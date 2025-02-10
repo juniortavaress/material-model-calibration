@@ -1,0 +1,15 @@
+{
+    "files": [
+        "mainwindow.py",
+        "frontend/interface/form.ui",
+        "frontend/interface/icons.qrc",
+        "frontend/aux_files/aux_dict.py",
+        "frontend/aux_files/buttons_callback.py",
+        "frontend/aux_files/get_conditions.py",
+        "frontend/aux_files/variables_manager.py",
+        "frontend/aux_files/yaml_generator.py",
+        "frontend/aux_files/aux_layout.py",
+        "backend/inp_configuration.py",
+        "frontend/aux_files/get_parameters.py"
+    ]
+}

@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/folder1">
+        <file>Icons/programmer.png</file>
+        <file>Icons/geometry.png</file>
+        <file>Icons/import.png</file>
+        <file>Icons/downArrow.png</file>
+        <file>Icons/downArrowDis.png</file>
+        <file>Icons/upArrow.png</file>
+        <file>Icons/upArrowDis.png</file>
+    </qresource>
+</RCC>
