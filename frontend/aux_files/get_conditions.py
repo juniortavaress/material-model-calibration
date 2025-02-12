@@ -5,17 +5,18 @@ from PySide6.QtWidgets import QFileDialog
 from PySide6.QtCore import QTimer
 from frontend.aux_files.yaml_generator import YamlClass
 from frontend.aux_files.aux_layout import SetLayout
-from backend.inp_configuration import InpManager
 
 class GetCondition:
     def set_conditions(self):
         with open(self.project_infos_path, "r", encoding="utf-8") as file:
             data = yaml.safe_load(file)
 
-        for key, value in data.items():
-            if key[:9] == "Condition":
-                self.ui.comboBox_condition.addItem(key)
-                GetCondition.change_combobox_info(self)
+        self.ui.comboBox_condition.clear()
+        for key, info in data.items():
+            for condition, value in info.items():
+                if condition[:9] == "Condition":
+                    self.ui.comboBox_condition.addItem(condition)
+                    GetCondition.change_combobox_info(self)
 
         if self.ui.comboBox_condition.findText("Condition 01") == -1:
             self.ui.comboBox_condition.addItem("Condition 01")
@@ -43,9 +44,15 @@ class GetCondition:
         inputFile = self.ui.label_input.text()
 
         if velocity and deepCuth and rakeAngle and tempPath and inputFile:
+            with open(self.project_infos_path, "r", encoding="utf-8") as file:
+                data = yaml.safe_load(file) or {}
+
+            if "3. Conditions" not in data:
+                data["3. Conditions"] = {}
+
             condition = self.ui.comboBox_condition.currentText()
-            data = {"velocity": velocity, "deepCuth": deepCuth, "rakeAngle": rakeAngle, "tempPath": tempPath, "inputFile": inputFile}
-            YamlClass.save_yaml_info(self, self.project_infos_path, condition, data)
+            data["3. Conditions"][condition] = {"velocity": velocity, "deepCuth": deepCuth, "rakeAngle": rakeAngle, "tempPath": tempPath, "inputFile": inputFile}
+            YamlClass.save_yaml_info(self, self.project_infos_path, "3. Conditions", data["3. Conditions"])
             
             if call == "new":
                 new_condition = f"Condition 0{self.ui.comboBox_condition.count() + 1}"
@@ -58,26 +65,25 @@ class GetCondition:
             with open(self.project_infos_path, "r", encoding="utf-8") as file:
                 data = yaml.safe_load(file) or {}
 
-            if self.ui.comboBox_condition.currentText() in data:
-                self.ui.lineEdit_velocity.setText(data[self.ui.comboBox_condition.currentText()]["velocity"])
-                self.ui.lineEdit_deepCuth.setText(data[self.ui.comboBox_condition.currentText()]["deepCuth"])
-                self.ui.lineEdit_rakeAngle.setText(data[self.ui.comboBox_condition.currentText()]["rakeAngle"])
-                self.ui.lineEdit_tempPath.setText(data[self.ui.comboBox_condition.currentText()]["tempPath"])
-                self.ui.label_input.setText(data[self.ui.comboBox_condition.currentText()]["inputFile"])
-            else:
-                self.ui.lineEdit_velocity.setText("")
-                self.ui.lineEdit_deepCuth.setText("")
-                self.ui.lineEdit_rakeAngle.setText("")
-                self.ui.lineEdit_tempPath.setText("")
-                self.ui.label_input.setText("")
+            if "3. Conditions" in data:
+                if self.ui.comboBox_condition.currentText() in data["3. Conditions"]:
+                    self.ui.lineEdit_velocity.setText(data["3. Conditions"][self.ui.comboBox_condition.currentText()]["velocity"])
+                    self.ui.lineEdit_deepCuth.setText(data["3. Conditions"][self.ui.comboBox_condition.currentText()]["deepCuth"])
+                    self.ui.lineEdit_rakeAngle.setText(data["3. Conditions"][self.ui.comboBox_condition.currentText()]["rakeAngle"])
+                    self.ui.lineEdit_tempPath.setText(data["3. Conditions"][self.ui.comboBox_condition.currentText()]["tempPath"])
+                    self.ui.label_input.setText(data["3. Conditions"][self.ui.comboBox_condition.currentText()]["inputFile"])
+                else:
+                    self.ui.lineEdit_velocity.setText("")
+                    self.ui.lineEdit_deepCuth.setText("")
+                    self.ui.lineEdit_rakeAngle.setText("")
+                    self.ui.lineEdit_tempPath.setText("")
+                    self.ui.label_input.setText("")
 
 
     def move_inp_files(self):
         if os.path.exists(self.project_infos_path):
             SetLayout.change_page(self, 4)
             QTimer.singleShot(0.005, lambda: GetCondition.move_files(self))
-
-
 
     def move_files(self):
         with open(self.project_infos_path, "r", encoding="utf-8") as file:
@@ -93,5 +99,5 @@ class GetCondition:
                 if os.path.exists(input_file_path):
                     new_input_file_path = os.path.join(self.inp_path, f"sim_v{v}_h{h}_gam{gam}.inp")
                     shutil.copy(input_file_path, new_input_file_path)
-        InpManager.get_available_parameters(self)
-        InpManager.get_list_with_parameters_name(self)
+
+

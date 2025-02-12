@@ -25,7 +25,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1128, 751)
+        MainWindow.resize(1060, 1093)
         MainWindow.setStyleSheet(u"QFrame {\n"
 "border: none;}\n"
 "\n"
@@ -1093,6 +1093,12 @@ class Ui_MainWindow(object):
         self.frame_plastic_properties = QFrame(self.frame_material_model)
         self.frame_plastic_properties.setObjectName(u"frame_plastic_properties")
         self.frame_plastic_properties.setEnabled(True)
+        self.frame_plastic_properties.setStyleSheet(u"/* QLabel*/\n"
+"QLabel{\n"
+"color: rgb(0, 0, 0);\n"
+"background-color: rgba(255, 255, 255, 150);\n"
+"border-radius: 10px;\n"
+"border: 1px solid rgb(113, 113, 113);}")
         self.frame_plastic_properties.setFrameShape(QFrame.Shape.StyledPanel)
         self.frame_plastic_properties.setFrameShadow(QFrame.Shadow.Raised)
         self.horizontalLayout_18 = QHBoxLayout(self.frame_plastic_properties)
@@ -1119,12 +1125,13 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_21.addWidget(self.checkBox_param_A)
 
-        self.label_22 = QLabel(self.frame_49)
-        self.label_22.setObjectName(u"label_22")
-        self.label_22.setMaximumSize(QSize(40, 16777215))
-        self.label_22.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label_param_A = QLabel(self.frame_49)
+        self.label_param_A.setObjectName(u"label_param_A")
+        self.label_param_A.setMinimumSize(QSize(50, 20))
+        self.label_param_A.setMaximumSize(QSize(50, 20))
+        self.label_param_A.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.horizontalLayout_21.addWidget(self.label_22)
+        self.horizontalLayout_21.addWidget(self.label_param_A)
 
 
         self.verticalLayout_30.addWidget(self.frame_49)
@@ -1142,12 +1149,13 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_19.addWidget(self.checkBox_param_B)
 
-        self.label_20 = QLabel(self.frame_47)
-        self.label_20.setObjectName(u"label_20")
-        self.label_20.setMaximumSize(QSize(40, 16777215))
-        self.label_20.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label_param_B = QLabel(self.frame_47)
+        self.label_param_B.setObjectName(u"label_param_B")
+        self.label_param_B.setMinimumSize(QSize(50, 20))
+        self.label_param_B.setMaximumSize(QSize(50, 20))
+        self.label_param_B.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.horizontalLayout_19.addWidget(self.label_20)
+        self.horizontalLayout_19.addWidget(self.label_param_B)
 
 
         self.verticalLayout_30.addWidget(self.frame_47)
@@ -1165,12 +1173,13 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_20.addWidget(self.checkBox_param_n)
 
-        self.label_21 = QLabel(self.frame_48)
-        self.label_21.setObjectName(u"label_21")
-        self.label_21.setMaximumSize(QSize(40, 16777215))
-        self.label_21.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label_param_n = QLabel(self.frame_48)
+        self.label_param_n.setObjectName(u"label_param_n")
+        self.label_param_n.setMinimumSize(QSize(50, 20))
+        self.label_param_n.setMaximumSize(QSize(50, 20))
+        self.label_param_n.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.horizontalLayout_20.addWidget(self.label_21)
+        self.horizontalLayout_20.addWidget(self.label_param_n)
 
 
         self.verticalLayout_30.addWidget(self.frame_48)
@@ -1198,12 +1207,13 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_24.addWidget(self.checkBox_param_C1)
 
-        self.label_23 = QLabel(self.frame_51)
-        self.label_23.setObjectName(u"label_23")
-        self.label_23.setMaximumSize(QSize(40, 16777215))
-        self.label_23.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label_param_C1 = QLabel(self.frame_51)
+        self.label_param_C1.setObjectName(u"label_param_C1")
+        self.label_param_C1.setMinimumSize(QSize(50, 20))
+        self.label_param_C1.setMaximumSize(QSize(50, 20))
+        self.label_param_C1.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.horizontalLayout_24.addWidget(self.label_23)
+        self.horizontalLayout_24.addWidget(self.label_param_C1)
 
 
         self.verticalLayout_31.addWidget(self.frame_51)
@@ -1221,12 +1231,13 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_25.addWidget(self.checkBox_param_C2)
 
-        self.label_24 = QLabel(self.frame_52)
-        self.label_24.setObjectName(u"label_24")
-        self.label_24.setMaximumSize(QSize(40, 16777215))
-        self.label_24.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label_param_C2 = QLabel(self.frame_52)
+        self.label_param_C2.setObjectName(u"label_param_C2")
+        self.label_param_C2.setMinimumSize(QSize(50, 20))
+        self.label_param_C2.setMaximumSize(QSize(50, 20))
+        self.label_param_C2.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.horizontalLayout_25.addWidget(self.label_24)
+        self.horizontalLayout_25.addWidget(self.label_param_C2)
 
 
         self.verticalLayout_31.addWidget(self.frame_52)
@@ -1244,12 +1255,13 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_26.addWidget(self.checkBox_param_C3)
 
-        self.label_25 = QLabel(self.frame_53)
-        self.label_25.setObjectName(u"label_25")
-        self.label_25.setMaximumSize(QSize(40, 16777215))
-        self.label_25.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label_param_C3 = QLabel(self.frame_53)
+        self.label_param_C3.setObjectName(u"label_param_C3")
+        self.label_param_C3.setMinimumSize(QSize(50, 20))
+        self.label_param_C3.setMaximumSize(QSize(50, 20))
+        self.label_param_C3.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.horizontalLayout_26.addWidget(self.label_25)
+        self.horizontalLayout_26.addWidget(self.label_param_C3)
 
 
         self.verticalLayout_31.addWidget(self.frame_53)
@@ -1277,12 +1289,13 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_27.addWidget(self.checkBox_param_e)
 
-        self.label_26 = QLabel(self.frame_55)
-        self.label_26.setObjectName(u"label_26")
-        self.label_26.setMaximumSize(QSize(40, 16777215))
-        self.label_26.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label_param_e = QLabel(self.frame_55)
+        self.label_param_e.setObjectName(u"label_param_e")
+        self.label_param_e.setMinimumSize(QSize(50, 20))
+        self.label_param_e.setMaximumSize(QSize(50, 20))
+        self.label_param_e.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.horizontalLayout_27.addWidget(self.label_26)
+        self.horizontalLayout_27.addWidget(self.label_param_e)
 
 
         self.verticalLayout_32.addWidget(self.frame_55)
@@ -1300,12 +1313,13 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_28.addWidget(self.checkBox_param_k)
 
-        self.label_27 = QLabel(self.frame_56)
-        self.label_27.setObjectName(u"label_27")
-        self.label_27.setMaximumSize(QSize(40, 16777215))
-        self.label_27.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label_param_k = QLabel(self.frame_56)
+        self.label_param_k.setObjectName(u"label_param_k")
+        self.label_param_k.setMinimumSize(QSize(50, 20))
+        self.label_param_k.setMaximumSize(QSize(50, 20))
+        self.label_param_k.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.horizontalLayout_28.addWidget(self.label_27)
+        self.horizontalLayout_28.addWidget(self.label_param_k)
 
 
         self.verticalLayout_32.addWidget(self.frame_56)
@@ -1323,12 +1337,13 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_29.addWidget(self.checkBox_param_Ts)
 
-        self.label_28 = QLabel(self.frame_57)
-        self.label_28.setObjectName(u"label_28")
-        self.label_28.setMaximumSize(QSize(40, 16777215))
-        self.label_28.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label_param_Ts = QLabel(self.frame_57)
+        self.label_param_Ts.setObjectName(u"label_param_Ts")
+        self.label_param_Ts.setMinimumSize(QSize(50, 20))
+        self.label_param_Ts.setMaximumSize(QSize(50, 20))
+        self.label_param_Ts.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.horizontalLayout_29.addWidget(self.label_28)
+        self.horizontalLayout_29.addWidget(self.label_param_Ts)
 
 
         self.verticalLayout_32.addWidget(self.frame_57)
@@ -1370,6 +1385,12 @@ class Ui_MainWindow(object):
         self.frame_damage_properties = QFrame(self.frame_damage_model)
         self.frame_damage_properties.setObjectName(u"frame_damage_properties")
         self.frame_damage_properties.setEnabled(True)
+        self.frame_damage_properties.setStyleSheet(u"/* QLabel*/\n"
+"QLabel{\n"
+"color: rgb(0, 0, 0);\n"
+"background-color: rgba(255, 255, 255, 150);\n"
+"border-radius: 10px;\n"
+"border: 1px solid rgb(113, 113, 113);}")
         self.frame_damage_properties.setFrameShape(QFrame.Shape.StyledPanel)
         self.frame_damage_properties.setFrameShadow(QFrame.Shadow.Raised)
         self.horizontalLayout_30 = QHBoxLayout(self.frame_damage_properties)
@@ -1396,12 +1417,13 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_31.addWidget(self.checkBox_param_D1)
 
-        self.label_29 = QLabel(self.frame_61)
-        self.label_29.setObjectName(u"label_29")
-        self.label_29.setMaximumSize(QSize(40, 16777215))
-        self.label_29.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label_param_D1 = QLabel(self.frame_61)
+        self.label_param_D1.setObjectName(u"label_param_D1")
+        self.label_param_D1.setMinimumSize(QSize(50, 20))
+        self.label_param_D1.setMaximumSize(QSize(50, 20))
+        self.label_param_D1.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.horizontalLayout_31.addWidget(self.label_29)
+        self.horizontalLayout_31.addWidget(self.label_param_D1)
 
 
         self.verticalLayout_35.addWidget(self.frame_61)
@@ -1419,12 +1441,13 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_32.addWidget(self.checkBox_param_D2)
 
-        self.label_30 = QLabel(self.frame_62)
-        self.label_30.setObjectName(u"label_30")
-        self.label_30.setMaximumSize(QSize(40, 16777215))
-        self.label_30.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label_param_D2 = QLabel(self.frame_62)
+        self.label_param_D2.setObjectName(u"label_param_D2")
+        self.label_param_D2.setMinimumSize(QSize(50, 20))
+        self.label_param_D2.setMaximumSize(QSize(50, 20))
+        self.label_param_D2.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.horizontalLayout_32.addWidget(self.label_30)
+        self.horizontalLayout_32.addWidget(self.label_param_D2)
 
 
         self.verticalLayout_35.addWidget(self.frame_62)
@@ -1442,12 +1465,13 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_33.addWidget(self.checkBox_param_D3)
 
-        self.label_31 = QLabel(self.frame_63)
-        self.label_31.setObjectName(u"label_31")
-        self.label_31.setMaximumSize(QSize(40, 16777215))
-        self.label_31.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label_param_D3 = QLabel(self.frame_63)
+        self.label_param_D3.setObjectName(u"label_param_D3")
+        self.label_param_D3.setMinimumSize(QSize(50, 20))
+        self.label_param_D3.setMaximumSize(QSize(50, 20))
+        self.label_param_D3.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.horizontalLayout_33.addWidget(self.label_31)
+        self.horizontalLayout_33.addWidget(self.label_param_D3)
 
 
         self.verticalLayout_35.addWidget(self.frame_63)
@@ -1475,12 +1499,13 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_34.addWidget(self.checkBox_param_D4)
 
-        self.label_32 = QLabel(self.frame_65)
-        self.label_32.setObjectName(u"label_32")
-        self.label_32.setMaximumSize(QSize(40, 16777215))
-        self.label_32.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label_param_D4 = QLabel(self.frame_65)
+        self.label_param_D4.setObjectName(u"label_param_D4")
+        self.label_param_D4.setMinimumSize(QSize(50, 20))
+        self.label_param_D4.setMaximumSize(QSize(50, 20))
+        self.label_param_D4.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.horizontalLayout_34.addWidget(self.label_32)
+        self.horizontalLayout_34.addWidget(self.label_param_D4)
 
 
         self.verticalLayout_36.addWidget(self.frame_65)
@@ -1498,12 +1523,13 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_35.addWidget(self.checkBox_param_D5)
 
-        self.label_33 = QLabel(self.frame_66)
-        self.label_33.setObjectName(u"label_33")
-        self.label_33.setMaximumSize(QSize(40, 16777215))
-        self.label_33.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label_param_D5 = QLabel(self.frame_66)
+        self.label_param_D5.setObjectName(u"label_param_D5")
+        self.label_param_D5.setMinimumSize(QSize(50, 20))
+        self.label_param_D5.setMaximumSize(QSize(50, 20))
+        self.label_param_D5.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.horizontalLayout_35.addWidget(self.label_33)
+        self.horizontalLayout_35.addWidget(self.label_param_D5)
 
 
         self.verticalLayout_36.addWidget(self.frame_66)
@@ -1521,12 +1547,13 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_36.addWidget(self.checkBox_param_Tm)
 
-        self.label_34 = QLabel(self.frame_67)
-        self.label_34.setObjectName(u"label_34")
-        self.label_34.setMaximumSize(QSize(40, 16777215))
-        self.label_34.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label_param_Tm = QLabel(self.frame_67)
+        self.label_param_Tm.setObjectName(u"label_param_Tm")
+        self.label_param_Tm.setMinimumSize(QSize(50, 20))
+        self.label_param_Tm.setMaximumSize(QSize(50, 20))
+        self.label_param_Tm.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.horizontalLayout_36.addWidget(self.label_34)
+        self.horizontalLayout_36.addWidget(self.label_param_Tm)
 
 
         self.verticalLayout_36.addWidget(self.frame_67)
@@ -1554,12 +1581,13 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_37.addWidget(self.checkBox_param_Tt)
 
-        self.label_35 = QLabel(self.frame_69)
-        self.label_35.setObjectName(u"label_35")
-        self.label_35.setMaximumSize(QSize(40, 16777215))
-        self.label_35.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label_param_Tt = QLabel(self.frame_69)
+        self.label_param_Tt.setObjectName(u"label_param_Tt")
+        self.label_param_Tt.setMinimumSize(QSize(50, 20))
+        self.label_param_Tt.setMaximumSize(QSize(50, 20))
+        self.label_param_Tt.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.horizontalLayout_37.addWidget(self.label_35)
+        self.horizontalLayout_37.addWidget(self.label_param_Tt)
 
 
         self.verticalLayout_37.addWidget(self.frame_69)
@@ -1577,12 +1605,13 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_38.addWidget(self.checkBox_param_e_damage)
 
-        self.label_36 = QLabel(self.frame_70)
-        self.label_36.setObjectName(u"label_36")
-        self.label_36.setMaximumSize(QSize(40, 16777215))
-        self.label_36.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label_param_e_damage = QLabel(self.frame_70)
+        self.label_param_e_damage.setObjectName(u"label_param_e_damage")
+        self.label_param_e_damage.setMinimumSize(QSize(50, 20))
+        self.label_param_e_damage.setMaximumSize(QSize(50, 20))
+        self.label_param_e_damage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.horizontalLayout_38.addWidget(self.label_36)
+        self.horizontalLayout_38.addWidget(self.label_param_e_damage)
 
 
         self.verticalLayout_37.addWidget(self.frame_70)
@@ -1600,12 +1629,13 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_39.addWidget(self.checkBox_param_p)
 
-        self.label_37 = QLabel(self.frame_71)
-        self.label_37.setObjectName(u"label_37")
-        self.label_37.setMaximumSize(QSize(40, 16777215))
-        self.label_37.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label_param_p = QLabel(self.frame_71)
+        self.label_param_p.setObjectName(u"label_param_p")
+        self.label_param_p.setMinimumSize(QSize(50, 20))
+        self.label_param_p.setMaximumSize(QSize(50, 20))
+        self.label_param_p.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.horizontalLayout_39.addWidget(self.label_37)
+        self.horizontalLayout_39.addWidget(self.label_param_p)
 
 
         self.verticalLayout_37.addWidget(self.frame_71)
@@ -1749,7 +1779,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_60.setObjectName(u"horizontalLayout_60")
         self.frame_73 = QFrame(self.frame_72)
         self.frame_73.setObjectName(u"frame_73")
-        self.frame_73.setMaximumSize(QSize(800, 16777215))
+        self.frame_73.setMaximumSize(QSize(400, 16777215))
         self.frame_73.setFrameShape(QFrame.Shape.NoFrame)
         self.frame_73.setFrameShadow(QFrame.Shadow.Raised)
         self.verticalLayout_41 = QVBoxLayout(self.frame_73)
@@ -1777,7 +1807,6 @@ class Ui_MainWindow(object):
         self.verticalLayout_43.setObjectName(u"verticalLayout_43")
         self.verticalLayout_43.setContentsMargins(0, 0, 0, 0)
         self.comboBox_material_limits = QComboBox(self.frame_75)
-        self.comboBox_material_limits.addItem("")
         self.comboBox_material_limits.setObjectName(u"comboBox_material_limits")
         self.comboBox_material_limits.setMinimumSize(QSize(0, 20))
         self.comboBox_material_limits.setMaximumSize(QSize(150, 16777215))
@@ -1792,10 +1821,10 @@ class Ui_MainWindow(object):
         self.frame_105.setObjectName(u"frame_105")
         self.frame_105.setFrameShape(QFrame.Shape.StyledPanel)
         self.frame_105.setFrameShadow(QFrame.Shadow.Raised)
-        self.horizontalLayout_41 = QHBoxLayout(self.frame_105)
-        self.horizontalLayout_41.setSpacing(20)
-        self.horizontalLayout_41.setObjectName(u"horizontalLayout_41")
-        self.horizontalLayout_41.setContentsMargins(-1, 0, -1, -1)
+        self.verticalLayout_61 = QVBoxLayout(self.frame_105)
+        self.verticalLayout_61.setSpacing(20)
+        self.verticalLayout_61.setObjectName(u"verticalLayout_61")
+        self.verticalLayout_61.setContentsMargins(-1, 0, -1, -1)
         self.frame_91 = QFrame(self.frame_105)
         self.frame_91.setObjectName(u"frame_91")
         self.frame_91.setEnabled(True)
@@ -1829,22 +1858,23 @@ class Ui_MainWindow(object):
         self.verticalLayout_46 = QVBoxLayout(self.frame_limits_plastic)
         self.verticalLayout_46.setObjectName(u"verticalLayout_46")
         self.verticalLayout_46.setContentsMargins(0, 0, 0, 0)
-        self.frame_78 = QFrame(self.frame_limits_plastic)
-        self.frame_78.setObjectName(u"frame_78")
-        self.frame_78.setMinimumSize(QSize(0, 35))
-        self.frame_78.setMaximumSize(QSize(16777215, 35))
-        self.frame_78.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frame_78.setFrameShadow(QFrame.Shadow.Raised)
-        self.horizontalLayout_42 = QHBoxLayout(self.frame_78)
+        self.frame_limits_param_A = QFrame(self.frame_limits_plastic)
+        self.frame_limits_param_A.setObjectName(u"frame_limits_param_A")
+        self.frame_limits_param_A.setEnabled(True)
+        self.frame_limits_param_A.setMinimumSize(QSize(0, 35))
+        self.frame_limits_param_A.setMaximumSize(QSize(16777215, 35))
+        self.frame_limits_param_A.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_limits_param_A.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_42 = QHBoxLayout(self.frame_limits_param_A)
         self.horizontalLayout_42.setObjectName(u"horizontalLayout_42")
         self.horizontalLayout_42.setContentsMargins(0, 0, 0, 0)
-        self.label_40 = QLabel(self.frame_78)
+        self.label_40 = QLabel(self.frame_limits_param_A)
         self.label_40.setObjectName(u"label_40")
         self.label_40.setMaximumSize(QSize(40, 16777215))
 
         self.horizontalLayout_42.addWidget(self.label_40)
 
-        self.lineEdit_min_param_A = QLineEdit(self.frame_78)
+        self.lineEdit_min_param_A = QLineEdit(self.frame_limits_param_A)
         self.lineEdit_min_param_A.setObjectName(u"lineEdit_min_param_A")
         self.lineEdit_min_param_A.setMinimumSize(QSize(40, 0))
         self.lineEdit_min_param_A.setMaximumSize(QSize(50, 16777215))
@@ -1852,7 +1882,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_42.addWidget(self.lineEdit_min_param_A)
 
-        self.lineEdit_max_param_A = QLineEdit(self.frame_78)
+        self.lineEdit_max_param_A = QLineEdit(self.frame_limits_param_A)
         self.lineEdit_max_param_A.setObjectName(u"lineEdit_max_param_A")
         self.lineEdit_max_param_A.setMinimumSize(QSize(40, 0))
         self.lineEdit_max_param_A.setMaximumSize(QSize(50, 16777215))
@@ -1861,24 +1891,25 @@ class Ui_MainWindow(object):
         self.horizontalLayout_42.addWidget(self.lineEdit_max_param_A)
 
 
-        self.verticalLayout_46.addWidget(self.frame_78)
+        self.verticalLayout_46.addWidget(self.frame_limits_param_A)
 
-        self.frame_86 = QFrame(self.frame_limits_plastic)
-        self.frame_86.setObjectName(u"frame_86")
-        self.frame_86.setMinimumSize(QSize(0, 35))
-        self.frame_86.setMaximumSize(QSize(16777215, 35))
-        self.frame_86.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frame_86.setFrameShadow(QFrame.Shadow.Raised)
-        self.horizontalLayout_50 = QHBoxLayout(self.frame_86)
+        self.frame_limits_param_B = QFrame(self.frame_limits_plastic)
+        self.frame_limits_param_B.setObjectName(u"frame_limits_param_B")
+        self.frame_limits_param_B.setEnabled(True)
+        self.frame_limits_param_B.setMinimumSize(QSize(0, 35))
+        self.frame_limits_param_B.setMaximumSize(QSize(16777215, 35))
+        self.frame_limits_param_B.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_limits_param_B.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_50 = QHBoxLayout(self.frame_limits_param_B)
         self.horizontalLayout_50.setObjectName(u"horizontalLayout_50")
         self.horizontalLayout_50.setContentsMargins(0, 0, 0, 0)
-        self.label_66 = QLabel(self.frame_86)
+        self.label_66 = QLabel(self.frame_limits_param_B)
         self.label_66.setObjectName(u"label_66")
         self.label_66.setMaximumSize(QSize(40, 16777215))
 
         self.horizontalLayout_50.addWidget(self.label_66)
 
-        self.lineEdit_min_param_B = QLineEdit(self.frame_86)
+        self.lineEdit_min_param_B = QLineEdit(self.frame_limits_param_B)
         self.lineEdit_min_param_B.setObjectName(u"lineEdit_min_param_B")
         self.lineEdit_min_param_B.setMinimumSize(QSize(40, 0))
         self.lineEdit_min_param_B.setMaximumSize(QSize(50, 16777215))
@@ -1886,7 +1917,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_50.addWidget(self.lineEdit_min_param_B)
 
-        self.lineEdit_max_param_B = QLineEdit(self.frame_86)
+        self.lineEdit_max_param_B = QLineEdit(self.frame_limits_param_B)
         self.lineEdit_max_param_B.setObjectName(u"lineEdit_max_param_B")
         self.lineEdit_max_param_B.setMinimumSize(QSize(40, 0))
         self.lineEdit_max_param_B.setMaximumSize(QSize(50, 16777215))
@@ -1895,24 +1926,25 @@ class Ui_MainWindow(object):
         self.horizontalLayout_50.addWidget(self.lineEdit_max_param_B)
 
 
-        self.verticalLayout_46.addWidget(self.frame_86)
+        self.verticalLayout_46.addWidget(self.frame_limits_param_B)
 
-        self.frame_85 = QFrame(self.frame_limits_plastic)
-        self.frame_85.setObjectName(u"frame_85")
-        self.frame_85.setMinimumSize(QSize(0, 35))
-        self.frame_85.setMaximumSize(QSize(16777215, 35))
-        self.frame_85.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frame_85.setFrameShadow(QFrame.Shadow.Raised)
-        self.horizontalLayout_49 = QHBoxLayout(self.frame_85)
+        self.frame_limits_param_n = QFrame(self.frame_limits_plastic)
+        self.frame_limits_param_n.setObjectName(u"frame_limits_param_n")
+        self.frame_limits_param_n.setEnabled(True)
+        self.frame_limits_param_n.setMinimumSize(QSize(0, 35))
+        self.frame_limits_param_n.setMaximumSize(QSize(16777215, 35))
+        self.frame_limits_param_n.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_limits_param_n.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_49 = QHBoxLayout(self.frame_limits_param_n)
         self.horizontalLayout_49.setObjectName(u"horizontalLayout_49")
         self.horizontalLayout_49.setContentsMargins(0, 0, 0, 0)
-        self.label_64 = QLabel(self.frame_85)
+        self.label_64 = QLabel(self.frame_limits_param_n)
         self.label_64.setObjectName(u"label_64")
         self.label_64.setMaximumSize(QSize(40, 16777215))
 
         self.horizontalLayout_49.addWidget(self.label_64)
 
-        self.lineEdit_min_param_n = QLineEdit(self.frame_85)
+        self.lineEdit_min_param_n = QLineEdit(self.frame_limits_param_n)
         self.lineEdit_min_param_n.setObjectName(u"lineEdit_min_param_n")
         self.lineEdit_min_param_n.setMinimumSize(QSize(40, 0))
         self.lineEdit_min_param_n.setMaximumSize(QSize(50, 16777215))
@@ -1920,7 +1952,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_49.addWidget(self.lineEdit_min_param_n)
 
-        self.lineEdit_max_param_n = QLineEdit(self.frame_85)
+        self.lineEdit_max_param_n = QLineEdit(self.frame_limits_param_n)
         self.lineEdit_max_param_n.setObjectName(u"lineEdit_max_param_n")
         self.lineEdit_max_param_n.setMinimumSize(QSize(40, 0))
         self.lineEdit_max_param_n.setMaximumSize(QSize(50, 16777215))
@@ -1929,24 +1961,25 @@ class Ui_MainWindow(object):
         self.horizontalLayout_49.addWidget(self.lineEdit_max_param_n)
 
 
-        self.verticalLayout_46.addWidget(self.frame_85)
+        self.verticalLayout_46.addWidget(self.frame_limits_param_n)
 
-        self.frame_84 = QFrame(self.frame_limits_plastic)
-        self.frame_84.setObjectName(u"frame_84")
-        self.frame_84.setMinimumSize(QSize(0, 35))
-        self.frame_84.setMaximumSize(QSize(16777215, 35))
-        self.frame_84.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frame_84.setFrameShadow(QFrame.Shadow.Raised)
-        self.horizontalLayout_48 = QHBoxLayout(self.frame_84)
+        self.frame_limits_param_C1 = QFrame(self.frame_limits_plastic)
+        self.frame_limits_param_C1.setObjectName(u"frame_limits_param_C1")
+        self.frame_limits_param_C1.setEnabled(True)
+        self.frame_limits_param_C1.setMinimumSize(QSize(0, 35))
+        self.frame_limits_param_C1.setMaximumSize(QSize(16777215, 35))
+        self.frame_limits_param_C1.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_limits_param_C1.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_48 = QHBoxLayout(self.frame_limits_param_C1)
         self.horizontalLayout_48.setObjectName(u"horizontalLayout_48")
         self.horizontalLayout_48.setContentsMargins(0, 0, 0, 0)
-        self.label_62 = QLabel(self.frame_84)
+        self.label_62 = QLabel(self.frame_limits_param_C1)
         self.label_62.setObjectName(u"label_62")
         self.label_62.setMaximumSize(QSize(40, 16777215))
 
         self.horizontalLayout_48.addWidget(self.label_62)
 
-        self.lineEdit_min_param_C1 = QLineEdit(self.frame_84)
+        self.lineEdit_min_param_C1 = QLineEdit(self.frame_limits_param_C1)
         self.lineEdit_min_param_C1.setObjectName(u"lineEdit_min_param_C1")
         self.lineEdit_min_param_C1.setMinimumSize(QSize(40, 0))
         self.lineEdit_min_param_C1.setMaximumSize(QSize(50, 16777215))
@@ -1954,7 +1987,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_48.addWidget(self.lineEdit_min_param_C1)
 
-        self.lineEdit_max_param_C1 = QLineEdit(self.frame_84)
+        self.lineEdit_max_param_C1 = QLineEdit(self.frame_limits_param_C1)
         self.lineEdit_max_param_C1.setObjectName(u"lineEdit_max_param_C1")
         self.lineEdit_max_param_C1.setMinimumSize(QSize(40, 0))
         self.lineEdit_max_param_C1.setMaximumSize(QSize(50, 16777215))
@@ -1963,24 +1996,25 @@ class Ui_MainWindow(object):
         self.horizontalLayout_48.addWidget(self.lineEdit_max_param_C1)
 
 
-        self.verticalLayout_46.addWidget(self.frame_84)
+        self.verticalLayout_46.addWidget(self.frame_limits_param_C1)
 
-        self.frame_83 = QFrame(self.frame_limits_plastic)
-        self.frame_83.setObjectName(u"frame_83")
-        self.frame_83.setMinimumSize(QSize(0, 35))
-        self.frame_83.setMaximumSize(QSize(16777215, 35))
-        self.frame_83.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frame_83.setFrameShadow(QFrame.Shadow.Raised)
-        self.horizontalLayout_47 = QHBoxLayout(self.frame_83)
+        self.frame_limits_param_C2 = QFrame(self.frame_limits_plastic)
+        self.frame_limits_param_C2.setObjectName(u"frame_limits_param_C2")
+        self.frame_limits_param_C2.setEnabled(True)
+        self.frame_limits_param_C2.setMinimumSize(QSize(0, 35))
+        self.frame_limits_param_C2.setMaximumSize(QSize(16777215, 35))
+        self.frame_limits_param_C2.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_limits_param_C2.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_47 = QHBoxLayout(self.frame_limits_param_C2)
         self.horizontalLayout_47.setObjectName(u"horizontalLayout_47")
         self.horizontalLayout_47.setContentsMargins(0, 0, 0, 0)
-        self.label_60 = QLabel(self.frame_83)
+        self.label_60 = QLabel(self.frame_limits_param_C2)
         self.label_60.setObjectName(u"label_60")
         self.label_60.setMaximumSize(QSize(40, 16777215))
 
         self.horizontalLayout_47.addWidget(self.label_60)
 
-        self.lineEdit_min_param_C2 = QLineEdit(self.frame_83)
+        self.lineEdit_min_param_C2 = QLineEdit(self.frame_limits_param_C2)
         self.lineEdit_min_param_C2.setObjectName(u"lineEdit_min_param_C2")
         self.lineEdit_min_param_C2.setMinimumSize(QSize(40, 0))
         self.lineEdit_min_param_C2.setMaximumSize(QSize(50, 16777215))
@@ -1988,7 +2022,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_47.addWidget(self.lineEdit_min_param_C2)
 
-        self.lineEdit_max_param_C2 = QLineEdit(self.frame_83)
+        self.lineEdit_max_param_C2 = QLineEdit(self.frame_limits_param_C2)
         self.lineEdit_max_param_C2.setObjectName(u"lineEdit_max_param_C2")
         self.lineEdit_max_param_C2.setMinimumSize(QSize(40, 0))
         self.lineEdit_max_param_C2.setMaximumSize(QSize(50, 16777215))
@@ -1997,24 +2031,25 @@ class Ui_MainWindow(object):
         self.horizontalLayout_47.addWidget(self.lineEdit_max_param_C2)
 
 
-        self.verticalLayout_46.addWidget(self.frame_83)
+        self.verticalLayout_46.addWidget(self.frame_limits_param_C2)
 
-        self.frame_82 = QFrame(self.frame_limits_plastic)
-        self.frame_82.setObjectName(u"frame_82")
-        self.frame_82.setMinimumSize(QSize(0, 35))
-        self.frame_82.setMaximumSize(QSize(16777215, 35))
-        self.frame_82.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frame_82.setFrameShadow(QFrame.Shadow.Raised)
-        self.horizontalLayout_46 = QHBoxLayout(self.frame_82)
+        self.frame_limits_param_C3 = QFrame(self.frame_limits_plastic)
+        self.frame_limits_param_C3.setObjectName(u"frame_limits_param_C3")
+        self.frame_limits_param_C3.setEnabled(True)
+        self.frame_limits_param_C3.setMinimumSize(QSize(0, 35))
+        self.frame_limits_param_C3.setMaximumSize(QSize(16777215, 35))
+        self.frame_limits_param_C3.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_limits_param_C3.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_46 = QHBoxLayout(self.frame_limits_param_C3)
         self.horizontalLayout_46.setObjectName(u"horizontalLayout_46")
         self.horizontalLayout_46.setContentsMargins(0, 0, 0, 0)
-        self.label_48 = QLabel(self.frame_82)
+        self.label_48 = QLabel(self.frame_limits_param_C3)
         self.label_48.setObjectName(u"label_48")
         self.label_48.setMaximumSize(QSize(40, 16777215))
 
         self.horizontalLayout_46.addWidget(self.label_48)
 
-        self.lineEdit_min_param_C3 = QLineEdit(self.frame_82)
+        self.lineEdit_min_param_C3 = QLineEdit(self.frame_limits_param_C3)
         self.lineEdit_min_param_C3.setObjectName(u"lineEdit_min_param_C3")
         self.lineEdit_min_param_C3.setMinimumSize(QSize(40, 0))
         self.lineEdit_min_param_C3.setMaximumSize(QSize(50, 16777215))
@@ -2022,7 +2057,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_46.addWidget(self.lineEdit_min_param_C3)
 
-        self.lineEdit_max_param_C3 = QLineEdit(self.frame_82)
+        self.lineEdit_max_param_C3 = QLineEdit(self.frame_limits_param_C3)
         self.lineEdit_max_param_C3.setObjectName(u"lineEdit_max_param_C3")
         self.lineEdit_max_param_C3.setMinimumSize(QSize(40, 0))
         self.lineEdit_max_param_C3.setMaximumSize(QSize(50, 16777215))
@@ -2031,24 +2066,25 @@ class Ui_MainWindow(object):
         self.horizontalLayout_46.addWidget(self.lineEdit_max_param_C3)
 
 
-        self.verticalLayout_46.addWidget(self.frame_82)
+        self.verticalLayout_46.addWidget(self.frame_limits_param_C3)
 
-        self.frame_81 = QFrame(self.frame_limits_plastic)
-        self.frame_81.setObjectName(u"frame_81")
-        self.frame_81.setMinimumSize(QSize(0, 35))
-        self.frame_81.setMaximumSize(QSize(16777215, 35))
-        self.frame_81.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frame_81.setFrameShadow(QFrame.Shadow.Raised)
-        self.horizontalLayout_45 = QHBoxLayout(self.frame_81)
+        self.frame_limits_param_e = QFrame(self.frame_limits_plastic)
+        self.frame_limits_param_e.setObjectName(u"frame_limits_param_e")
+        self.frame_limits_param_e.setEnabled(True)
+        self.frame_limits_param_e.setMinimumSize(QSize(0, 35))
+        self.frame_limits_param_e.setMaximumSize(QSize(16777215, 35))
+        self.frame_limits_param_e.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_limits_param_e.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_45 = QHBoxLayout(self.frame_limits_param_e)
         self.horizontalLayout_45.setObjectName(u"horizontalLayout_45")
         self.horizontalLayout_45.setContentsMargins(0, 0, 0, 0)
-        self.label_46 = QLabel(self.frame_81)
+        self.label_46 = QLabel(self.frame_limits_param_e)
         self.label_46.setObjectName(u"label_46")
         self.label_46.setMaximumSize(QSize(40, 16777215))
 
         self.horizontalLayout_45.addWidget(self.label_46)
 
-        self.lineEdit_min_param_e = QLineEdit(self.frame_81)
+        self.lineEdit_min_param_e = QLineEdit(self.frame_limits_param_e)
         self.lineEdit_min_param_e.setObjectName(u"lineEdit_min_param_e")
         self.lineEdit_min_param_e.setMinimumSize(QSize(40, 0))
         self.lineEdit_min_param_e.setMaximumSize(QSize(50, 16777215))
@@ -2056,7 +2092,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_45.addWidget(self.lineEdit_min_param_e)
 
-        self.lineEdit_max_param_e = QLineEdit(self.frame_81)
+        self.lineEdit_max_param_e = QLineEdit(self.frame_limits_param_e)
         self.lineEdit_max_param_e.setObjectName(u"lineEdit_max_param_e")
         self.lineEdit_max_param_e.setMinimumSize(QSize(40, 0))
         self.lineEdit_max_param_e.setMaximumSize(QSize(50, 16777215))
@@ -2065,24 +2101,25 @@ class Ui_MainWindow(object):
         self.horizontalLayout_45.addWidget(self.lineEdit_max_param_e)
 
 
-        self.verticalLayout_46.addWidget(self.frame_81)
+        self.verticalLayout_46.addWidget(self.frame_limits_param_e)
 
-        self.frame_80 = QFrame(self.frame_limits_plastic)
-        self.frame_80.setObjectName(u"frame_80")
-        self.frame_80.setMinimumSize(QSize(0, 35))
-        self.frame_80.setMaximumSize(QSize(16777215, 35))
-        self.frame_80.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frame_80.setFrameShadow(QFrame.Shadow.Raised)
-        self.horizontalLayout_44 = QHBoxLayout(self.frame_80)
+        self.frame_limits_param_k = QFrame(self.frame_limits_plastic)
+        self.frame_limits_param_k.setObjectName(u"frame_limits_param_k")
+        self.frame_limits_param_k.setEnabled(True)
+        self.frame_limits_param_k.setMinimumSize(QSize(0, 35))
+        self.frame_limits_param_k.setMaximumSize(QSize(16777215, 35))
+        self.frame_limits_param_k.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_limits_param_k.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_44 = QHBoxLayout(self.frame_limits_param_k)
         self.horizontalLayout_44.setObjectName(u"horizontalLayout_44")
         self.horizontalLayout_44.setContentsMargins(0, 0, 0, 0)
-        self.label_44 = QLabel(self.frame_80)
+        self.label_44 = QLabel(self.frame_limits_param_k)
         self.label_44.setObjectName(u"label_44")
         self.label_44.setMaximumSize(QSize(40, 16777215))
 
         self.horizontalLayout_44.addWidget(self.label_44)
 
-        self.lineEdit_min_param_k = QLineEdit(self.frame_80)
+        self.lineEdit_min_param_k = QLineEdit(self.frame_limits_param_k)
         self.lineEdit_min_param_k.setObjectName(u"lineEdit_min_param_k")
         self.lineEdit_min_param_k.setMinimumSize(QSize(40, 0))
         self.lineEdit_min_param_k.setMaximumSize(QSize(50, 16777215))
@@ -2090,7 +2127,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_44.addWidget(self.lineEdit_min_param_k)
 
-        self.lineEdit_max_param_k = QLineEdit(self.frame_80)
+        self.lineEdit_max_param_k = QLineEdit(self.frame_limits_param_k)
         self.lineEdit_max_param_k.setObjectName(u"lineEdit_max_param_k")
         self.lineEdit_max_param_k.setMinimumSize(QSize(40, 0))
         self.lineEdit_max_param_k.setMaximumSize(QSize(50, 16777215))
@@ -2099,24 +2136,25 @@ class Ui_MainWindow(object):
         self.horizontalLayout_44.addWidget(self.lineEdit_max_param_k)
 
 
-        self.verticalLayout_46.addWidget(self.frame_80)
+        self.verticalLayout_46.addWidget(self.frame_limits_param_k)
 
-        self.frame_79 = QFrame(self.frame_limits_plastic)
-        self.frame_79.setObjectName(u"frame_79")
-        self.frame_79.setMinimumSize(QSize(0, 35))
-        self.frame_79.setMaximumSize(QSize(16777215, 35))
-        self.frame_79.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frame_79.setFrameShadow(QFrame.Shadow.Raised)
-        self.horizontalLayout_43 = QHBoxLayout(self.frame_79)
+        self.frame_limits_param_Ts = QFrame(self.frame_limits_plastic)
+        self.frame_limits_param_Ts.setObjectName(u"frame_limits_param_Ts")
+        self.frame_limits_param_Ts.setEnabled(True)
+        self.frame_limits_param_Ts.setMinimumSize(QSize(0, 35))
+        self.frame_limits_param_Ts.setMaximumSize(QSize(16777215, 35))
+        self.frame_limits_param_Ts.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_limits_param_Ts.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_43 = QHBoxLayout(self.frame_limits_param_Ts)
         self.horizontalLayout_43.setObjectName(u"horizontalLayout_43")
         self.horizontalLayout_43.setContentsMargins(0, 0, 0, 0)
-        self.label_42 = QLabel(self.frame_79)
+        self.label_42 = QLabel(self.frame_limits_param_Ts)
         self.label_42.setObjectName(u"label_42")
         self.label_42.setMaximumSize(QSize(40, 16777215))
 
         self.horizontalLayout_43.addWidget(self.label_42)
 
-        self.lineEdit_min_param_Ts = QLineEdit(self.frame_79)
+        self.lineEdit_min_param_Ts = QLineEdit(self.frame_limits_param_Ts)
         self.lineEdit_min_param_Ts.setObjectName(u"lineEdit_min_param_Ts")
         self.lineEdit_min_param_Ts.setMinimumSize(QSize(40, 0))
         self.lineEdit_min_param_Ts.setMaximumSize(QSize(50, 16777215))
@@ -2124,7 +2162,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_43.addWidget(self.lineEdit_min_param_Ts)
 
-        self.lineEdit_max_param_Ts = QLineEdit(self.frame_79)
+        self.lineEdit_max_param_Ts = QLineEdit(self.frame_limits_param_Ts)
         self.lineEdit_max_param_Ts.setObjectName(u"lineEdit_max_param_Ts")
         self.lineEdit_max_param_Ts.setMinimumSize(QSize(40, 0))
         self.lineEdit_max_param_Ts.setMaximumSize(QSize(50, 16777215))
@@ -2133,7 +2171,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_43.addWidget(self.lineEdit_max_param_Ts)
 
 
-        self.verticalLayout_46.addWidget(self.frame_79)
+        self.verticalLayout_46.addWidget(self.frame_limits_param_Ts)
 
 
         self.verticalLayout_44.addWidget(self.frame_limits_plastic)
@@ -2143,7 +2181,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_44.addItem(self.verticalSpacer_3)
 
 
-        self.horizontalLayout_41.addWidget(self.frame_91)
+        self.verticalLayout_61.addWidget(self.frame_91)
 
         self.frame_77 = QFrame(self.frame_105)
         self.frame_77.setObjectName(u"frame_77")
@@ -2178,22 +2216,23 @@ class Ui_MainWindow(object):
         self.verticalLayout_47 = QVBoxLayout(self.frame_limits_damage)
         self.verticalLayout_47.setObjectName(u"verticalLayout_47")
         self.verticalLayout_47.setContentsMargins(0, 0, 0, 0)
-        self.frame_87 = QFrame(self.frame_limits_damage)
-        self.frame_87.setObjectName(u"frame_87")
-        self.frame_87.setMinimumSize(QSize(0, 35))
-        self.frame_87.setMaximumSize(QSize(16777215, 35))
-        self.frame_87.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frame_87.setFrameShadow(QFrame.Shadow.Raised)
-        self.horizontalLayout_51 = QHBoxLayout(self.frame_87)
+        self.frame_limits_param_D1 = QFrame(self.frame_limits_damage)
+        self.frame_limits_param_D1.setObjectName(u"frame_limits_param_D1")
+        self.frame_limits_param_D1.setEnabled(True)
+        self.frame_limits_param_D1.setMinimumSize(QSize(0, 35))
+        self.frame_limits_param_D1.setMaximumSize(QSize(16777215, 35))
+        self.frame_limits_param_D1.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_limits_param_D1.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_51 = QHBoxLayout(self.frame_limits_param_D1)
         self.horizontalLayout_51.setObjectName(u"horizontalLayout_51")
         self.horizontalLayout_51.setContentsMargins(0, 0, 0, 0)
-        self.label_50 = QLabel(self.frame_87)
+        self.label_50 = QLabel(self.frame_limits_param_D1)
         self.label_50.setObjectName(u"label_50")
         self.label_50.setMaximumSize(QSize(40, 16777215))
 
         self.horizontalLayout_51.addWidget(self.label_50)
 
-        self.lineEdit_min_param_D1 = QLineEdit(self.frame_87)
+        self.lineEdit_min_param_D1 = QLineEdit(self.frame_limits_param_D1)
         self.lineEdit_min_param_D1.setObjectName(u"lineEdit_min_param_D1")
         self.lineEdit_min_param_D1.setMinimumSize(QSize(40, 0))
         self.lineEdit_min_param_D1.setMaximumSize(QSize(50, 16777215))
@@ -2201,7 +2240,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_51.addWidget(self.lineEdit_min_param_D1)
 
-        self.lineEdit_max_param_D1 = QLineEdit(self.frame_87)
+        self.lineEdit_max_param_D1 = QLineEdit(self.frame_limits_param_D1)
         self.lineEdit_max_param_D1.setObjectName(u"lineEdit_max_param_D1")
         self.lineEdit_max_param_D1.setMinimumSize(QSize(40, 0))
         self.lineEdit_max_param_D1.setMaximumSize(QSize(50, 16777215))
@@ -2210,24 +2249,25 @@ class Ui_MainWindow(object):
         self.horizontalLayout_51.addWidget(self.lineEdit_max_param_D1)
 
 
-        self.verticalLayout_47.addWidget(self.frame_87)
+        self.verticalLayout_47.addWidget(self.frame_limits_param_D1)
 
-        self.frame_88 = QFrame(self.frame_limits_damage)
-        self.frame_88.setObjectName(u"frame_88")
-        self.frame_88.setMinimumSize(QSize(0, 35))
-        self.frame_88.setMaximumSize(QSize(16777215, 35))
-        self.frame_88.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frame_88.setFrameShadow(QFrame.Shadow.Raised)
-        self.horizontalLayout_52 = QHBoxLayout(self.frame_88)
+        self.frame_limits_param_D2 = QFrame(self.frame_limits_damage)
+        self.frame_limits_param_D2.setObjectName(u"frame_limits_param_D2")
+        self.frame_limits_param_D2.setEnabled(True)
+        self.frame_limits_param_D2.setMinimumSize(QSize(0, 35))
+        self.frame_limits_param_D2.setMaximumSize(QSize(16777215, 35))
+        self.frame_limits_param_D2.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_limits_param_D2.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_52 = QHBoxLayout(self.frame_limits_param_D2)
         self.horizontalLayout_52.setObjectName(u"horizontalLayout_52")
         self.horizontalLayout_52.setContentsMargins(0, 0, 0, 0)
-        self.label_52 = QLabel(self.frame_88)
+        self.label_52 = QLabel(self.frame_limits_param_D2)
         self.label_52.setObjectName(u"label_52")
         self.label_52.setMaximumSize(QSize(40, 16777215))
 
         self.horizontalLayout_52.addWidget(self.label_52)
 
-        self.lineEdit_min_param_D2 = QLineEdit(self.frame_88)
+        self.lineEdit_min_param_D2 = QLineEdit(self.frame_limits_param_D2)
         self.lineEdit_min_param_D2.setObjectName(u"lineEdit_min_param_D2")
         self.lineEdit_min_param_D2.setMinimumSize(QSize(40, 0))
         self.lineEdit_min_param_D2.setMaximumSize(QSize(50, 16777215))
@@ -2235,7 +2275,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_52.addWidget(self.lineEdit_min_param_D2)
 
-        self.lineEdit_max_param_D2 = QLineEdit(self.frame_88)
+        self.lineEdit_max_param_D2 = QLineEdit(self.frame_limits_param_D2)
         self.lineEdit_max_param_D2.setObjectName(u"lineEdit_max_param_D2")
         self.lineEdit_max_param_D2.setMinimumSize(QSize(40, 0))
         self.lineEdit_max_param_D2.setMaximumSize(QSize(50, 16777215))
@@ -2244,24 +2284,25 @@ class Ui_MainWindow(object):
         self.horizontalLayout_52.addWidget(self.lineEdit_max_param_D2)
 
 
-        self.verticalLayout_47.addWidget(self.frame_88)
+        self.verticalLayout_47.addWidget(self.frame_limits_param_D2)
 
-        self.frame_92 = QFrame(self.frame_limits_damage)
-        self.frame_92.setObjectName(u"frame_92")
-        self.frame_92.setMinimumSize(QSize(0, 35))
-        self.frame_92.setMaximumSize(QSize(16777215, 35))
-        self.frame_92.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frame_92.setFrameShadow(QFrame.Shadow.Raised)
-        self.horizontalLayout_54 = QHBoxLayout(self.frame_92)
+        self.frame_limits_param_D3 = QFrame(self.frame_limits_damage)
+        self.frame_limits_param_D3.setObjectName(u"frame_limits_param_D3")
+        self.frame_limits_param_D3.setEnabled(True)
+        self.frame_limits_param_D3.setMinimumSize(QSize(0, 35))
+        self.frame_limits_param_D3.setMaximumSize(QSize(16777215, 35))
+        self.frame_limits_param_D3.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_limits_param_D3.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_54 = QHBoxLayout(self.frame_limits_param_D3)
         self.horizontalLayout_54.setObjectName(u"horizontalLayout_54")
         self.horizontalLayout_54.setContentsMargins(0, 0, 0, 0)
-        self.label_56 = QLabel(self.frame_92)
+        self.label_56 = QLabel(self.frame_limits_param_D3)
         self.label_56.setObjectName(u"label_56")
         self.label_56.setMaximumSize(QSize(40, 16777215))
 
         self.horizontalLayout_54.addWidget(self.label_56)
 
-        self.lineEdit_min_param_D3 = QLineEdit(self.frame_92)
+        self.lineEdit_min_param_D3 = QLineEdit(self.frame_limits_param_D3)
         self.lineEdit_min_param_D3.setObjectName(u"lineEdit_min_param_D3")
         self.lineEdit_min_param_D3.setMinimumSize(QSize(40, 0))
         self.lineEdit_min_param_D3.setMaximumSize(QSize(50, 16777215))
@@ -2269,7 +2310,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_54.addWidget(self.lineEdit_min_param_D3)
 
-        self.lineEdit_max_param_D3 = QLineEdit(self.frame_92)
+        self.lineEdit_max_param_D3 = QLineEdit(self.frame_limits_param_D3)
         self.lineEdit_max_param_D3.setObjectName(u"lineEdit_max_param_D3")
         self.lineEdit_max_param_D3.setMinimumSize(QSize(40, 0))
         self.lineEdit_max_param_D3.setMaximumSize(QSize(50, 16777215))
@@ -2278,24 +2319,25 @@ class Ui_MainWindow(object):
         self.horizontalLayout_54.addWidget(self.lineEdit_max_param_D3)
 
 
-        self.verticalLayout_47.addWidget(self.frame_92)
+        self.verticalLayout_47.addWidget(self.frame_limits_param_D3)
 
-        self.frame_93 = QFrame(self.frame_limits_damage)
-        self.frame_93.setObjectName(u"frame_93")
-        self.frame_93.setMinimumSize(QSize(0, 35))
-        self.frame_93.setMaximumSize(QSize(16777215, 35))
-        self.frame_93.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frame_93.setFrameShadow(QFrame.Shadow.Raised)
-        self.horizontalLayout_55 = QHBoxLayout(self.frame_93)
+        self.frame_limits_param_D4 = QFrame(self.frame_limits_damage)
+        self.frame_limits_param_D4.setObjectName(u"frame_limits_param_D4")
+        self.frame_limits_param_D4.setEnabled(True)
+        self.frame_limits_param_D4.setMinimumSize(QSize(0, 35))
+        self.frame_limits_param_D4.setMaximumSize(QSize(16777215, 35))
+        self.frame_limits_param_D4.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_limits_param_D4.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_55 = QHBoxLayout(self.frame_limits_param_D4)
         self.horizontalLayout_55.setObjectName(u"horizontalLayout_55")
         self.horizontalLayout_55.setContentsMargins(0, 0, 0, 0)
-        self.label_58 = QLabel(self.frame_93)
+        self.label_58 = QLabel(self.frame_limits_param_D4)
         self.label_58.setObjectName(u"label_58")
         self.label_58.setMaximumSize(QSize(40, 16777215))
 
         self.horizontalLayout_55.addWidget(self.label_58)
 
-        self.lineEdit_min_param_D4 = QLineEdit(self.frame_93)
+        self.lineEdit_min_param_D4 = QLineEdit(self.frame_limits_param_D4)
         self.lineEdit_min_param_D4.setObjectName(u"lineEdit_min_param_D4")
         self.lineEdit_min_param_D4.setMinimumSize(QSize(40, 0))
         self.lineEdit_min_param_D4.setMaximumSize(QSize(50, 16777215))
@@ -2303,7 +2345,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_55.addWidget(self.lineEdit_min_param_D4)
 
-        self.lineEdit_max_param_D4 = QLineEdit(self.frame_93)
+        self.lineEdit_max_param_D4 = QLineEdit(self.frame_limits_param_D4)
         self.lineEdit_max_param_D4.setObjectName(u"lineEdit_max_param_D4")
         self.lineEdit_max_param_D4.setMinimumSize(QSize(40, 0))
         self.lineEdit_max_param_D4.setMaximumSize(QSize(50, 16777215))
@@ -2312,24 +2354,25 @@ class Ui_MainWindow(object):
         self.horizontalLayout_55.addWidget(self.lineEdit_max_param_D4)
 
 
-        self.verticalLayout_47.addWidget(self.frame_93)
+        self.verticalLayout_47.addWidget(self.frame_limits_param_D4)
 
-        self.frame_89 = QFrame(self.frame_limits_damage)
-        self.frame_89.setObjectName(u"frame_89")
-        self.frame_89.setMinimumSize(QSize(0, 35))
-        self.frame_89.setMaximumSize(QSize(16777215, 35))
-        self.frame_89.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frame_89.setFrameShadow(QFrame.Shadow.Raised)
-        self.horizontalLayout_53 = QHBoxLayout(self.frame_89)
+        self.frame_limits_param_D5 = QFrame(self.frame_limits_damage)
+        self.frame_limits_param_D5.setObjectName(u"frame_limits_param_D5")
+        self.frame_limits_param_D5.setEnabled(True)
+        self.frame_limits_param_D5.setMinimumSize(QSize(0, 35))
+        self.frame_limits_param_D5.setMaximumSize(QSize(16777215, 35))
+        self.frame_limits_param_D5.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_limits_param_D5.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_53 = QHBoxLayout(self.frame_limits_param_D5)
         self.horizontalLayout_53.setObjectName(u"horizontalLayout_53")
         self.horizontalLayout_53.setContentsMargins(0, 0, 0, 0)
-        self.label_54 = QLabel(self.frame_89)
+        self.label_54 = QLabel(self.frame_limits_param_D5)
         self.label_54.setObjectName(u"label_54")
         self.label_54.setMaximumSize(QSize(40, 16777215))
 
         self.horizontalLayout_53.addWidget(self.label_54)
 
-        self.lineEdit_min_param_D5 = QLineEdit(self.frame_89)
+        self.lineEdit_min_param_D5 = QLineEdit(self.frame_limits_param_D5)
         self.lineEdit_min_param_D5.setObjectName(u"lineEdit_min_param_D5")
         self.lineEdit_min_param_D5.setMinimumSize(QSize(40, 0))
         self.lineEdit_min_param_D5.setMaximumSize(QSize(50, 16777215))
@@ -2337,7 +2380,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_53.addWidget(self.lineEdit_min_param_D5)
 
-        self.lineEdit_max_param_D5 = QLineEdit(self.frame_89)
+        self.lineEdit_max_param_D5 = QLineEdit(self.frame_limits_param_D5)
         self.lineEdit_max_param_D5.setObjectName(u"lineEdit_max_param_D5")
         self.lineEdit_max_param_D5.setMinimumSize(QSize(40, 0))
         self.lineEdit_max_param_D5.setMaximumSize(QSize(50, 16777215))
@@ -2346,24 +2389,25 @@ class Ui_MainWindow(object):
         self.horizontalLayout_53.addWidget(self.lineEdit_max_param_D5)
 
 
-        self.verticalLayout_47.addWidget(self.frame_89)
+        self.verticalLayout_47.addWidget(self.frame_limits_param_D5)
 
-        self.frame_94 = QFrame(self.frame_limits_damage)
-        self.frame_94.setObjectName(u"frame_94")
-        self.frame_94.setMinimumSize(QSize(0, 35))
-        self.frame_94.setMaximumSize(QSize(16777215, 35))
-        self.frame_94.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frame_94.setFrameShadow(QFrame.Shadow.Raised)
-        self.horizontalLayout_56 = QHBoxLayout(self.frame_94)
+        self.frame_limits_param_Tm = QFrame(self.frame_limits_damage)
+        self.frame_limits_param_Tm.setObjectName(u"frame_limits_param_Tm")
+        self.frame_limits_param_Tm.setEnabled(True)
+        self.frame_limits_param_Tm.setMinimumSize(QSize(0, 35))
+        self.frame_limits_param_Tm.setMaximumSize(QSize(16777215, 35))
+        self.frame_limits_param_Tm.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_limits_param_Tm.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_56 = QHBoxLayout(self.frame_limits_param_Tm)
         self.horizontalLayout_56.setObjectName(u"horizontalLayout_56")
         self.horizontalLayout_56.setContentsMargins(0, 0, 0, 0)
-        self.label_69 = QLabel(self.frame_94)
+        self.label_69 = QLabel(self.frame_limits_param_Tm)
         self.label_69.setObjectName(u"label_69")
         self.label_69.setMaximumSize(QSize(40, 16777215))
 
         self.horizontalLayout_56.addWidget(self.label_69)
 
-        self.lineEdit_min_param_Tm = QLineEdit(self.frame_94)
+        self.lineEdit_min_param_Tm = QLineEdit(self.frame_limits_param_Tm)
         self.lineEdit_min_param_Tm.setObjectName(u"lineEdit_min_param_Tm")
         self.lineEdit_min_param_Tm.setMinimumSize(QSize(40, 0))
         self.lineEdit_min_param_Tm.setMaximumSize(QSize(50, 16777215))
@@ -2371,7 +2415,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_56.addWidget(self.lineEdit_min_param_Tm)
 
-        self.lineEdit_max_param_Tm = QLineEdit(self.frame_94)
+        self.lineEdit_max_param_Tm = QLineEdit(self.frame_limits_param_Tm)
         self.lineEdit_max_param_Tm.setObjectName(u"lineEdit_max_param_Tm")
         self.lineEdit_max_param_Tm.setMinimumSize(QSize(40, 0))
         self.lineEdit_max_param_Tm.setMaximumSize(QSize(50, 16777215))
@@ -2380,24 +2424,25 @@ class Ui_MainWindow(object):
         self.horizontalLayout_56.addWidget(self.lineEdit_max_param_Tm)
 
 
-        self.verticalLayout_47.addWidget(self.frame_94)
+        self.verticalLayout_47.addWidget(self.frame_limits_param_Tm)
 
-        self.frame_95 = QFrame(self.frame_limits_damage)
-        self.frame_95.setObjectName(u"frame_95")
-        self.frame_95.setMinimumSize(QSize(0, 35))
-        self.frame_95.setMaximumSize(QSize(16777215, 35))
-        self.frame_95.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frame_95.setFrameShadow(QFrame.Shadow.Raised)
-        self.horizontalLayout_57 = QHBoxLayout(self.frame_95)
+        self.frame_limits_param_Tt = QFrame(self.frame_limits_damage)
+        self.frame_limits_param_Tt.setObjectName(u"frame_limits_param_Tt")
+        self.frame_limits_param_Tt.setEnabled(True)
+        self.frame_limits_param_Tt.setMinimumSize(QSize(0, 35))
+        self.frame_limits_param_Tt.setMaximumSize(QSize(16777215, 35))
+        self.frame_limits_param_Tt.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_limits_param_Tt.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_57 = QHBoxLayout(self.frame_limits_param_Tt)
         self.horizontalLayout_57.setObjectName(u"horizontalLayout_57")
         self.horizontalLayout_57.setContentsMargins(0, 0, 0, 0)
-        self.label_71 = QLabel(self.frame_95)
+        self.label_71 = QLabel(self.frame_limits_param_Tt)
         self.label_71.setObjectName(u"label_71")
         self.label_71.setMaximumSize(QSize(40, 16777215))
 
         self.horizontalLayout_57.addWidget(self.label_71)
 
-        self.lineEdit_min_param_Tt = QLineEdit(self.frame_95)
+        self.lineEdit_min_param_Tt = QLineEdit(self.frame_limits_param_Tt)
         self.lineEdit_min_param_Tt.setObjectName(u"lineEdit_min_param_Tt")
         self.lineEdit_min_param_Tt.setMinimumSize(QSize(40, 0))
         self.lineEdit_min_param_Tt.setMaximumSize(QSize(50, 16777215))
@@ -2405,7 +2450,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_57.addWidget(self.lineEdit_min_param_Tt)
 
-        self.lineEdit_max_param_Tt = QLineEdit(self.frame_95)
+        self.lineEdit_max_param_Tt = QLineEdit(self.frame_limits_param_Tt)
         self.lineEdit_max_param_Tt.setObjectName(u"lineEdit_max_param_Tt")
         self.lineEdit_max_param_Tt.setMinimumSize(QSize(40, 0))
         self.lineEdit_max_param_Tt.setMaximumSize(QSize(50, 16777215))
@@ -2414,32 +2459,33 @@ class Ui_MainWindow(object):
         self.horizontalLayout_57.addWidget(self.lineEdit_max_param_Tt)
 
 
-        self.verticalLayout_47.addWidget(self.frame_95)
+        self.verticalLayout_47.addWidget(self.frame_limits_param_Tt)
 
-        self.frame_96 = QFrame(self.frame_limits_damage)
-        self.frame_96.setObjectName(u"frame_96")
-        self.frame_96.setMinimumSize(QSize(0, 35))
-        self.frame_96.setMaximumSize(QSize(16777215, 35))
-        self.frame_96.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frame_96.setFrameShadow(QFrame.Shadow.Raised)
-        self.horizontalLayout_58 = QHBoxLayout(self.frame_96)
+        self.frame_limits_param_e_damage = QFrame(self.frame_limits_damage)
+        self.frame_limits_param_e_damage.setObjectName(u"frame_limits_param_e_damage")
+        self.frame_limits_param_e_damage.setEnabled(True)
+        self.frame_limits_param_e_damage.setMinimumSize(QSize(0, 35))
+        self.frame_limits_param_e_damage.setMaximumSize(QSize(16777215, 35))
+        self.frame_limits_param_e_damage.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_limits_param_e_damage.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_58 = QHBoxLayout(self.frame_limits_param_e_damage)
         self.horizontalLayout_58.setObjectName(u"horizontalLayout_58")
         self.horizontalLayout_58.setContentsMargins(0, 0, 0, 0)
-        self.label_73 = QLabel(self.frame_96)
+        self.label_73 = QLabel(self.frame_limits_param_e_damage)
         self.label_73.setObjectName(u"label_73")
         self.label_73.setMaximumSize(QSize(40, 16777215))
 
         self.horizontalLayout_58.addWidget(self.label_73)
 
-        self.lineEdit_min_param_e_damege = QLineEdit(self.frame_96)
-        self.lineEdit_min_param_e_damege.setObjectName(u"lineEdit_min_param_e_damege")
-        self.lineEdit_min_param_e_damege.setMinimumSize(QSize(40, 0))
-        self.lineEdit_min_param_e_damege.setMaximumSize(QSize(50, 16777215))
-        self.lineEdit_min_param_e_damege.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.lineEdit_min_param_e_damage = QLineEdit(self.frame_limits_param_e_damage)
+        self.lineEdit_min_param_e_damage.setObjectName(u"lineEdit_min_param_e_damage")
+        self.lineEdit_min_param_e_damage.setMinimumSize(QSize(40, 0))
+        self.lineEdit_min_param_e_damage.setMaximumSize(QSize(50, 16777215))
+        self.lineEdit_min_param_e_damage.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.horizontalLayout_58.addWidget(self.lineEdit_min_param_e_damege)
+        self.horizontalLayout_58.addWidget(self.lineEdit_min_param_e_damage)
 
-        self.lineEdit_max_param_e_damage = QLineEdit(self.frame_96)
+        self.lineEdit_max_param_e_damage = QLineEdit(self.frame_limits_param_e_damage)
         self.lineEdit_max_param_e_damage.setObjectName(u"lineEdit_max_param_e_damage")
         self.lineEdit_max_param_e_damage.setMinimumSize(QSize(40, 0))
         self.lineEdit_max_param_e_damage.setMaximumSize(QSize(50, 16777215))
@@ -2448,24 +2494,25 @@ class Ui_MainWindow(object):
         self.horizontalLayout_58.addWidget(self.lineEdit_max_param_e_damage)
 
 
-        self.verticalLayout_47.addWidget(self.frame_96)
+        self.verticalLayout_47.addWidget(self.frame_limits_param_e_damage)
 
-        self.frame_98 = QFrame(self.frame_limits_damage)
-        self.frame_98.setObjectName(u"frame_98")
-        self.frame_98.setMinimumSize(QSize(0, 35))
-        self.frame_98.setMaximumSize(QSize(16777215, 35))
-        self.frame_98.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frame_98.setFrameShadow(QFrame.Shadow.Raised)
-        self.horizontalLayout_59 = QHBoxLayout(self.frame_98)
+        self.frame_limits_param_p = QFrame(self.frame_limits_damage)
+        self.frame_limits_param_p.setObjectName(u"frame_limits_param_p")
+        self.frame_limits_param_p.setEnabled(True)
+        self.frame_limits_param_p.setMinimumSize(QSize(0, 35))
+        self.frame_limits_param_p.setMaximumSize(QSize(16777215, 35))
+        self.frame_limits_param_p.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_limits_param_p.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_59 = QHBoxLayout(self.frame_limits_param_p)
         self.horizontalLayout_59.setObjectName(u"horizontalLayout_59")
         self.horizontalLayout_59.setContentsMargins(0, 0, 0, 0)
-        self.label_75 = QLabel(self.frame_98)
+        self.label_75 = QLabel(self.frame_limits_param_p)
         self.label_75.setObjectName(u"label_75")
         self.label_75.setMaximumSize(QSize(40, 16777215))
 
         self.horizontalLayout_59.addWidget(self.label_75)
 
-        self.lineEdit_min_param_p = QLineEdit(self.frame_98)
+        self.lineEdit_min_param_p = QLineEdit(self.frame_limits_param_p)
         self.lineEdit_min_param_p.setObjectName(u"lineEdit_min_param_p")
         self.lineEdit_min_param_p.setMinimumSize(QSize(40, 0))
         self.lineEdit_min_param_p.setMaximumSize(QSize(50, 16777215))
@@ -2473,7 +2520,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_59.addWidget(self.lineEdit_min_param_p)
 
-        self.lineEdit_max_param_p = QLineEdit(self.frame_98)
+        self.lineEdit_max_param_p = QLineEdit(self.frame_limits_param_p)
         self.lineEdit_max_param_p.setObjectName(u"lineEdit_max_param_p")
         self.lineEdit_max_param_p.setMinimumSize(QSize(40, 0))
         self.lineEdit_max_param_p.setMaximumSize(QSize(50, 16777215))
@@ -2482,7 +2529,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_59.addWidget(self.lineEdit_max_param_p)
 
 
-        self.verticalLayout_47.addWidget(self.frame_98)
+        self.verticalLayout_47.addWidget(self.frame_limits_param_p)
 
 
         self.verticalLayout_49.addWidget(self.frame_limits_damage)
@@ -2492,7 +2539,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_49.addItem(self.verticalSpacer)
 
 
-        self.horizontalLayout_41.addWidget(self.frame_77)
+        self.verticalLayout_61.addWidget(self.frame_77)
 
 
         self.verticalLayout_42.addWidget(self.frame_105)
@@ -2833,88 +2880,6 @@ class Ui_MainWindow(object):
         self.verticalLayout_55.setSpacing(0)
         self.verticalLayout_55.setObjectName(u"verticalLayout_55")
         self.verticalLayout_55.setContentsMargins(0, 0, 0, 0)
-        self.frame_144 = QFrame(self.frame_117)
-        self.frame_144.setObjectName(u"frame_144")
-        self.frame_144.setMinimumSize(QSize(0, 40))
-        self.frame_144.setMaximumSize(QSize(16777215, 40))
-        self.frame_144.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frame_144.setFrameShadow(QFrame.Shadow.Raised)
-        self.horizontalLayout_86 = QHBoxLayout(self.frame_144)
-        self.horizontalLayout_86.setObjectName(u"horizontalLayout_86")
-        self.horizontalLayout_86.setContentsMargins(9, 0, 9, 0)
-        self.label_133 = QLabel(self.frame_144)
-        self.label_133.setObjectName(u"label_133")
-        font4 = QFont()
-        font4.setFamilies([u"Segoe UI"])
-        font4.setPointSize(11)
-        font4.setBold(False)
-        self.label_133.setFont(font4)
-
-        self.horizontalLayout_86.addWidget(self.label_133)
-
-        self.lineEdit_var2 = QLineEdit(self.frame_144)
-        self.lineEdit_var2.setObjectName(u"lineEdit_var2")
-        self.lineEdit_var2.setMinimumSize(QSize(65, 20))
-        self.lineEdit_var2.setMaximumSize(QSize(65, 20))
-        self.lineEdit_var2.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        self.horizontalLayout_86.addWidget(self.lineEdit_var2)
-
-
-        self.verticalLayout_55.addWidget(self.frame_144)
-
-        self.frame_143 = QFrame(self.frame_117)
-        self.frame_143.setObjectName(u"frame_143")
-        self.frame_143.setMinimumSize(QSize(0, 40))
-        self.frame_143.setMaximumSize(QSize(16777215, 40))
-        self.frame_143.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frame_143.setFrameShadow(QFrame.Shadow.Raised)
-        self.horizontalLayout_85 = QHBoxLayout(self.frame_143)
-        self.horizontalLayout_85.setObjectName(u"horizontalLayout_85")
-        self.horizontalLayout_85.setContentsMargins(9, 0, 9, 0)
-        self.label_132 = QLabel(self.frame_143)
-        self.label_132.setObjectName(u"label_132")
-        self.label_132.setFont(font4)
-
-        self.horizontalLayout_85.addWidget(self.label_132)
-
-        self.lineEdit_var3 = QLineEdit(self.frame_143)
-        self.lineEdit_var3.setObjectName(u"lineEdit_var3")
-        self.lineEdit_var3.setMinimumSize(QSize(65, 20))
-        self.lineEdit_var3.setMaximumSize(QSize(65, 20))
-        self.lineEdit_var3.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        self.horizontalLayout_85.addWidget(self.lineEdit_var3)
-
-
-        self.verticalLayout_55.addWidget(self.frame_143)
-
-        self.frame_145 = QFrame(self.frame_117)
-        self.frame_145.setObjectName(u"frame_145")
-        self.frame_145.setMinimumSize(QSize(0, 40))
-        self.frame_145.setMaximumSize(QSize(16777215, 40))
-        self.frame_145.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frame_145.setFrameShadow(QFrame.Shadow.Raised)
-        self.horizontalLayout_87 = QHBoxLayout(self.frame_145)
-        self.horizontalLayout_87.setObjectName(u"horizontalLayout_87")
-        self.horizontalLayout_87.setContentsMargins(9, 0, 9, 0)
-        self.label_134 = QLabel(self.frame_145)
-        self.label_134.setObjectName(u"label_134")
-        self.label_134.setFont(font4)
-
-        self.horizontalLayout_87.addWidget(self.label_134)
-
-        self.lineEdit_var1 = QLineEdit(self.frame_145)
-        self.lineEdit_var1.setObjectName(u"lineEdit_var1")
-        self.lineEdit_var1.setMinimumSize(QSize(65, 20))
-        self.lineEdit_var1.setMaximumSize(QSize(65, 20))
-        self.lineEdit_var1.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        self.horizontalLayout_87.addWidget(self.lineEdit_var1)
-
-
-        self.verticalLayout_55.addWidget(self.frame_145)
-
         self.frame_140 = QFrame(self.frame_117)
         self.frame_140.setObjectName(u"frame_140")
         self.frame_140.setMinimumSize(QSize(0, 40))
@@ -2926,6 +2891,10 @@ class Ui_MainWindow(object):
         self.horizontalLayout_82.setContentsMargins(9, 0, 9, 0)
         self.label_129 = QLabel(self.frame_140)
         self.label_129.setObjectName(u"label_129")
+        font4 = QFont()
+        font4.setFamilies([u"Segoe UI"])
+        font4.setPointSize(11)
+        font4.setBold(False)
         self.label_129.setFont(font4)
 
         self.horizontalLayout_82.addWidget(self.label_129)
@@ -2941,6 +2910,32 @@ class Ui_MainWindow(object):
 
 
         self.verticalLayout_55.addWidget(self.frame_140)
+
+        self.frame_142 = QFrame(self.frame_117)
+        self.frame_142.setObjectName(u"frame_142")
+        self.frame_142.setMinimumSize(QSize(0, 40))
+        self.frame_142.setMaximumSize(QSize(16777215, 40))
+        self.frame_142.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_142.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_84 = QHBoxLayout(self.frame_142)
+        self.horizontalLayout_84.setObjectName(u"horizontalLayout_84")
+        self.horizontalLayout_84.setContentsMargins(9, 0, 9, 0)
+        self.label_131 = QLabel(self.frame_142)
+        self.label_131.setObjectName(u"label_131")
+        self.label_131.setFont(font4)
+
+        self.horizontalLayout_84.addWidget(self.label_131)
+
+        self.lineEdit_number_iteration = QLineEdit(self.frame_142)
+        self.lineEdit_number_iteration.setObjectName(u"lineEdit_number_iteration")
+        self.lineEdit_number_iteration.setMinimumSize(QSize(65, 20))
+        self.lineEdit_number_iteration.setMaximumSize(QSize(65, 20))
+        self.lineEdit_number_iteration.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.horizontalLayout_84.addWidget(self.lineEdit_number_iteration)
+
+
+        self.verticalLayout_55.addWidget(self.frame_142)
 
         self.frame_141 = QFrame(self.frame_117)
         self.frame_141.setObjectName(u"frame_141")
@@ -2968,31 +2963,83 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_55.addWidget(self.frame_141)
 
-        self.frame_142 = QFrame(self.frame_117)
-        self.frame_142.setObjectName(u"frame_142")
-        self.frame_142.setMinimumSize(QSize(0, 40))
-        self.frame_142.setMaximumSize(QSize(16777215, 40))
-        self.frame_142.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frame_142.setFrameShadow(QFrame.Shadow.Raised)
-        self.horizontalLayout_84 = QHBoxLayout(self.frame_142)
-        self.horizontalLayout_84.setObjectName(u"horizontalLayout_84")
-        self.horizontalLayout_84.setContentsMargins(9, 0, 9, 0)
-        self.label_131 = QLabel(self.frame_142)
-        self.label_131.setObjectName(u"label_131")
-        self.label_131.setFont(font4)
+        self.frame_144 = QFrame(self.frame_117)
+        self.frame_144.setObjectName(u"frame_144")
+        self.frame_144.setMinimumSize(QSize(0, 40))
+        self.frame_144.setMaximumSize(QSize(16777215, 40))
+        self.frame_144.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_144.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_86 = QHBoxLayout(self.frame_144)
+        self.horizontalLayout_86.setObjectName(u"horizontalLayout_86")
+        self.horizontalLayout_86.setContentsMargins(9, 0, 9, 0)
+        self.label_133 = QLabel(self.frame_144)
+        self.label_133.setObjectName(u"label_133")
+        self.label_133.setFont(font4)
 
-        self.horizontalLayout_84.addWidget(self.label_131)
+        self.horizontalLayout_86.addWidget(self.label_133)
 
-        self.lineEdit_number_iteration = QLineEdit(self.frame_142)
-        self.lineEdit_number_iteration.setObjectName(u"lineEdit_number_iteration")
-        self.lineEdit_number_iteration.setMinimumSize(QSize(65, 20))
-        self.lineEdit_number_iteration.setMaximumSize(QSize(65, 20))
-        self.lineEdit_number_iteration.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.lineEdit_var2 = QLineEdit(self.frame_144)
+        self.lineEdit_var2.setObjectName(u"lineEdit_var2")
+        self.lineEdit_var2.setMinimumSize(QSize(65, 20))
+        self.lineEdit_var2.setMaximumSize(QSize(65, 20))
+        self.lineEdit_var2.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.horizontalLayout_84.addWidget(self.lineEdit_number_iteration)
+        self.horizontalLayout_86.addWidget(self.lineEdit_var2)
 
 
-        self.verticalLayout_55.addWidget(self.frame_142)
+        self.verticalLayout_55.addWidget(self.frame_144)
+
+        self.frame_145 = QFrame(self.frame_117)
+        self.frame_145.setObjectName(u"frame_145")
+        self.frame_145.setMinimumSize(QSize(0, 40))
+        self.frame_145.setMaximumSize(QSize(16777215, 40))
+        self.frame_145.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_145.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_87 = QHBoxLayout(self.frame_145)
+        self.horizontalLayout_87.setObjectName(u"horizontalLayout_87")
+        self.horizontalLayout_87.setContentsMargins(9, 0, 9, 0)
+        self.label_134 = QLabel(self.frame_145)
+        self.label_134.setObjectName(u"label_134")
+        self.label_134.setFont(font4)
+
+        self.horizontalLayout_87.addWidget(self.label_134)
+
+        self.lineEdit_var1 = QLineEdit(self.frame_145)
+        self.lineEdit_var1.setObjectName(u"lineEdit_var1")
+        self.lineEdit_var1.setMinimumSize(QSize(65, 20))
+        self.lineEdit_var1.setMaximumSize(QSize(65, 20))
+        self.lineEdit_var1.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.horizontalLayout_87.addWidget(self.lineEdit_var1)
+
+
+        self.verticalLayout_55.addWidget(self.frame_145)
+
+        self.frame_143 = QFrame(self.frame_117)
+        self.frame_143.setObjectName(u"frame_143")
+        self.frame_143.setMinimumSize(QSize(0, 40))
+        self.frame_143.setMaximumSize(QSize(16777215, 40))
+        self.frame_143.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_143.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_85 = QHBoxLayout(self.frame_143)
+        self.horizontalLayout_85.setObjectName(u"horizontalLayout_85")
+        self.horizontalLayout_85.setContentsMargins(9, 0, 9, 0)
+        self.label_132 = QLabel(self.frame_143)
+        self.label_132.setObjectName(u"label_132")
+        self.label_132.setFont(font4)
+
+        self.horizontalLayout_85.addWidget(self.label_132)
+
+        self.lineEdit_var3 = QLineEdit(self.frame_143)
+        self.lineEdit_var3.setObjectName(u"lineEdit_var3")
+        self.lineEdit_var3.setMinimumSize(QSize(65, 20))
+        self.lineEdit_var3.setMaximumSize(QSize(65, 20))
+        self.lineEdit_var3.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.horizontalLayout_85.addWidget(self.lineEdit_var3)
+
+
+        self.verticalLayout_55.addWidget(self.frame_143)
 
 
         self.verticalLayout_56.addWidget(self.frame_117)
@@ -3080,19 +3127,62 @@ class Ui_MainWindow(object):
 
         self.combobox_core_by_simulation = QComboBox(self.frame_139)
         self.combobox_core_by_simulation.addItem("")
+        self.combobox_core_by_simulation.addItem("")
+        self.combobox_core_by_simulation.addItem("")
+        self.combobox_core_by_simulation.addItem("")
+        self.combobox_core_by_simulation.addItem("")
+        self.combobox_core_by_simulation.addItem("")
+        self.combobox_core_by_simulation.addItem("")
+        self.combobox_core_by_simulation.addItem("")
+        self.combobox_core_by_simulation.addItem("")
         self.combobox_core_by_simulation.setObjectName(u"combobox_core_by_simulation")
         self.combobox_core_by_simulation.setMinimumSize(QSize(65, 20))
         self.combobox_core_by_simulation.setMaximumSize(QSize(65, 20))
         self.combobox_core_by_simulation.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
-        self.combobox_core_by_simulation.setStyleSheet(u"QComboBox {\n"
-"	padding-left: 10px;\n"
-"}")
+        self.combobox_core_by_simulation.setStyleSheet(u"")
+        self.combobox_core_by_simulation.setInsertPolicy(QComboBox.InsertPolicy.InsertAtCurrent)
         self.combobox_core_by_simulation.setFrame(True)
 
         self.horizontalLayout_81.addWidget(self.combobox_core_by_simulation)
 
 
         self.verticalLayout_14.addWidget(self.frame_139)
+
+        self.frame_345 = QFrame(self.frame_119)
+        self.frame_345.setObjectName(u"frame_345")
+        self.frame_345.setMinimumSize(QSize(0, 40))
+        self.frame_345.setMaximumSize(QSize(16777215, 40))
+        self.frame_345.setStyleSheet(u"")
+        self.frame_345.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_345.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_90 = QHBoxLayout(self.frame_345)
+        self.horizontalLayout_90.setObjectName(u"horizontalLayout_90")
+        self.label_76 = QLabel(self.frame_345)
+        self.label_76.setObjectName(u"label_76")
+        self.label_76.setFont(font4)
+
+        self.horizontalLayout_90.addWidget(self.label_76)
+
+        self.combobox_number_computer = QComboBox(self.frame_345)
+        self.combobox_number_computer.addItem("")
+        self.combobox_number_computer.addItem("")
+        self.combobox_number_computer.addItem("")
+        self.combobox_number_computer.addItem("")
+        self.combobox_number_computer.addItem("")
+        self.combobox_number_computer.addItem("")
+        self.combobox_number_computer.setObjectName(u"combobox_number_computer")
+        self.combobox_number_computer.setMinimumSize(QSize(65, 20))
+        self.combobox_number_computer.setMaximumSize(QSize(65, 20))
+        self.combobox_number_computer.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
+        self.combobox_number_computer.setStyleSheet(u"QComboBox{\n"
+"text-align: center;}")
+        self.combobox_number_computer.setInsertPolicy(QComboBox.InsertPolicy.InsertAtCurrent)
+        self.combobox_number_computer.setFrame(True)
+
+        self.horizontalLayout_90.addWidget(self.combobox_number_computer)
+
+
+        self.verticalLayout_14.addWidget(self.frame_345)
 
         self.frame_344 = QFrame(self.frame_119)
         self.frame_344.setObjectName(u"frame_344")
@@ -3109,48 +3199,21 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_88.addWidget(self.label_74)
 
-        self.comboxbox_simulation_per_time_2 = QComboBox(self.frame_344)
-        self.comboxbox_simulation_per_time_2.addItem("")
-        self.comboxbox_simulation_per_time_2.setObjectName(u"comboxbox_simulation_per_time_2")
-        self.comboxbox_simulation_per_time_2.setMinimumSize(QSize(65, 20))
-        self.comboxbox_simulation_per_time_2.setMaximumSize(QSize(65, 20))
-        self.comboxbox_simulation_per_time_2.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
-        self.comboxbox_simulation_per_time_2.setStyleSheet(u"")
-        self.comboxbox_simulation_per_time_2.setFrame(True)
+        self.combobox_main_computer = QComboBox(self.frame_344)
+        self.combobox_main_computer.addItem("")
+        self.combobox_main_computer.addItem("")
+        self.combobox_main_computer.setObjectName(u"combobox_main_computer")
+        self.combobox_main_computer.setMinimumSize(QSize(65, 20))
+        self.combobox_main_computer.setMaximumSize(QSize(65, 20))
+        self.combobox_main_computer.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
+        self.combobox_main_computer.setStyleSheet(u"")
+        self.combobox_main_computer.setInsertPolicy(QComboBox.InsertPolicy.InsertAtCurrent)
+        self.combobox_main_computer.setFrame(True)
 
-        self.horizontalLayout_88.addWidget(self.comboxbox_simulation_per_time_2)
+        self.horizontalLayout_88.addWidget(self.combobox_main_computer)
 
 
         self.verticalLayout_14.addWidget(self.frame_344)
-
-        self.frame_343 = QFrame(self.frame_119)
-        self.frame_343.setObjectName(u"frame_343")
-        self.frame_343.setMinimumSize(QSize(0, 40))
-        self.frame_343.setMaximumSize(QSize(16777215, 40))
-        self.frame_343.setStyleSheet(u"")
-        self.frame_343.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frame_343.setFrameShadow(QFrame.Shadow.Raised)
-        self.horizontalLayout_80 = QHBoxLayout(self.frame_343)
-        self.horizontalLayout_80.setObjectName(u"horizontalLayout_80")
-        self.label_70 = QLabel(self.frame_343)
-        self.label_70.setObjectName(u"label_70")
-        self.label_70.setFont(font4)
-
-        self.horizontalLayout_80.addWidget(self.label_70)
-
-        self.comboxbox_simulation_per_time = QComboBox(self.frame_343)
-        self.comboxbox_simulation_per_time.addItem("")
-        self.comboxbox_simulation_per_time.setObjectName(u"comboxbox_simulation_per_time")
-        self.comboxbox_simulation_per_time.setMinimumSize(QSize(65, 20))
-        self.comboxbox_simulation_per_time.setMaximumSize(QSize(65, 20))
-        self.comboxbox_simulation_per_time.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
-        self.comboxbox_simulation_per_time.setStyleSheet(u"")
-        self.comboxbox_simulation_per_time.setFrame(True)
-
-        self.horizontalLayout_80.addWidget(self.comboxbox_simulation_per_time)
-
-
-        self.verticalLayout_14.addWidget(self.frame_343)
 
 
         self.verticalLayout_51.addWidget(self.frame_119)
@@ -3851,12 +3914,12 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 1128, 22))
+        self.menubar.setGeometry(QRect(0, 0, 1060, 22))
         MainWindow.setMenuBar(self.menubar)
 
         self.retranslateUi(MainWindow)
 
-        self.pages.setCurrentIndex(3)
+        self.pages.setCurrentIndex(7)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -3909,49 +3972,47 @@ class Ui_MainWindow(object):
         self.comboBox_material.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Select the Material", None))
         self.label_3.setText(QCoreApplication.translate("MainWindow", u"Plastic", None))
         self.checkBox_param_A.setText(QCoreApplication.translate("MainWindow", u"A", None))
-        self.label_22.setText(QCoreApplication.translate("MainWindow", u"0.00", None))
+        self.label_param_A.setText(QCoreApplication.translate("MainWindow", u"0.00", None))
         self.checkBox_param_B.setText(QCoreApplication.translate("MainWindow", u"B", None))
-        self.label_20.setText(QCoreApplication.translate("MainWindow", u"0.00", None))
+        self.label_param_B.setText(QCoreApplication.translate("MainWindow", u"0.00", None))
         self.checkBox_param_n.setText(QCoreApplication.translate("MainWindow", u"n", None))
-        self.label_21.setText(QCoreApplication.translate("MainWindow", u"0.00", None))
+        self.label_param_n.setText(QCoreApplication.translate("MainWindow", u"0.00", None))
         self.checkBox_param_C1.setText(QCoreApplication.translate("MainWindow", u"C1", None))
-        self.label_23.setText(QCoreApplication.translate("MainWindow", u"0.00", None))
+        self.label_param_C1.setText(QCoreApplication.translate("MainWindow", u"0.00", None))
         self.checkBox_param_C2.setText(QCoreApplication.translate("MainWindow", u"C2", None))
-        self.label_24.setText(QCoreApplication.translate("MainWindow", u"0.00", None))
+        self.label_param_C2.setText(QCoreApplication.translate("MainWindow", u"0.00", None))
         self.checkBox_param_C3.setText(QCoreApplication.translate("MainWindow", u"C3", None))
-        self.label_25.setText(QCoreApplication.translate("MainWindow", u"0.00", None))
+        self.label_param_C3.setText(QCoreApplication.translate("MainWindow", u"0.00", None))
         self.checkBox_param_e.setText(QCoreApplication.translate("MainWindow", u"e", None))
-        self.label_26.setText(QCoreApplication.translate("MainWindow", u"0.00", None))
+        self.label_param_e.setText(QCoreApplication.translate("MainWindow", u"0.00", None))
         self.checkBox_param_k.setText(QCoreApplication.translate("MainWindow", u"k", None))
-        self.label_27.setText(QCoreApplication.translate("MainWindow", u"0.00", None))
+        self.label_param_k.setText(QCoreApplication.translate("MainWindow", u"0.00", None))
         self.checkBox_param_Ts.setText(QCoreApplication.translate("MainWindow", u"Ts", None))
-        self.label_28.setText(QCoreApplication.translate("MainWindow", u"0.00", None))
+        self.label_param_Ts.setText(QCoreApplication.translate("MainWindow", u"0.00", None))
         self.label_19.setText(QCoreApplication.translate("MainWindow", u"Damage", None))
         self.checkBox_param_D1.setText(QCoreApplication.translate("MainWindow", u"D1", None))
-        self.label_29.setText(QCoreApplication.translate("MainWindow", u"0.00", None))
+        self.label_param_D1.setText(QCoreApplication.translate("MainWindow", u"0.00", None))
         self.checkBox_param_D2.setText(QCoreApplication.translate("MainWindow", u"D2", None))
-        self.label_30.setText(QCoreApplication.translate("MainWindow", u"0.00", None))
+        self.label_param_D2.setText(QCoreApplication.translate("MainWindow", u"0.00", None))
         self.checkBox_param_D3.setText(QCoreApplication.translate("MainWindow", u"D3", None))
-        self.label_31.setText(QCoreApplication.translate("MainWindow", u"0.00", None))
+        self.label_param_D3.setText(QCoreApplication.translate("MainWindow", u"0.00", None))
         self.checkBox_param_D4.setText(QCoreApplication.translate("MainWindow", u"D4", None))
-        self.label_32.setText(QCoreApplication.translate("MainWindow", u"0.00", None))
+        self.label_param_D4.setText(QCoreApplication.translate("MainWindow", u"0.00", None))
         self.checkBox_param_D5.setText(QCoreApplication.translate("MainWindow", u"D5", None))
-        self.label_33.setText(QCoreApplication.translate("MainWindow", u"0.00", None))
+        self.label_param_D5.setText(QCoreApplication.translate("MainWindow", u"0.00", None))
         self.checkBox_param_Tm.setText(QCoreApplication.translate("MainWindow", u"Tm", None))
-        self.label_34.setText(QCoreApplication.translate("MainWindow", u"0.00", None))
+        self.label_param_Tm.setText(QCoreApplication.translate("MainWindow", u"0.00", None))
         self.checkBox_param_Tt.setText(QCoreApplication.translate("MainWindow", u"Tt", None))
-        self.label_35.setText(QCoreApplication.translate("MainWindow", u"0.00", None))
+        self.label_param_Tt.setText(QCoreApplication.translate("MainWindow", u"0.00", None))
         self.checkBox_param_e_damage.setText(QCoreApplication.translate("MainWindow", u"e", None))
-        self.label_36.setText(QCoreApplication.translate("MainWindow", u"0.00", None))
+        self.label_param_e_damage.setText(QCoreApplication.translate("MainWindow", u"0.00", None))
         self.checkBox_param_p.setText(QCoreApplication.translate("MainWindow", u"p", None))
-        self.label_37.setText(QCoreApplication.translate("MainWindow", u"0.00", None))
+        self.label_param_p.setText(QCoreApplication.translate("MainWindow", u"0.00", None))
         self.button_parameter_selection_back.setText(QCoreApplication.translate("MainWindow", u"Back", None))
         self.button_parameter_selection_next_page.setText(QCoreApplication.translate("MainWindow", u"Next", None))
         self.label_18.setText(QCoreApplication.translate("MainWindow", u"Developed by Junior Tavares, Severin Groh and Pascal Behrens", None))
         self.icon_interface_6.setText("")
         self.interface_name_6.setText(QCoreApplication.translate("MainWindow", u"PARAMETER LIMITS", None))
-        self.comboBox_material_limits.setItemText(0, QCoreApplication.translate("MainWindow", u"Material 01", None))
-
         self.comboBox_material_limits.setCurrentText("")
         self.comboBox_material_limits.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Select the Material", None))
         self.label_39.setText(QCoreApplication.translate("MainWindow", u"Plastic", None))
@@ -4006,7 +4067,7 @@ class Ui_MainWindow(object):
         self.lineEdit_min_param_Tt.setPlaceholderText(QCoreApplication.translate("MainWindow", u"min", None))
         self.lineEdit_max_param_Tt.setPlaceholderText(QCoreApplication.translate("MainWindow", u"max", None))
         self.label_73.setText(QCoreApplication.translate("MainWindow", u"e", None))
-        self.lineEdit_min_param_e_damege.setPlaceholderText(QCoreApplication.translate("MainWindow", u"min", None))
+        self.lineEdit_min_param_e_damage.setPlaceholderText(QCoreApplication.translate("MainWindow", u"min", None))
         self.lineEdit_max_param_e_damage.setPlaceholderText(QCoreApplication.translate("MainWindow", u"max", None))
         self.label_75.setText(QCoreApplication.translate("MainWindow", u"p", None))
         self.lineEdit_min_param_p.setPlaceholderText(QCoreApplication.translate("MainWindow", u"min", None))
@@ -4023,28 +4084,52 @@ class Ui_MainWindow(object):
         self.icon_interface_7.setText("")
         self.interface_name_7.setText(QCoreApplication.translate("MainWindow", u"PARTICLE SWARM OPTIMIZATION", None))
         self.label_43.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:14pt; font-weight:700;\">Particle Swarm Optimization</span></p></body></html>", None))
-        self.label_133.setText(QCoreApplication.translate("MainWindow", u"fi2:", None))
-        self.label_132.setText(QCoreApplication.translate("MainWindow", u"w:", None))
-        self.label_134.setText(QCoreApplication.translate("MainWindow", u"fi1:", None))
         self.label_129.setText(QCoreApplication.translate("MainWindow", u"Number of Cutting Conditions:", None))
-        self.label_number_conditions.setText("")
-        self.label_130.setText(QCoreApplication.translate("MainWindow", u"Number of Particles:", None))
+        self.label_number_conditions.setText(QCoreApplication.translate("MainWindow", u"0", None))
         self.label_131.setText(QCoreApplication.translate("MainWindow", u"Number of Iterations:", None))
+        self.lineEdit_number_iteration.setText(QCoreApplication.translate("MainWindow", u"20", None))
+        self.lineEdit_number_iteration.setPlaceholderText(QCoreApplication.translate("MainWindow", u"20", None))
+        self.label_130.setText(QCoreApplication.translate("MainWindow", u"Number of Particles:", None))
+        self.lineEdit_number_particles.setText(QCoreApplication.translate("MainWindow", u"4", None))
+        self.lineEdit_number_particles.setPlaceholderText(QCoreApplication.translate("MainWindow", u"4", None))
+        self.label_133.setText(QCoreApplication.translate("MainWindow", u"w:", None))
+        self.lineEdit_var2.setText(QCoreApplication.translate("MainWindow", u"0.5", None))
+        self.lineEdit_var2.setPlaceholderText(QCoreApplication.translate("MainWindow", u"0.5", None))
+        self.label_134.setText(QCoreApplication.translate("MainWindow", u"fig:", None))
+        self.lineEdit_var1.setText(QCoreApplication.translate("MainWindow", u"0.5", None))
+        self.lineEdit_var1.setPlaceholderText(QCoreApplication.translate("MainWindow", u"2.0", None))
+        self.label_132.setText(QCoreApplication.translate("MainWindow", u"fip:", None))
+        self.lineEdit_var3.setText(QCoreApplication.translate("MainWindow", u"2.0", None))
+        self.lineEdit_var3.setPlaceholderText(QCoreApplication.translate("MainWindow", u"2.0", None))
         self.label_51.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:14pt; font-weight:700;\">Simulation</span></p></body></html>", None))
         self.label_128.setText(QCoreApplication.translate("MainWindow", u"Cores Available:", None))
         self.label_cores.setText("")
         self.label_72.setText(QCoreApplication.translate("MainWindow", u"Cores by simulation:", None))
         self.combobox_core_by_simulation.setItemText(0, QCoreApplication.translate("MainWindow", u"None", None))
+        self.combobox_core_by_simulation.setItemText(1, QCoreApplication.translate("MainWindow", u"1", None))
+        self.combobox_core_by_simulation.setItemText(2, QCoreApplication.translate("MainWindow", u"2", None))
+        self.combobox_core_by_simulation.setItemText(3, QCoreApplication.translate("MainWindow", u"3", None))
+        self.combobox_core_by_simulation.setItemText(4, QCoreApplication.translate("MainWindow", u"4", None))
+        self.combobox_core_by_simulation.setItemText(5, QCoreApplication.translate("MainWindow", u"5", None))
+        self.combobox_core_by_simulation.setItemText(6, QCoreApplication.translate("MainWindow", u"6", None))
+        self.combobox_core_by_simulation.setItemText(7, QCoreApplication.translate("MainWindow", u"7", None))
+        self.combobox_core_by_simulation.setItemText(8, QCoreApplication.translate("MainWindow", u"8", None))
 
         self.combobox_core_by_simulation.setPlaceholderText(QCoreApplication.translate("MainWindow", u"None", None))
-        self.label_74.setText(QCoreApplication.translate("MainWindow", u"How many computers will be used?", None))
-        self.comboxbox_simulation_per_time_2.setItemText(0, QCoreApplication.translate("MainWindow", u"None", None))
+        self.label_76.setText(QCoreApplication.translate("MainWindow", u"How many computers will be used?", None))
+        self.combobox_number_computer.setItemText(0, QCoreApplication.translate("MainWindow", u"None", None))
+        self.combobox_number_computer.setItemText(1, QCoreApplication.translate("MainWindow", u"1", None))
+        self.combobox_number_computer.setItemText(2, QCoreApplication.translate("MainWindow", u"2", None))
+        self.combobox_number_computer.setItemText(3, QCoreApplication.translate("MainWindow", u"3", None))
+        self.combobox_number_computer.setItemText(4, QCoreApplication.translate("MainWindow", u"4", None))
+        self.combobox_number_computer.setItemText(5, QCoreApplication.translate("MainWindow", u"5", None))
 
-        self.comboxbox_simulation_per_time_2.setPlaceholderText(QCoreApplication.translate("MainWindow", u"None", None))
-        self.label_70.setText(QCoreApplication.translate("MainWindow", u"How many simulations to run at the same time?", None))
-        self.comboxbox_simulation_per_time.setItemText(0, QCoreApplication.translate("MainWindow", u"None", None))
+        self.combobox_number_computer.setPlaceholderText(QCoreApplication.translate("MainWindow", u"None", None))
+        self.label_74.setText(QCoreApplication.translate("MainWindow", u"Do you want to use this computer to run simulations?", None))
+        self.combobox_main_computer.setItemText(0, QCoreApplication.translate("MainWindow", u"Yes", None))
+        self.combobox_main_computer.setItemText(1, QCoreApplication.translate("MainWindow", u"No", None))
 
-        self.comboxbox_simulation_per_time.setPlaceholderText(QCoreApplication.translate("MainWindow", u"None", None))
+        self.combobox_main_computer.setPlaceholderText(QCoreApplication.translate("MainWindow", u"None", None))
         self.button_pso_back.setText(QCoreApplication.translate("MainWindow", u"Back", None))
         self.button_pso_next_page.setText(QCoreApplication.translate("MainWindow", u"Next", None))
         self.label_41.setText(QCoreApplication.translate("MainWindow", u"Developed by Junior Tavares, Severin Groh and Pascal Behrens", None))

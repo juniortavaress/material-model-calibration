@@ -9,7 +9,9 @@
         "frontend/aux_files/variables_manager.py",
         "frontend/aux_files/yaml_generator.py",
         "frontend/aux_files/aux_layout.py",
-        "backend/inp_configuration.py",
-        "frontend/aux_files/get_parameters.py"
+        "backend/start_otimization.py",
+        "frontend/aux_files/get_parameters.py",
+        "frontend/aux_files/get_pso_and_simulation_info.py",
+        "backend/aux_files/code_to_run_simulation.py"
     ]
 }

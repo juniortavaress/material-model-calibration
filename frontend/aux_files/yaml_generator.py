@@ -17,9 +17,9 @@ class YamlClass:
                 with open(self.project_infos_path, "r", encoding="utf-8") as file:
                     data = yaml.safe_load(file)
 
-                if self.ui.lineEdit_password.text() == data["Info"]["Password"]:
-                    if "Result_path" in data.get("Info", {}):
-                        self.user_result_folder = data["Info"]["Result_path"]
+                if self.ui.lineEdit_password.text() == data["1. Info"]["Password"]:
+                    if "Result_path" in data.get("1. Info", {}):
+                        self.user_result_folder = data["1. Info"]["Result_path"]
                         self.ui.label_result.setText(self.user_result_folder)
                         self.ui.button_settings_next_page.setEnabled(True)
                         YamlClass.set_user_config_path(self, True)
@@ -30,7 +30,7 @@ class YamlClass:
                     self.project_name = self.ui.lineEdit_project_name.text()
                     self.project_infos_path = os.path.join(self.software_path, f"{self.project_name}.yaml")
                     data = {"Date": datetime.today().strftime('%d-%m-%Y'), "Password": self.ui.lineEdit_password.text()}
-                    YamlClass.save_yaml_info(self, self.project_infos_path, "Info", data)
+                    YamlClass.save_yaml_info(self, self.project_infos_path, "1. Info", data)
                     SetLayout.change_page(self, 1)
 
 
@@ -84,9 +84,10 @@ class YamlClass:
         self.excel_files = os.path.join(self.user_result_folder, "excel_files")
         self.odb_files = os.path.join(self.user_result_folder, "obd_files")
         self.chip_images = os.path.join(self.user_result_folder, "chip_images")
-        self.user_config = os.path.join(self.user_result_folder, "config")
 
         self.auxiliary_files = os.path.join(self.user_result_folder, "auxiliary_files")
+        self.user_config = os.path.join(self.auxiliary_files, "config")
+        self.python_files = os.path.join(self.auxiliary_files, "python_files_to_computers")
         self.simulation_inp_files = os.path.join(self.auxiliary_files, "simulation_inp_files")
         self.odb_processing = os.path.join(self.auxiliary_files, "odb_processing")
         self.cae_path = os.path.join(self.auxiliary_files, "defaut/CAE")
@@ -94,14 +95,14 @@ class YamlClass:
         self.json_defaut_path = os.path.join(self.auxiliary_files, "defaut/jsonFiles")
 
         # Creating folders setup
-        folders = [self.excel_files, self.odb_files, self.chip_images, self.user_config, self.simulation_inp_files, self.odb_processing, self.cae_path, self.inp_path, self.json_defaut_path]
+        folders = [self.excel_files, self.odb_files, self.chip_images, self.user_config, self.python_files, self.simulation_inp_files, self.odb_processing, self.cae_path, self.inp_path, self.json_defaut_path]
         for folder in folders:
             os.makedirs(folder)
         
         # Add path to project .yaml
         if self.project_infos_path:
             dict_with_folders = dict_folder_setup(self)
-            YamlClass.save_yaml_info(self, self.project_infos_path, "Paths", dict_with_folders)
+            YamlClass.save_yaml_info(self, self.project_infos_path, "2. Paths", dict_with_folders)
 
         # Allowing go to next page
         self.ui.button_settings_next_page.setEnabled(True)
@@ -109,7 +110,7 @@ class YamlClass:
         if os.path.exists(self.project_infos_path):
             with open(self.project_infos_path, "r", encoding="utf-8") as file:
                 existing_data = yaml.safe_load(file) or {}
-            existing_data["Info"]["Result_path"] = self.user_result_folder
+            existing_data["1. Info"]["Result_path"] = self.user_result_folder
             with open(self.project_infos_path, "w", encoding="utf-8") as file:
                 yaml.dump(existing_data, file, default_flow_style=False, allow_unicode=True, width=float("inf"))
 
