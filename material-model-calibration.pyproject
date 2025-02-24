@@ -9,9 +9,13 @@
         "frontend/aux_files/variables_manager.py",
         "frontend/aux_files/yaml_generator.py",
         "frontend/aux_files/aux_layout.py",
-        "backend/start_otimization.py",
         "frontend/aux_files/get_parameters.py",
         "frontend/aux_files/get_pso_and_simulation_info.py",
-        "backend/aux_files/code_to_run_simulation.py"
+        "backend/aux_files/code_to_run_simulation.py",
+        "frontend/aux_files/show_status_message.py",
+        "backend/aux_files/thread_manager.py",
+        "backend/aux_files/generate_status_file.py",
+        "backend/pso/start_otimization.py",
+        "backend/pso/pso_manager.py"
     ]
 }

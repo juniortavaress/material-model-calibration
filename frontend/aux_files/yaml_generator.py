@@ -2,9 +2,9 @@ import os
 import yaml
 import shutil
 from PySide6.QtWidgets import QFileDialog
+from PySide6.QtCore import QTimer
 from datetime import datetime
 from frontend.aux_files.aux_dict import *
-from frontend.aux_files.aux_layout import SetLayout
 
 class YamlClass:
     def create_login_credentials(self):
@@ -23,7 +23,10 @@ class YamlClass:
                         self.ui.label_result.setText(self.user_result_folder)
                         self.ui.button_settings_next_page.setEnabled(True)
                         YamlClass.set_user_config_path(self, True)
-                    SetLayout.change_page(self, 1)
+                    self.ui.pages.setCurrentIndex(1)
+                else:
+                    self.ui.label_login_warning.show()
+                    QTimer.singleShot(3000, lambda: self.ui.label_login_warning.hide())
 
             else:
                 if self.ui.lineEdit_project_name.text() and self.ui.lineEdit_password.text():
@@ -31,7 +34,7 @@ class YamlClass:
                     self.project_infos_path = os.path.join(self.software_path, f"{self.project_name}.yaml")
                     data = {"Date": datetime.today().strftime('%d-%m-%Y'), "Password": self.ui.lineEdit_password.text()}
                     YamlClass.save_yaml_info(self, self.project_infos_path, "1. Info", data)
-                    SetLayout.change_page(self, 1)
+                    self.ui.pages.setCurrentIndex(1)
 
 
     def set_software_config_path(self, call=None):
@@ -60,7 +63,9 @@ class YamlClass:
                 YamlClass.save_yaml_info(self, self.software_config_path, "abaqus_path", self.abaqus_path)
                 self.ui.button_result.setEnabled(True)
             else:
-                self.ui.label_abaqus.setText("Select a valid path to Abaqus .bat")
+                self.ui.label_abaqus.setText(" ")
+                self.ui.label_path_warning.show()
+                QTimer.singleShot(3000, lambda: self.ui.label_path_warning.hide())
 
 
     def set_user_config_path(self, call=None):
@@ -72,7 +77,9 @@ class YamlClass:
             self.result_path = QFileDialog.getExistingDirectory()
 
             if not self.result_path:
-                self.ui.label_result.setText("Select a valid path to save the results")
+                self.ui.label_result.setText(" ")
+                self.ui.label_path_warning.show()
+                QTimer.singleShot(3000, lambda: self.ui.label_path_warning.hide())
                 return
             
             self.user_result_folder = os.path.join(self.result_path, self.project_name)
@@ -93,9 +100,10 @@ class YamlClass:
         self.cae_path = os.path.join(self.auxiliary_files, "defaut/CAE")
         self.inp_path = os.path.join(self.auxiliary_files, "defaut/INPFiles")
         self.json_defaut_path = os.path.join(self.auxiliary_files, "defaut/jsonFiles")
+        self.obj_path = os.path.join(self.auxiliary_files, "defaut/objFiles")
 
         # Creating folders setup
-        folders = [self.excel_files, self.odb_files, self.chip_images, self.user_config, self.python_files, self.simulation_inp_files, self.odb_processing, self.cae_path, self.inp_path, self.json_defaut_path]
+        folders = [self.excel_files, self.odb_files, self.chip_images, self.user_config, self.python_files, self.simulation_inp_files, self.odb_processing, self.cae_path, self.inp_path, self.json_defaut_path, self.obj_path]
         for folder in folders:
             os.makedirs(folder)
         

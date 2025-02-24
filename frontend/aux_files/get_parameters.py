@@ -2,14 +2,15 @@ import os
 import re
 import yaml
 from frontend.aux_files.yaml_generator import YamlClass
-from frontend.aux_files.aux_layout import SetLayout
+from PySide6.QtCore import QTimer
 
 class GetParameters:
     def parameter_and_interface_manager(self):
-        material_info = GetParameters.get_available_parameters(self)
-        GetParameters.define_variables_name(self, material_info)
-        GetParameters.get_list_with_parameters_name(self)
-        GetParameters.show_paramters_values(self)
+        if not self.error_tracking:
+            material_info = GetParameters.get_available_parameters(self)
+            GetParameters.define_variables_name(self, material_info)
+            GetParameters.get_list_with_parameters_name(self)
+            GetParameters.show_paramters_values(self)
 
 
     def get_available_parameters(self):
@@ -23,7 +24,7 @@ class GetParameters:
             for key, info in data.items():
                 for condition, value in info.items():
                     if condition == "Condition 01":
-                        path_to_inp = value["inputFile"]
+                        path_to_inp = value["Cutting Properties"]["inputFile"]
 
             # Settings
             i = 0
@@ -134,6 +135,11 @@ class GetParameters:
 
 
         for material, info in data.items():
+            self.ui.comboBox_material.addItem(material)
+            self.ui.comboBox_material.setCurrentIndex(0)
+            self.ui.comboBox_material_limits.addItem(material)
+            self.ui.comboBox_material_limits.setCurrentIndex(0)
+
             for prop, values in info.items():
                 if prop == "Plastic" and len(values) > 0:
                     self.ui.frame_material_model.show()
@@ -230,8 +236,6 @@ class GetParameters:
         self.resize(1000, 600) if not self.isMaximized() else None
 
 
-
-
     def save_parameters_limits(self):
         next_page = True
         with open(self.project_infos_path, "r", encoding="utf-8") as file:
@@ -255,5 +259,8 @@ class GetParameters:
                     next_page = False
 
         if next_page:
-            SetLayout.change_page(self, 6)
+            self.ui.pages.setCurrentIndex(6)
+        else:
+            self.ui.label_limits_warning.show()
+            QTimer.singleShot(3000, lambda: self.ui.label_limits_warning.hide())
 

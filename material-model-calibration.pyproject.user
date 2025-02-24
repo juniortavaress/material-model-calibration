@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 14.0.1, 2025-02-12T10:25:34. -->
+<!-- Written by QtCreator 14.0.1, 2025-02-14T11:01:55. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -236,7 +236,7 @@
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">backend\aux_files\code_to_run_simulation.py</value>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">PythonEditor.RunConfiguration.S:/Junior/abaqus-with-python/otimization-scripts/new-version/material-model-calibration/backend/aux_files/code_to_run_simulation.py</value>
     <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">S:/Junior/abaqus-with-python/otimization-scripts/new-version/material-model-calibration/backend/aux_files/code_to_run_simulation.py</value>
-    <value type="bool" key="ProjectExplorer.RunConfiguration.Customized">false</value>
+    <value type="bool" key="ProjectExplorer.RunConfiguration.Customized">true</value>
     <value type="QString" key="PythonEditor.RunConfiguation.Script">S:\Junior\abaqus-with-python\otimization-scripts\new-version\material-model-calibration\backend\aux_files\code_to_run_simulation.py</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
@@ -255,11 +255,104 @@
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">backend\start_otimization.py</value>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">PythonEditor.RunConfiguration.S:/Junior/abaqus-with-python/otimization-scripts/new-version/material-model-calibration/backend/start_otimization.py</value>
     <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">S:/Junior/abaqus-with-python/otimization-scripts/new-version/material-model-calibration/backend/start_otimization.py</value>
-    <value type="bool" key="ProjectExplorer.RunConfiguration.Customized">false</value>
-    <value type="QString" key="PythonEditor.RunConfiguation.Script">S:\Junior\abaqus-with-python\otimization-scripts\new-version\material-model-calibration\backend\start_otimization.py</value>
+    <value type="bool" key="ProjectExplorer.RunConfiguration.Customized">true</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
-    <value type="QString" key="RunConfiguration.WorkingDirectory.default">S:/Junior/abaqus-with-python/otimization-scripts/new-version/material-model-calibration/backend</value>
+   </valuemap>
+   <valuemap type="QVariantMap" key="ProjectExplorer.Target.RunConfiguration.13">
+    <value type="bool" key="Analyzer.Perf.Settings.UseGlobalSettings">true</value>
+    <value type="bool" key="Analyzer.QmlProfiler.Settings.UseGlobalSettings">true</value>
+    <value type="int" key="Analyzer.Valgrind.Callgrind.CostFormat">0</value>
+    <value type="bool" key="Analyzer.Valgrind.Settings.UseGlobalSettings">true</value>
+    <valuelist type="QVariantList" key="CustomOutputParsers"/>
+    <value type="int" key="PE.EnvironmentAspect.Base">2</value>
+    <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
+    <value type="bool" key="PE.EnvironmentAspect.PrintOnRun">false</value>
+    <value type="QString" key="PerfRecordArgsId">-e cpu-cycles --call-graph &quot;dwarf,4096&quot; -F 250</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">frontend\aux_files\show_status_message.py</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">PythonEditor.RunConfiguration.S:/Junior/abaqus-with-python/otimization-scripts/new-version/material-model-calibration/frontend/aux_files/show_status_message.py</value>
+    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">S:/Junior/abaqus-with-python/otimization-scripts/new-version/material-model-calibration/frontend/aux_files/show_status_message.py</value>
+    <value type="bool" key="ProjectExplorer.RunConfiguration.Customized">true</value>
+    <value type="QString" key="PythonEditor.RunConfiguation.Script">S:\Junior\abaqus-with-python\otimization-scripts\new-version\material-model-calibration\frontend\aux_files\show_status_message.py</value>
+    <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
+    <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
+    <value type="QString" key="RunConfiguration.WorkingDirectory.default">S:/Junior/abaqus-with-python/otimization-scripts/new-version/material-model-calibration/frontend/aux_files</value>
+   </valuemap>
+   <valuemap type="QVariantMap" key="ProjectExplorer.Target.RunConfiguration.14">
+    <value type="bool" key="Analyzer.Perf.Settings.UseGlobalSettings">true</value>
+    <value type="bool" key="Analyzer.QmlProfiler.Settings.UseGlobalSettings">true</value>
+    <value type="int" key="Analyzer.Valgrind.Callgrind.CostFormat">0</value>
+    <value type="bool" key="Analyzer.Valgrind.Settings.UseGlobalSettings">true</value>
+    <valuelist type="QVariantList" key="CustomOutputParsers"/>
+    <value type="int" key="PE.EnvironmentAspect.Base">2</value>
+    <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
+    <value type="bool" key="PE.EnvironmentAspect.PrintOnRun">false</value>
+    <value type="QString" key="PerfRecordArgsId">-e cpu-cycles --call-graph &quot;dwarf,4096&quot; -F 250</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">backend\aux_files\thread_manager.py</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">PythonEditor.RunConfiguration.S:/Junior/abaqus-with-python/otimization-scripts/new-version/material-model-calibration/backend/aux_files/thread_manager.py</value>
+    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">S:/Junior/abaqus-with-python/otimization-scripts/new-version/material-model-calibration/backend/aux_files/thread_manager.py</value>
+    <value type="bool" key="ProjectExplorer.RunConfiguration.Customized">true</value>
+    <value type="QString" key="PythonEditor.RunConfiguation.Script">S:\Junior\abaqus-with-python\otimization-scripts\new-version\material-model-calibration\backend\aux_files\thread_manager.py</value>
+    <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
+    <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
+    <value type="QString" key="RunConfiguration.WorkingDirectory.default">S:/Junior/abaqus-with-python/otimization-scripts/new-version/material-model-calibration/backend/aux_files</value>
+   </valuemap>
+   <valuemap type="QVariantMap" key="ProjectExplorer.Target.RunConfiguration.15">
+    <value type="bool" key="Analyzer.Perf.Settings.UseGlobalSettings">true</value>
+    <value type="bool" key="Analyzer.QmlProfiler.Settings.UseGlobalSettings">true</value>
+    <value type="int" key="Analyzer.Valgrind.Callgrind.CostFormat">0</value>
+    <value type="bool" key="Analyzer.Valgrind.Settings.UseGlobalSettings">true</value>
+    <valuelist type="QVariantList" key="CustomOutputParsers"/>
+    <value type="int" key="PE.EnvironmentAspect.Base">2</value>
+    <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
+    <value type="bool" key="PE.EnvironmentAspect.PrintOnRun">false</value>
+    <value type="QString" key="PerfRecordArgsId">-e cpu-cycles --call-graph &quot;dwarf,4096&quot; -F 250</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">backend\aux_files\generate_status_file.py</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">PythonEditor.RunConfiguration.S:/Junior/abaqus-with-python/otimization-scripts/new-version/material-model-calibration/backend/aux_files/generate_status_file.py</value>
+    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">S:/Junior/abaqus-with-python/otimization-scripts/new-version/material-model-calibration/backend/aux_files/generate_status_file.py</value>
+    <value type="bool" key="ProjectExplorer.RunConfiguration.Customized">true</value>
+    <value type="QString" key="PythonEditor.RunConfiguation.Script">S:\Junior\abaqus-with-python\otimization-scripts\new-version\material-model-calibration\backend\aux_files\generate_status_file.py</value>
+    <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
+    <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
+    <value type="QString" key="RunConfiguration.WorkingDirectory.default">S:/Junior/abaqus-with-python/otimization-scripts/new-version/material-model-calibration/backend/aux_files</value>
+   </valuemap>
+   <valuemap type="QVariantMap" key="ProjectExplorer.Target.RunConfiguration.16">
+    <value type="bool" key="Analyzer.Perf.Settings.UseGlobalSettings">true</value>
+    <value type="bool" key="Analyzer.QmlProfiler.Settings.UseGlobalSettings">true</value>
+    <value type="int" key="Analyzer.Valgrind.Callgrind.CostFormat">0</value>
+    <value type="bool" key="Analyzer.Valgrind.Settings.UseGlobalSettings">true</value>
+    <valuelist type="QVariantList" key="CustomOutputParsers"/>
+    <value type="int" key="PE.EnvironmentAspect.Base">2</value>
+    <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
+    <value type="bool" key="PE.EnvironmentAspect.PrintOnRun">false</value>
+    <value type="QString" key="PerfRecordArgsId">-e cpu-cycles --call-graph &quot;dwarf,4096&quot; -F 250</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">backend\pso\start_otimization.py</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">PythonEditor.RunConfiguration.S:/Junior/abaqus-with-python/otimization-scripts/new-version/material-model-calibration/backend/pso/start_otimization.py</value>
+    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">S:/Junior/abaqus-with-python/otimization-scripts/new-version/material-model-calibration/backend/pso/start_otimization.py</value>
+    <value type="bool" key="ProjectExplorer.RunConfiguration.Customized">false</value>
+    <value type="QString" key="PythonEditor.RunConfiguation.Script">S:\Junior\abaqus-with-python\otimization-scripts\new-version\material-model-calibration\backend\pso\start_otimization.py</value>
+    <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
+    <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
+    <value type="QString" key="RunConfiguration.WorkingDirectory.default">S:/Junior/abaqus-with-python/otimization-scripts/new-version/material-model-calibration/backend/pso</value>
+   </valuemap>
+   <valuemap type="QVariantMap" key="ProjectExplorer.Target.RunConfiguration.17">
+    <value type="bool" key="Analyzer.Perf.Settings.UseGlobalSettings">true</value>
+    <value type="bool" key="Analyzer.QmlProfiler.Settings.UseGlobalSettings">true</value>
+    <value type="int" key="Analyzer.Valgrind.Callgrind.CostFormat">0</value>
+    <value type="bool" key="Analyzer.Valgrind.Settings.UseGlobalSettings">true</value>
+    <valuelist type="QVariantList" key="CustomOutputParsers"/>
+    <value type="int" key="PE.EnvironmentAspect.Base">2</value>
+    <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
+    <value type="bool" key="PE.EnvironmentAspect.PrintOnRun">false</value>
+    <value type="QString" key="PerfRecordArgsId">-e cpu-cycles --call-graph &quot;dwarf,4096&quot; -F 250</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">backend\pso\pso_manager.py</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">PythonEditor.RunConfiguration.S:/Junior/abaqus-with-python/otimization-scripts/new-version/material-model-calibration/backend/pso/pso_manager.py</value>
+    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">S:/Junior/abaqus-with-python/otimization-scripts/new-version/material-model-calibration/backend/pso/pso_manager.py</value>
+    <value type="bool" key="ProjectExplorer.RunConfiguration.Customized">false</value>
+    <value type="QString" key="PythonEditor.RunConfiguation.Script">S:\Junior\abaqus-with-python\otimization-scripts\new-version\material-model-calibration\backend\pso\pso_manager.py</value>
+    <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
+    <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
+    <value type="QString" key="RunConfiguration.WorkingDirectory.default">S:/Junior/abaqus-with-python/otimization-scripts/new-version/material-model-calibration/backend/pso</value>
    </valuemap>
    <valuemap type="QVariantMap" key="ProjectExplorer.Target.RunConfiguration.2">
     <value type="bool" key="Analyzer.Perf.Settings.UseGlobalSettings">true</value>
@@ -405,13 +498,13 @@
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">frontend\aux_files\get_pso_and_simulation_info.py</value>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">PythonEditor.RunConfiguration.S:/Junior/abaqus-with-python/otimization-scripts/new-version/material-model-calibration/frontend/aux_files/get_pso_and_simulation_info.py</value>
     <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">S:/Junior/abaqus-with-python/otimization-scripts/new-version/material-model-calibration/frontend/aux_files/get_pso_and_simulation_info.py</value>
-    <value type="bool" key="ProjectExplorer.RunConfiguration.Customized">false</value>
+    <value type="bool" key="ProjectExplorer.RunConfiguration.Customized">true</value>
     <value type="QString" key="PythonEditor.RunConfiguation.Script">S:\Junior\abaqus-with-python\otimization-scripts\new-version\material-model-calibration\frontend\aux_files\get_pso_and_simulation_info.py</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
     <value type="QString" key="RunConfiguration.WorkingDirectory.default">S:/Junior/abaqus-with-python/otimization-scripts/new-version/material-model-calibration/frontend/aux_files</value>
    </valuemap>
-   <value type="qlonglong" key="ProjectExplorer.Target.RunConfigurationCount">13</value>
+   <value type="qlonglong" key="ProjectExplorer.Target.RunConfigurationCount">18</value>
   </valuemap>
  </data>
  <data>

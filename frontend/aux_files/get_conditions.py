@@ -2,9 +2,8 @@ import os
 import yaml
 import shutil
 from PySide6.QtWidgets import QFileDialog
-from PySide6.QtCore import QTimer
+from PySide6.QtCore import QTimer, Qt, QThread
 from frontend.aux_files.yaml_generator import YamlClass
-from frontend.aux_files.aux_layout import SetLayout
 
 class GetCondition:
     def set_conditions(self):
@@ -28,6 +27,11 @@ class GetCondition:
         self.ui.label_input.setText(inputFile)
 
 
+    def save_conditions(self):
+        GetCondition.get_defaut_user_conditions(self)
+        GetCondition.move_inp_files(self)
+
+
     def check_values(self, value):
         try:
             float(value)
@@ -37,13 +41,19 @@ class GetCondition:
 
 
     def get_defaut_user_conditions(self, call=None):
+        self.error_tracking = False
         velocity = GetCondition.check_values(self, self.ui.lineEdit_velocity.text().replace(',', '.'))
-        deepCuth = GetCondition.check_values(self, self.ui.lineEdit_deepCuth.text().replace(',', '.'))
-        rakeAngle = GetCondition.check_values(self, self.ui.lineEdit_rakeAngle.text().replace(',', '.').replace('+', ''))
-        tempPath = self.ui.lineEdit_tempPath.text()
+        deep_cuth = GetCondition.check_values(self, self.ui.lineEdit_deepCuth.text().replace(',', '.'))
+        rake_angle = GetCondition.check_values(self, self.ui.lineEdit_rakeAngle.text().replace(',', '.').replace('+', ''))
+        temp_path = self.ui.lineEdit_tempPath.text()
         inputFile = self.ui.label_input.text()
 
-        if velocity and deepCuth and rakeAngle and tempPath and inputFile:
+        cutting_force = GetCondition.check_values(self, self.ui.lineEdit_cutting_force.text().replace(',', '.'))
+        normal_force = GetCondition.check_values(self, self.ui.lineEdit_normal_force.text().replace(',', '.'))
+        chip_compression = GetCondition.check_values(self, self.ui.lineEdit_CCR.text().replace(',', '.'))
+        chip_segmentation = GetCondition.check_values(self, self.ui.lineEdit_CSR.text().replace(',', '.'))
+
+        if velocity and deep_cuth and rake_angle and temp_path and inputFile:
             with open(self.project_infos_path, "r", encoding="utf-8") as file:
                 data = yaml.safe_load(file) or {}
 
@@ -51,14 +61,15 @@ class GetCondition:
                 data["3. Conditions"] = {}
 
             condition = self.ui.comboBox_condition.currentText()
-            data["3. Conditions"][condition] = {"velocity": velocity, "deepCuth": deepCuth, "rakeAngle": rakeAngle, "tempPath": tempPath, "inputFile": inputFile}
+            data["3. Conditions"][condition] = data["3. Conditions"][condition] = {"Cutting Properties": {"velocity": velocity, "deepCuth": deep_cuth, "rakeAngle": rake_angle, "tempPath": temp_path, "inputFile": inputFile}, "Experimental Datas": {"cutting_force": cutting_force, "normal_force": normal_force, "chip_compression": chip_compression, "chip_segmentation": chip_segmentation}}
             YamlClass.save_yaml_info(self, self.project_infos_path, "3. Conditions", data["3. Conditions"])
             
             if call == "new":
                 new_condition = f"Condition 0{self.ui.comboBox_condition.count() + 1}"
                 self.ui.comboBox_condition.addItem(new_condition)
                 self.ui.comboBox_condition.setCurrentIndex(self.ui.comboBox_condition.findText(new_condition))
-            
+        else:
+            self.error_tracking = True
 
     def change_combobox_info(self):
         if os.path.exists(self.project_infos_path):
@@ -67,37 +78,51 @@ class GetCondition:
 
             if "3. Conditions" in data:
                 if self.ui.comboBox_condition.currentText() in data["3. Conditions"]:
-                    self.ui.lineEdit_velocity.setText(data["3. Conditions"][self.ui.comboBox_condition.currentText()]["velocity"])
-                    self.ui.lineEdit_deepCuth.setText(data["3. Conditions"][self.ui.comboBox_condition.currentText()]["deepCuth"])
-                    self.ui.lineEdit_rakeAngle.setText(data["3. Conditions"][self.ui.comboBox_condition.currentText()]["rakeAngle"])
-                    self.ui.lineEdit_tempPath.setText(data["3. Conditions"][self.ui.comboBox_condition.currentText()]["tempPath"])
-                    self.ui.label_input.setText(data["3. Conditions"][self.ui.comboBox_condition.currentText()]["inputFile"])
+                    self.ui.lineEdit_velocity.setText(data["3. Conditions"][self.ui.comboBox_condition.currentText()]["Cutting Properties"]["velocity"])
+                    self.ui.lineEdit_deepCuth.setText(data["3. Conditions"][self.ui.comboBox_condition.currentText()]["Cutting Properties"]["deepCuth"])
+                    self.ui.lineEdit_rakeAngle.setText(data["3. Conditions"][self.ui.comboBox_condition.currentText()]["Cutting Properties"]["rakeAngle"])
+                    self.ui.lineEdit_tempPath.setText(data["3. Conditions"][self.ui.comboBox_condition.currentText()]["Cutting Properties"]["tempPath"])
+                    self.ui.label_input.setText(data["3. Conditions"][self.ui.comboBox_condition.currentText()]["Cutting Properties"]["inputFile"])
+                    self.ui.lineEdit_cutting_force.setText(data["3. Conditions"][self.ui.comboBox_condition.currentText()]["Experimental Datas"]["cutting_force"])
+                    self.ui.lineEdit_normal_force.setText(data["3. Conditions"][self.ui.comboBox_condition.currentText()]["Experimental Datas"]["normal_force"])
+                    self.ui.lineEdit_CCR.setText(data["3. Conditions"][self.ui.comboBox_condition.currentText()]["Experimental Datas"]["chip_compression"])
+                    self.ui.lineEdit_CSR.setText(data["3. Conditions"][self.ui.comboBox_condition.currentText()]["Experimental Datas"]["chip_segmentation"])
                 else:
                     self.ui.lineEdit_velocity.setText("")
                     self.ui.lineEdit_deepCuth.setText("")
                     self.ui.lineEdit_rakeAngle.setText("")
                     self.ui.lineEdit_tempPath.setText("")
                     self.ui.label_input.setText("")
+                    self.ui.lineEdit_cutting_force.setText("")
+                    self.ui.lineEdit_normal_force.setText("")
+                    self.ui.lineEdit_CCR.setText("")
+                    self.ui.lineEdit_CSR.setText("")
 
 
     def move_inp_files(self):
-        if os.path.exists(self.project_infos_path):
-            SetLayout.change_page(self, 4)
-            QTimer.singleShot(0.005, lambda: GetCondition.move_files(self))
+        if os.path.exists(self.project_infos_path) and not self.error_tracking:
+            self.ui.pages.setCurrentIndex(4)
+            GetCondition.move_files(self)
+        else:
+            self.ui.label_condition_warning.show()
+            QTimer.singleShot(3000, lambda: self.ui.label_condition_warning.hide())
+
 
     def move_files(self):
         with open(self.project_infos_path, "r", encoding="utf-8") as file:
             data = yaml.safe_load(file) or {}
 
-        for key , condition_data in data.items():
-            if key[:9] == "Condition":
-                v = condition_data["velocity"]
-                h = condition_data["deepCuth"]
-                gam = condition_data["rakeAngle"]
-                input_file_path = condition_data["inputFile"]
+        for info, value in data.items():
+            for key, condition_data in value.items():
+                if key[:9] == "Condition":
+                    v = condition_data["Cutting Properties"]["velocity"]
+                    h = condition_data["Cutting Properties"]["deepCuth"]
+                    gam = condition_data["Cutting Properties"]["rakeAngle"]
+                    input_file_path = condition_data["Cutting Properties"]["inputFile"]
 
-                if os.path.exists(input_file_path):
-                    new_input_file_path = os.path.join(self.inp_path, f"sim_v{v}_h{h}_gam{gam}.inp")
-                    shutil.copy(input_file_path, new_input_file_path)
+                    if os.path.exists(input_file_path):
+                        new_input_file_path = os.path.join(self.inp_path, f"sim_v{v}_h{h}_gam{gam}.inp")
+                        # print(new_input_file_path)
+                        shutil.copy(input_file_path, new_input_file_path)
 
 

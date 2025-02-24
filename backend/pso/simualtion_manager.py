@@ -1,0 +1,158 @@
+import os
+import re
+import shutil
+import traceback
+import json
+import time
+import numpy as np
+import yaml
+import pandas as pd
+from frontend.aux_files.show_status_message import StatusMessage
+from backend.get_result_from_odb_file.main_results import getResults
+from backend.pso.edit_input_file import InpEditor
+# from edit_input_file import InpEditor
+import uuid
+
+class SimulationManager:
+    def __init__(self):
+        print("SimulationManager")
+
+    def simulation_manager(self):
+        """
+        Manages the simulation workflow: editing input files, running simulations,
+        transferring output files, and collecting results.
+        """
+        # Step 1: Edit the .inp file
+        try:    
+            StatusMessage.set_text(self, "message-id_02")
+            lis_dir_inp, self.index_names = InpEditor.manager_edit(self)
+        except Exception as e:
+            self.error_tracking = True
+            stage = "Editing inp file"
+            SimulationManager.except_function(self, stage, e)
+            
+
+        # Step 2: Putting compiled files together 
+        if not self.error_tracking:
+            try:
+                SimulationManager.copy_file(self, "CompiledFiles")
+            except Exception as e:
+                stage = "Transferring compiled files"
+                SimulationManager.except_function(self, stage, e)
+
+
+        # Step 3: Creating list for computers
+        if not self.error_tracking:
+            splits = np.array_split(lis_dir_inp, self.number_of_cp)
+            
+            if self.main_computer == "Yes":
+                computer_dict = {f"Computer {i+1}": {"status": bool(split.tolist()), "files": split.tolist()} for i, split in enumerate(splits)}
+            else:
+                computer_dict = {f"Computer {i+2}": {"status": bool(split.tolist()), "files": split.tolist()} for i, split in enumerate(splits)}
+
+            with open(os.path.join(self.python_files, "computers_list.yaml"), "w") as file:
+                yaml.dump(computer_dict, file)
+
+
+        # Step 4: Run the simulation
+        if not self.error_tracking and self.main_computer == "Yes":
+            try:
+                StatusMessage.set_text(self, "message-id_03")
+                if computer_dict["Computer 1"]["status"] == True:
+                    # print(computer_dict["Computer 1"]["files"])
+                    SimulationManager.run_simulation(self, "cp1", computer_dict["Computer 1"]["files"])
+            except Exception as e:
+                self.error_tracking = True
+                print(e)
+                stage = "Rodando Simulação"
+                SimulationManager.except_function(self, stage, e)
+        else:
+            print("Main computer off")
+
+
+        while True:
+            yaml_path = os.path.join(self.python_files, "computers_list.yaml")
+            with open(yaml_path, "r") as file:
+                data = yaml.safe_load(file)
+
+            all_finished = True
+            for computers, infos in data.items():
+                for info_type, value in infos.items():
+                    if info_type == "status":
+                        # print(value)
+                        if value:
+                            all_finished = False  
+                    
+            if all_finished:
+                break
+            else:
+                import time
+                time.sleep(5)
+
+        # Step 5: Collect simulation results
+        if not self.error_tracking:
+            try:    
+                StatusMessage.set_text(self, "message-id_04")
+                getResults.result_call(self)
+                StatusMessage.set_text(self, "message-id_05")
+            except Exception as e:
+                self.error_tracking = True
+                stage = "Collecting results"
+                SimulationManager.except_function(self, stage, e)
+
+
+    def copy_file(self, type):
+        """
+        Transfers .odb files from the simulation directory to the results directory.
+        """
+        if type == "ODB":
+            # pass
+            # PARA OS FOLDERS COMP01_DATA E COMP02_DATA
+            destination_odb_folder = self.odb_files
+            for folder_name in os.listdir(self.simulation_inp_files):
+                folder_path = os.path.join(self.simulation_inp_files, folder_name)
+                if os.path.isdir(folder_path) and folder_name.lower() != "defaut":
+                    for root, dirs, files in os.walk(folder_path):
+                        for file in files:
+                            if file.endswith(".odb"):
+                                source_path = os.path.join(root, file) 
+                                destination_path = os.path.join(destination_odb_folder, file)  
+                                shutil.copy2(source_path, destination_path)
+                                os.remove(source_path)
+
+        elif type == "CompiledFiles":
+            compiled_files_dir = os.path.join(self.software_path, "compiled")
+            for folder_name in os.listdir(self.simulation_inp_files):
+                folder_path = os.path.join(self.simulation_inp_files, folder_name)
+                if folder_name.lower() != "defaut" and folder_name.lower() != "info":
+                    source_path_list = ["abaqus_v6.env", "explicitU-D.dll", "explicitU.dll"]
+                    for file in source_path_list:
+                        source_path = os.path.join(compiled_files_dir, file)
+                        shutil.copy2(source_path, folder_path)
+
+
+    def run_simulation(self, id, path_list_to_inp_folders):
+        """
+        Starts the Abaqus simulation using a parallel processing framework.
+        """
+        # from backend.pso.pararel_simulation import PararelSimulation
+        # number_of_cores = 4
+        # number_pararell_sim = 3
+        # simulation = PararelSimulation
+        # PararelSimulation.start_simulation(self, id, path_list_to_inp_folders, number_of_cores, number_pararell_sim)
+        x = input("coloca as simulações ai meu bom!")
+       
+
+    def except_function(self, stage, e):
+        """
+        Handles exceptions by saving error data to a log file and re-raising the exception.
+        """
+        self.e = e
+        self.stage = stage
+        # FileUtils.code_status(self, "iteration-error")
+        StatusMessage.set_text(self, "message-error")
+    
+
+if __name__ == "__main__":
+    a = SimulationManager()
+    a.simulation_manager()

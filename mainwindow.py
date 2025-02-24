@@ -15,6 +15,7 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)
 
         self.test = False
+        self.error_tracking = False
         ButtonsCallback.activate_buttons(self)
 
     # def __setattr__(self, name, value):
