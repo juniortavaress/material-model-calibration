@@ -11,6 +11,7 @@ from backend.get_result_from_odb_file.convert_json_to_excel import DataConverter
 from backend.get_result_from_odb_file.convert_obj_to_excel import GetChipMeasure
 
 
+
 class getResults():
     """
     Class to handle results extraction and conversion processes.
@@ -28,7 +29,6 @@ class getResults():
         getResults.manage_abaqus_script(self)
         getResults.convert_json_to_excel(self)
         
-        
 
     def manage_abaqus_script(self):
         """
@@ -44,9 +44,9 @@ class getResults():
         abaqus_command_forces = rf'C:\SIMULIA\Commands\abq2021.bat python {dir}\get_forces.py {self.odb_processing} {self.json_defaut_path}'
         abaqus_command_chip_obj = rf'C:\SIMULIA\Commands\abq2021.bat cae script={dir}\get_chip_obj_file.py'
 
-        # commands = [abaqus_command_forces, abaqus_command_temperatures, abaqus_command_chip_obj]
+        commands = [abaqus_command_forces, abaqus_command_temperatures, abaqus_command_chip_obj]
         # commands = [abaqus_command_forces, abaqus_command_temperatures]
-        commands = [abaqus_command_chip_obj, abaqus_command_forces]
+        # commands = [abaqus_command_chip_obj, abaqus_command_forces]
     
         # Start processes for each Abaqus script
         processes = []
@@ -73,6 +73,8 @@ class getResults():
         try:
             result = subprocess.run(abaqus_command, shell=True, capture_output=True, check=True, text=True)
             if "Error" in result.stdout or "Error" in result.stderr:
+                print("ERROR", result.stdout)
+                print("ERROR", result.stderr)
                 error_track = True
                 
         except subprocess.CalledProcessError as e:
@@ -96,12 +98,5 @@ class getResults():
             DataConverter.main_json_to_excel(self, base_name_file)
         ExcelManager.create_datas(self)
         
-
-
-
-
-
-
-
 if __name__ == "__main__":
     getResults()

@@ -2,15 +2,12 @@
 import os 
 import json
 import pandas as pd
-import numpy as np
-from backend.get_result_from_odb_file.excel_manager import ExcelManager
-from backend.get_result_from_odb_file.excel_utils import ExcelUtils
+from backend.get_result_from_odb_file.create_graphs import createPlots
 
 class DataConverter():
     def __init__(self):
         self.excel_files = r"S:/Junior/abaqus-with-python/otimization-scripts/new-version/material-model-calibration\Teste\excel_files"
         self.json_defaut_path = r"S:/Junior/abaqus-with-python/otimization-scripts/new-version/material-model-calibration\Teste\auxiliary_files\json_and_obj_files/jsonFiles"
-
         DataConverter.main_json_to_excel(self)
         
 
@@ -107,8 +104,8 @@ class DataConverter():
         ISSO SAO OS DADOS PARA OS GRAFICOS INDIVIDUAIS
         TEM QUE SALVAR PARA DEPOIS PLOTAR NA INTERFACE
         """
-        ExcelUtils.create_forces_graphs(combined_forces_df_with_results) 
-        ExcelUtils.create_temp_graps(combined_temp_df_with_results) 
+        createPlots.create_forces_graphs(combined_forces_df_with_results) 
+        createPlots.create_temp_graps(combined_temp_df_with_results) 
             
 
     @staticmethod

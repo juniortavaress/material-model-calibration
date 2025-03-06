@@ -28,7 +28,7 @@ class ExcelManager():
             df = pd.DataFrame(0, columns=columns, index=range(1))
             df.index.name = "Simulation"
             df.to_excel(data_path, index=True, engine="openpyxl")
-        ExcelManager.format_file(self, data_path)
+        # ExcelManager.format_file(self, data_path)
 
 
     def create_datas(self):
@@ -113,7 +113,7 @@ class ExcelManager():
             column_order.insert(2, column_order.pop(column_order.index("Best Set of Iteraction")))  # Move "Best Set" para a posição 3
             df_information = df_information[column_order]   
             df_information.to_excel(data_path, index=True, engine="openpyxl")
-            ExcelManager.format_file(self, data_path)
+            # ExcelManager.format_file(self, data_path)
 
 
     def format_file(self, data_path):
@@ -146,23 +146,23 @@ class ExcelManager():
                         cell.number_format = '0.00%'
 
 
-        # Definir o intervalo da tabela (assumindo que a tabela começa na célula A1 e vai até o final dos dados)
-        table_range = f"A1:{openpyxl.utils.get_column_letter(ws.max_column)}{ws.max_row}"
+        # # Definir o intervalo da tabela (assumindo que a tabela começa na célula A1 e vai até o final dos dados)
+        # table_range = f"A1:{openpyxl.utils.get_column_letter(ws.max_column)}{ws.max_row}"
 
-        # Criar a tabela
-        table = Table(displayName="ResultsTable", ref=table_range)
+        # # Criar a tabela
+        # table = Table(displayName="ResultsTable", ref=table_range)
 
-        # Aplicar estilo à tabela
-        style = TableStyleInfo(
-            showFirstColumn=False,
-            showLastColumn=False,
-            showRowStripes=True,
-            showColumnStripes=True
-        )
-        table.tableStyleInfo = style
+        # # Aplicar estilo à tabela
+        # style = TableStyleInfo(
+        #     showFirstColumn=False,
+        #     showLastColumn=False,
+        #     showRowStripes=True,
+        #     showColumnStripes=True
+        # )
+        # table.tableStyleInfo = style
 
-        # Adicionar a tabela à planilha
-        ws.add_table(table)
+        # # Adicionar a tabela à planilha
+        # ws.add_table(table)
 
         # Salvar as modificações
         wb.save(data_path)

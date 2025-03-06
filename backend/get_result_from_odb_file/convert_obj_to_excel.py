@@ -1,33 +1,27 @@
 import os
+import traceback
 import alphashape
-import pandas as pd
 import numpy as np
 from scipy.signal import find_peaks
 from shapely.geometry import MultiPolygon
-from openpyxl import load_workbook
-from openpyxl.styles import Alignment
-from backend.get_result_from_odb_file.createplt import createPlots
-import os
+from backend.get_result_from_odb_file.create_graphs import createPlots
 
 class GetChipMeasure():
-    def main_to_chip_results(self, file):
+    def main_to_chip_results(self, filename):
         """
         Main function to process OBJ files, calculate chip thickness statistics,
         and save results and plots.
         """
-        # from file_utils import FileUtils
-        # self.file = FileUtils()
-        # self.file.create_folders(self, "temp-force")
+        # file_directory = r"S:\Junior\abaqus-with-python\otimization-scripts\new-version\material-model-calibration\Teste\auxiliary_files\json_and_obj_files\objFiles"
+        # self.chip_datas={}
 
+        file_groups = {}
         file_directory = self.obj_path
-        output_directory = self.excel_files
-
-        results, file_groups = [], {}
-        GetChipMeasure.process_datas(self, file_directory, file_groups, output_directory, file)
-        GetChipMeasure.calculate_results_and_save(self, file_groups, results, output_directory)
+        file_groups = GetChipMeasure.process_datas(self, file_directory, file_groups, filename)
+        GetChipMeasure.calculate_results_and_save(self, file_groups)
         
 
-    def process_datas(self, file_directory, file_groups, output_directory, file):
+    def process_datas(self, file_directory, file_groups, filename):
         """
         Processes all OBJ files in the specified directory.
 
@@ -35,32 +29,27 @@ class GetChipMeasure():
             file_directory (str): Path to the directory containing OBJ files.
             file_groups (dict): Dictionary to store grouped file results.
         """
-        for file_name in os.listdir(file_directory):
-            if file_name.endswith('.obj'):
-                base_name = '_'.join(file_name.split('_')[:-1])  
-                file_path = os.path.join(file_directory, file_name)
+        for file in os.listdir(file_directory):
+            if file.endswith('.obj') and file.startswith(filename):
+                base_name = '_'.join(file.split('_')[:-1])  
+                file_path = os.path.join(file_directory, file)
 
-                if base_name == file:
-                    try: 
-                        num_lines = GetChipMeasure.count_lines_until_empty(file_path)
+                try: 
+                    num_lines = GetChipMeasure.count_lines_until_empty(file_path)
+                    min_distances, peaks, valleys, sides, points, absolute_minimum, absolute_maximum = GetChipMeasure.process_obj_file(file_path, num_lines)
 
-                        
-                        min_distances, peaks, valleys, lower_chip_side, upper_chip_side, left_segmented_chip_side, right_smooth_chip_side, points, absolute_minimum, absolute_maximum = GetChipMeasure.process_obj_file(file_path, num_lines, output_directory)
+                    if base_name not in file_groups:
+                        file_groups[base_name] = []
+                    file_groups[base_name].append((file, absolute_minimum, absolute_maximum))
 
+                    if "Frame50" in file or "Frame46" in file:
+                        createPlots.create_plots(self, file, min_distances, peaks, valleys, sides, points)
+                    
+                except Exception as e:
+                    traceback.print_exc()
+                    continue 
+        return file_groups
 
-                        if base_name not in file_groups:
-                            file_groups[base_name] = []
-                        file_groups[base_name].append((file_name, absolute_minimum, absolute_maximum))
-
-                        if "Frame50" in file_name or "Frame46" in file_name:
-                            createPlots.create_plots(self, file_name, min_distances, peaks, valleys, lower_chip_side, upper_chip_side, left_segmented_chip_side, right_smooth_chip_side, points)
-
-                    except Exception as e:
-                        
-                        # Print the error and the file that caused it
-                        # print(f"Error processing file: {file_name}")
-                        # print(f"Error details: {e}")
-                        continue  # Skip this file and move to the next one
 
     def count_lines_until_empty(file_path):
         """
@@ -70,7 +59,7 @@ class GetChipMeasure():
             file_path (str): Path to the file to count lines.
 
         Returns:
-            int: Number of non-empty lines before the first empty line.
+            int: Number of lines with vertices information
         """
         count = 0
         with open(file_path, 'r') as file:
@@ -81,7 +70,7 @@ class GetChipMeasure():
         return count
 
 
-    def process_obj_file(file_path, num_lines, output_directory):
+    def process_obj_file(file_path, num_lines):
         """
         Processes a single OBJ file to calculate chip thickness statistics.
 
@@ -101,29 +90,25 @@ class GetChipMeasure():
     
         # Extract chip sides
         contour_points, ymin, ymax = GetChipMeasure.sort_contour_points(alpha_shape)
-        lower_chip_side = GetChipMeasure.get_chip_side_01(contour_points, ymin) 
+        lower_chip_side = contour_points[contour_points[:, 1] == ymin]
         upper_chip_side = GetChipMeasure.get_chip_side_02(contour_points, ymax, ymin) 
         left_segmented_chip_side = GetChipMeasure.get_chip_side_03(contour_points, lower_chip_side, upper_chip_side, ymin, ymax)
         right_smooth_chip_side = GetChipMeasure.get_chip_side_04(upper_chip_side, contour_points, lower_chip_side)
+        sides = [lower_chip_side, upper_chip_side, left_segmented_chip_side, right_smooth_chip_side]
 
         # Calculate distances and statistics
         min_distances = GetChipMeasure.calculate_min_distances(left_segmented_chip_side, right_smooth_chip_side)
         peaks, _ = find_peaks(min_distances)
         valleys, _ = find_peaks(-min_distances)
 
-        # print(file_path, peaks, valleys)
-
         if len(peaks) == 0:
-            pass
-            # print("No peaks were found in the distance data.")
+            print("No peaks were found in the distance data.")
         if len(valleys) == 0:
-            pass
-            # print("No valleys were found in the distance data.")
+            print("No valleys were found in the distance data.")
 
         absolute_maximum = np.max(min_distances[peaks]) * 1000
         absolut_minimum = np.min(min_distances[valleys]) * 1000
-        return min_distances, peaks, valleys, lower_chip_side, upper_chip_side, left_segmented_chip_side, right_smooth_chip_side, points, absolut_minimum, absolute_maximum
-        # return 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        return min_distances, peaks, valleys, sides, points, absolut_minimum, absolute_maximum
 
 
     def load_obj_points(file_path, num_lines):
@@ -140,39 +125,17 @@ class GetChipMeasure():
         arc = np.loadtxt(file_path, skiprows=2, max_rows=num_lines - 2, usecols=(1, 2, 3))
 
         # Mine
-        # points = arc[arc[:, 2] == 0.02]
-        points = arc[(arc[:, 2] >= 0.02*0.8) & (arc[:, 2] <= 0.02*1.2)]
-        # points = points[(points[:, 1] >= 0.55) & (points[:, 1] <= 0.75)]
-        points = points[(points[:, 1] >= 0.55)]
+        y_min = np.min(arc[:, 1])
+        y_max = np.max(arc[:, 1])
+        z_min = np.min(arc[:, 2])
+        z_max = np.max(arc[:, 2])
+        points = arc[(arc[:, 2] >= 0.7 * z_min) & (arc[:, 2] <= 1.3 * z_max)]
+        points = points[(points[:, 1] >= 1.03 * y_min) & (points[:, 1] <= 0.97 * y_max)]
 
         # Severin
         # points = arc[arc[:, 2] == 0.02]
-        # points = points[points[:, 1] >= 0.02]  # Filter some points because sometimes there were errors with alphashape
-        # points = points[points[:, 1] <= 0.5]  # Filter some points because sometimes there were errors with alphashape
+        # points = points[(points[:, 1] >= 0.02) & (points[:, 1] <= 0.5)]
         return np.delete(points, 2, axis=1) 
-
-
-    def sort_contour_points(alpha_shape):
-        """
-        Sorts the contour points from the alpha shape, ensuring correct order.
-
-        Args:
-            alpha_shape (Polygon): The alpha shape calculated from the points.
-
-        Returns:
-            np.ndarray: Sorted contour points.
-            float: Minimum y-value in the contour points.
-            float: Maximum y-value in the contour points.
-        """
-        contour_x, contour_y = alpha_shape.exterior.xy
-        contour_points = np.column_stack((contour_x, contour_y))
-        ymin = np.min(contour_points[:, 1])
-        lower_y_points = contour_points[contour_points[:, 1] == ymin] 
-        start_point = lower_y_points[np.argmax(lower_y_points[:, 0])] 
-        start_index = np.where(np.all(contour_points == start_point, axis=1))[0][0]
-        contour_points = np.roll(contour_points, -start_index, axis=0)  
-        ymax = np.max(contour_y)
-        return contour_points, ymin, ymax
 
 
     def find_valid_alphashape(points, alpha=150, step_size=0.005):
@@ -197,25 +160,40 @@ class GetChipMeasure():
             except AttributeError:
                 iteration += 1
                 xmin = np.min(points[:, 0])
-                
                 # Filter points that are greater than xmin + step_size
                 points = points[points[:, 0] > xmin + step_size]
                 if len(points) == 0:
                     raise ValueError("No more valid points avaliable.")
-
-
-    def get_chip_side_01(contour_points, ymin):
+        
+                
+    def sort_contour_points(alpha_shape):
         """
-        Extracts the lower chip side.
+        Sorts the contour points from the alpha shape, ensuring correct order.
 
         Args:
-            contour_points (np.ndarray): Contour points of the alpha shape.
-            ymin (float): Minimum y-value in the contour points.
+            alpha_shape (Polygon): The alpha shape calculated from the points.
 
         Returns:
-            np.ndarray: Points representing the lower chip side.
+            np.ndarray: Sorted contour points.
+            float: Minimum y-value in the contour points.
+            float: Maximum y-value in the contour points.
         """
-        return contour_points[contour_points[:, 1] == ymin]
+        contour_x, contour_y = alpha_shape.exterior.xy
+        contour_points = np.column_stack((contour_x, contour_y))
+
+        ymin = np.min(contour_points[:, 1])
+        if np.sum(contour_points[:, 1] == ymin) < 2: 
+            ymin = np.unique(contour_points[:, 1])[1]
+
+        ymax = np.max(contour_y)
+        if np.sum(contour_points[:, 1] == ymax) < 2: 
+            ymax = np.unique(contour_points[:, 1])[-2]
+            
+        lower_y_points = contour_points[contour_points[:, 1] == ymin] 
+        start_point = lower_y_points[np.argmax(lower_y_points[:, 0])] 
+        start_index = np.where(np.all(contour_points == start_point, axis=1))[0][0]
+        contour_points = np.roll(contour_points, - start_index, axis=0)  
+        return contour_points, ymin, ymax
 
 
     def get_chip_side_02(contour_points, ymax, ymin):
@@ -252,7 +230,6 @@ class GetChipMeasure():
                 upper_chip_side = vertical_line
             else:
                 upper_chip_side = contour_points[contour_points[:, 1] == ymax]
-
         return upper_chip_side
 
 
@@ -334,20 +311,20 @@ class GetChipMeasure():
             x2, y2 = contour_points[i]
 
             # Check if the line remains vertical (same x-coordinate)
-            if x1 == x2:
+            if abs(x1 - x2) < 1e-5:
                 current_line.append((x2, y2))
             else:
                 # Check if the vertical line is long enough
                 if len(current_line) >= 5:
                     vertical_lines.append(current_line)
-                current_line = [(x2, y2)]  # Reset with the current point
+                current_line = [(x2, y2)]
 
         # Final check for the last segment
         if len(current_line) >= 5:
-            vertical_lines.append(current_line)
+            vertical_lines.append(np.array(current_line))
         return vertical_lines
 
-    # Function to find horizontal lines with at least 3 points (excluding ymin)
+
     def find_horizontal_lines(contour_points, ymin):
         horizontal_lines = []
         unique_y = np.unique(contour_points[:, 1])  # All unique y-coordinates
@@ -357,9 +334,9 @@ class GetChipMeasure():
                 horizontal_line = contour_points[contour_points[:, 1] == y]
                 if len(horizontal_line) >= 3:  # At least 3 points required
                     horizontal_lines.append(horizontal_line)
-
         return horizontal_lines
     
+
     def calculate_min_distances(curve1, curve2):
         """
         Calculates the minimal distances between two curves.
@@ -386,18 +363,12 @@ class GetChipMeasure():
         last_point = curve2[-1]
         
         # Filter out measurements involving the first or last point of curve2
-        filtered_indices = [
-            i for i, idx in enumerate(min_indices)
-            if not (np.array_equal(curve2[idx], first_point) or np.array_equal(curve2[idx], last_point))
-        ]
-        
-        # Return the filtered distances
+        filtered_indices = [i for i, idx in enumerate(min_indices) if not (np.array_equal(curve2[idx], first_point) or np.array_equal(curve2[idx], last_point))]
         filtered_distances = min_distances[filtered_indices]
-        
         return filtered_distances
 
 
-    def calculate_results_and_save(self, file_groups, results, output_directory):
+    def calculate_results_and_save(self, file_groups):
         """
         Calculates the results for all file groups and saves them to an Excel file.
 
@@ -407,12 +378,21 @@ class GetChipMeasure():
             output_directory (str): Path to the output directory.
         """
         for base_name, group_results in file_groups.items():
-            group_results.sort(key=lambda x: int(x[0].split('_')[-1].replace('Frame', '').replace('.obj', '')))
             h = float(f"{base_name.split('h')[1].split('_g')[0]}")
-            means_min = [r[1] for r in group_results]
-            means_max = [r[2] for r in group_results]
-            self.chip_datas[base_name] = {"Chip Compression Ratio (CCR)": np.mean(means_max)/h, "Chip Segmentatio Ratio (CSR)": np.mean(means_max)/np.mean(means_min)}
+            means_min = [frame_info[1] for frame_info in group_results]
+            means_max = [frame_info[2] for frame_info in group_results]
+
+        # If no value is found, set the averages to 0 to avoid generating an error.
+        if not means_min and not means_max:
+            means_max = 0
+            means_min = 0
+        self.chip_datas[base_name] = {"Chip Compression Ratio (CCR)": np.mean(means_max)/h, "Chip Segmentatio Ratio (CSR)": np.mean(means_max)/np.mean(means_min)}
+
 
 if __name__ == "__main__":
+    filename = "PA01_vc10_h0025_gam+6_IT5_Set06"
+    # filename = "sim_v1000_h100_gam-6_p_0.90_D2_0.96_Ts_625.12"
+    # filename = "sim_v166_h100_gam6_int_01_set_01"
+    # filename = "PA09_vc60_h0025_gam+6_IT5_Set06"
     chip = GetChipMeasure()
-    chip.main_to_chip_results()
+    chip.main_to_chip_results(filename)
