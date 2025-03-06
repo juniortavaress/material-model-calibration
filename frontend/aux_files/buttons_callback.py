@@ -1,9 +1,9 @@
 from frontend.aux_files.yaml_generator import YamlClass
 from frontend.aux_files.get_conditions import GetCondition
-from frontend.aux_files.aux_layout import SetLayout
 from frontend.aux_files.get_parameters import GetParameters
 from frontend.aux_files.get_pso_and_simulation_info import GetPsoAndSimulation
 from backend.pso.start_otimization import OtimizationManager
+from backend.pso.pso_manager import PsoManager
 
 class ButtonsCallback():
     def __init__(self):
@@ -23,13 +23,15 @@ class ButtonsCallback():
         self.ui.button_result.setEnabled(False)
         self.ui.button_settings_next_page.setEnabled(False)
 
-        self.resize(1000, 400)
+        self.resize(1000, 400) if not self.isMaximized() else None
         self.ui.pages.setCurrentIndex(0)
 
 
         # Page 01 - Project Name
         self.ui.button_login_next_page.clicked.connect(lambda: YamlClass.create_login_credentials(self))
         self.ui.button_login_next_page.clicked.connect(lambda: YamlClass.set_software_config_path(self, "start"))
+        self.ui.button_login_next_page.clicked.connect(lambda: GetPsoAndSimulation.verify_gui_stage(self))
+        # self.ui.button_login_next_page.clicked.connect(lambda: YamlClass.verify_gui_stage(self))
 
 
         # Page 02 - Abaqus and Results Path
@@ -77,17 +79,10 @@ class ButtonsCallback():
         self.ui.button_pso_next_page.clicked.connect(lambda: OtimizationManager.main(self))
 
 
-        """
-
-
-        Antes de continuar revisar todo o codigo e tentar causar erro
-
-
-        """
-
         # Page 09 - Model Calibration
         self.ui.button_code_tracking_next_page.clicked.connect(lambda: self.ui.pages.setCurrentIndex(9))
         self.ui.button_code_tracking_back.clicked.connect(lambda: self.ui.pages.setCurrentIndex(7))
+
 
         # Page 10 - Results Visualization
         self.ui.button_result_back.clicked.connect(lambda: self.ui.pages.setCurrentIndex(8))

@@ -6,7 +6,6 @@ import displayGroupOdbToolset as dgo
 import sys
 import inspect
 
-
 class GetChipMeasure():
     """
     Class to manage the extraction of chip data from ODB files and generate OBJ files.
@@ -16,26 +15,14 @@ class GetChipMeasure():
         Initialize the GetChipMeasure instance, process ODB files, and extract data.
         """
         # Get and verify result directories.
-        sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))))
-        self.odb_dir = r"S:/Junior/abaqus-with-python/otimization-scripts/new-version/material-model-calibration\Teste\auxiliary_files\odb_processing"
-        self.odb_files = r"S:/Junior/abaqus-with-python/otimization-scripts/new-version/material-model-calibration\Teste\auxiliary_files\defaut/objFiles"
+        sys.path.append(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))))
+        from aux_info import config_info_to_extract_results
+        project_info_path = config_info_to_extract_results(self)
+        file_directory = project_info_path["odb_dir"]
+        obj_directory = project_info_path["obj_dir"]
 
         # Process ODB files
-        file_directory, obj_directory = self.get_parameters_and_dir()
         self.process_odb(file_directory, obj_directory)
-
-        
-    def get_parameters_and_dir(self):
-        """
-        Set up the required directories and step name.
-
-        Returns:
-            tuple: Step name, directory for ODB files, and directory for OBJ files.
-        """
-        file_directory = self.odb_dir
-        obj_directory = self.odb_files
-        return file_directory, obj_directory
-
 
     def process_odb(self, file_directory, obj_directory):
         """
@@ -118,4 +105,3 @@ class GetChipMeasure():
 if __name__ == "__main__":
     GetChipMeasure()
     sys.exit()
-

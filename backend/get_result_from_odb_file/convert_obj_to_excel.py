@@ -10,7 +10,7 @@ from backend.get_result_from_odb_file.createplt import createPlots
 import os
 
 class GetChipMeasure():
-    def main_to_chip_results(self):
+    def main_to_chip_results(self, file):
         """
         Main function to process OBJ files, calculate chip thickness statistics,
         and save results and plots.
@@ -21,12 +21,13 @@ class GetChipMeasure():
 
         file_directory = self.obj_path
         output_directory = self.excel_files
+
         results, file_groups = [], {}
-        GetChipMeasure.process_datas(self, file_directory, file_groups, output_directory)
-        GetChipMeasure.calculate_results_and_save(file_groups, results, output_directory)
+        GetChipMeasure.process_datas(self, file_directory, file_groups, output_directory, file)
+        GetChipMeasure.calculate_results_and_save(self, file_groups, results, output_directory)
         
 
-    def process_datas(self, file_directory, file_groups, output_directory):
+    def process_datas(self, file_directory, file_groups, output_directory, file):
         """
         Processes all OBJ files in the specified directory.
 
@@ -39,26 +40,27 @@ class GetChipMeasure():
                 base_name = '_'.join(file_name.split('_')[:-1])  
                 file_path = os.path.join(file_directory, file_name)
 
-                try: 
-                    num_lines = GetChipMeasure.count_lines_until_empty(file_path)
+                if base_name == file:
+                    try: 
+                        num_lines = GetChipMeasure.count_lines_until_empty(file_path)
 
-                    # min_distances, peaks, valleys, lower_chip_side, upper_chip_side, left_segmented_chip_side, right_smooth_chip_side, points, average_minimum, average_maximum = GetChipMeasure.process_obj_file(file_path, num_lines)
-                    min_distances, peaks, valleys, lower_chip_side, upper_chip_side, left_segmented_chip_side, right_smooth_chip_side, points, absolute_minimum, absolute_maximum = GetChipMeasure.process_obj_file(file_path, num_lines, output_directory)
-                    # print(file_name, absolute_maximum, absolute_minimum)
+                        
+                        min_distances, peaks, valleys, lower_chip_side, upper_chip_side, left_segmented_chip_side, right_smooth_chip_side, points, absolute_minimum, absolute_maximum = GetChipMeasure.process_obj_file(file_path, num_lines, output_directory)
 
-                    if base_name not in file_groups:
-                        file_groups[base_name] = []
-                    file_groups[base_name].append((file_name, absolute_minimum, absolute_maximum))
 
-                    if "Frame50" in file_name or "Frame46" in file_name:
-                        createPlots.create_plots(self, file_name, min_distances, peaks, valleys, lower_chip_side, upper_chip_side, left_segmented_chip_side, right_smooth_chip_side, points)
+                        if base_name not in file_groups:
+                            file_groups[base_name] = []
+                        file_groups[base_name].append((file_name, absolute_minimum, absolute_maximum))
 
-                except Exception as e:
-                    
-                    # Print the error and the file that caused it
-                    # print(f"Error processing file: {file_name}")
-                    # print(f"Error details: {e}")
-                    continue  # Skip this file and move to the next one
+                        if "Frame50" in file_name or "Frame46" in file_name:
+                            createPlots.create_plots(self, file_name, min_distances, peaks, valleys, lower_chip_side, upper_chip_side, left_segmented_chip_side, right_smooth_chip_side, points)
+
+                    except Exception as e:
+                        
+                        # Print the error and the file that caused it
+                        # print(f"Error processing file: {file_name}")
+                        # print(f"Error details: {e}")
+                        continue  # Skip this file and move to the next one
 
     def count_lines_until_empty(file_path):
         """
@@ -136,10 +138,17 @@ class GetChipMeasure():
             np.ndarray: Filtered 2D points.
         """
         arc = np.loadtxt(file_path, skiprows=2, max_rows=num_lines - 2, usecols=(1, 2, 3))
+
+        # Mine
         # points = arc[arc[:, 2] == 0.02]
         points = arc[(arc[:, 2] >= 0.02*0.8) & (arc[:, 2] <= 0.02*1.2)]
         # points = points[(points[:, 1] >= 0.55) & (points[:, 1] <= 0.75)]
         points = points[(points[:, 1] >= 0.55)]
+
+        # Severin
+        # points = arc[arc[:, 2] == 0.02]
+        # points = points[points[:, 1] >= 0.02]  # Filter some points because sometimes there were errors with alphashape
+        # points = points[points[:, 1] <= 0.5]  # Filter some points because sometimes there were errors with alphashape
         return np.delete(points, 2, axis=1) 
 
 
@@ -388,7 +397,7 @@ class GetChipMeasure():
         return filtered_distances
 
 
-    def calculate_results_and_save(file_groups, results, output_directory):
+    def calculate_results_and_save(self, file_groups, results, output_directory):
         """
         Calculates the results for all file groups and saves them to an Excel file.
 
@@ -402,53 +411,7 @@ class GetChipMeasure():
             h = float(f"{base_name.split('h')[1].split('_g')[0]}")
             means_min = [r[1] for r in group_results]
             means_max = [r[2] for r in group_results]
-            results.append([base_name, np.mean(means_min), np.std(means_min), np.mean(means_max), np.std(means_max), np.mean(means_max)/h, np.mean(means_max)/np.mean(means_min)])
-        GetChipMeasure.save_info_to_excel(results, output_directory)
-
-
-    def save_info_to_excel(results, output_directory):
-        """
-        Saves the results to an Excel file with formatted columns.
-
-        Args:
-            results (list): List of results to save.
-            output_directory (str): Path to the output directory.
-        """
-        df_averaged = pd.DataFrame(results, columns=[
-            "Filename", 
-            "Average of Minimum chip thickness [µm]", 
-            "Standard deviation of Minimum chip thickness [µm]",
-            "Average of Maximum chip thickness [µm]", 
-            "Standard deviation of Maximum chip thickness [µm]",
-            "Chip Compression Ratio (CCR)",
-            "Chip Segmentatio Ratio (CSR)"
-        ])
-
-        excel_file_path = os.path.join(output_directory, "results_chip_analysis.xlsx")
-        df_averaged.to_excel(excel_file_path, index=False)
-
-        # Open the excel file with openpyxl
-        workbook = load_workbook(excel_file_path)
-        worksheet = workbook.active
-
-        # Adjust column width and center entries
-        for column_cells in worksheet.columns:
-            max_length = 0
-            column_letter = column_cells[0].column_letter
-            for cell in column_cells:
-                try:
-                    if cell.value:
-                        max_length = max(max_length, len(str(cell.value)))
-                        cell.alignment = Alignment(horizontal='center', vertical='center')
-                except:
-                    pass
-            adjusted_width = max_length + 2
-            worksheet.column_dimensions[column_letter].width = adjusted_width
-
-        workbook.save(excel_file_path)
-        workbook.close()
-        # print(f"Results have been saved to {excel_file_path}")
-
+            self.chip_datas[base_name] = {"Chip Compression Ratio (CCR)": np.mean(means_max)/h, "Chip Segmentatio Ratio (CSR)": np.mean(means_max)/np.mean(means_min)}
 
 if __name__ == "__main__":
     chip = GetChipMeasure()

@@ -85,28 +85,34 @@ class YamlClass:
             self.user_result_folder = os.path.join(self.result_path, self.project_name)
             self.ui.label_result.setText(self.user_result_folder)
 
-        if os.path.exists(self.user_result_folder):
-            shutil.rmtree(self.user_result_folder)
-
         self.excel_files = os.path.join(self.user_result_folder, "excel_files")
         self.odb_files = os.path.join(self.user_result_folder, "obd_files")
         self.chip_images = os.path.join(self.user_result_folder, "chip_images")
 
         self.auxiliary_files = os.path.join(self.user_result_folder, "auxiliary_files")
         self.user_config = os.path.join(self.auxiliary_files, "config")
+        self.json_and_obj_files = os.path.join(self.auxiliary_files, "json_and_obj_files")
         self.python_files = os.path.join(self.auxiliary_files, "python_files_to_computers")
         self.simulation_inp_files = os.path.join(self.auxiliary_files, "simulation_inp_files")
         self.odb_processing = os.path.join(self.auxiliary_files, "odb_processing")
         self.cae_path = os.path.join(self.auxiliary_files, "defaut/CAE")
         self.inp_path = os.path.join(self.auxiliary_files, "defaut/INPFiles")
-        self.json_defaut_path = os.path.join(self.auxiliary_files, "defaut/jsonFiles")
-        self.obj_path = os.path.join(self.auxiliary_files, "defaut/objFiles")
+        self.json_defaut_path = os.path.join(self.auxiliary_files, "json_and_obj_files/jsonFiles")
+        self.obj_path = os.path.join(self.auxiliary_files, "json_and_obj_files/objFiles")
 
-        # Creating folders setup
-        folders = [self.excel_files, self.odb_files, self.chip_images, self.user_config, self.python_files, self.simulation_inp_files, self.odb_processing, self.cae_path, self.inp_path, self.json_defaut_path, self.obj_path]
-        for folder in folders:
-            os.makedirs(folder)
-        
+        if os.path.exists(self.project_infos_path):
+            with open(self.project_infos_path, "r", encoding="utf-8") as file:
+                existing_data = yaml.safe_load(file) or {}
+
+        if "8. Otimization Datas" not in existing_data:
+            shutil.rmtree(self.user_result_folder)
+            
+            # Creating folders setup
+            folders = [self.excel_files, self.odb_files, self.chip_images, self.user_config, self.python_files, self.simulation_inp_files, self.odb_processing, self.cae_path, self.inp_path, self.json_defaut_path, self.obj_path]
+            for folder in folders:
+                os.makedirs(folder)
+
+
         # Add path to project .yaml
         if self.project_infos_path:
             dict_with_folders = dict_folder_setup(self)
@@ -138,3 +144,4 @@ class YamlClass:
         os.makedirs(os.path.dirname(yaml_path), exist_ok=True)
         with open(yaml_path, "w", encoding="utf-8") as file:
             yaml.dump(existing_data, file, default_flow_style=False, allow_unicode=True, width=float("inf"))
+

@@ -3,6 +3,7 @@ import yaml
 import shutil
 import psutil
 from frontend.aux_files.yaml_generator import YamlClass
+from backend.pso.start_otimization import OtimizationManager
 from PySide6.QtCore import QTimer
 
 class GetPsoAndSimulation:
@@ -90,14 +91,17 @@ class GetPsoAndSimulation:
 
 
     def create_python_files(self):
+        self.pararel_simulation = r"backend\pso\pararel_simulation.py"
+
         if not self.error_tracking:
             with open(self.project_infos_path, "r", encoding="utf-8") as file:
                 data = yaml.safe_load(file) or {}
 
             defaut_file = r"backend\aux_files\code_to_run_simulation.py"
             computers = data["7. PSO and Simulation"]["Computers"]
-            cores = data["7. PSO and Simulation"]["Cores by Simulation"]
+            cores_by_simulation = data["7. PSO and Simulation"]["Cores by Simulation"]
             main_activated = data["7. PSO and Simulation"]["Main Computer"]
+            project_name = os.path.basename(data["1. Info"]["Result_path"])
 
             i = 1 if main_activated == "No" else  2
             for computer in range(i, int(computers) + 1):
@@ -105,10 +109,48 @@ class GetPsoAndSimulation:
                 with open(defaut_file, 'r') as file:
                     conteudo = file.read()
 
-                conteudo_modificado = conteudo.replace("X", f"0{computer}").replace("CORES", cores)
+                conteudo_modificado = conteudo.replace("XX", f"0{computer}").replace("X", f"{computer}").replace("cores_by_simulation", cores_by_simulation).replace("project_name", project_name)
 
                 with open(computer_file, 'w') as file:
                     file.write(conteudo_modificado)
 
 
+            dest_pararel_file = os.path.join(self.python_files, "pararel_simulation.py")
+            shutil.copy(self.pararel_simulation, dest_pararel_file)
 
+
+    def verify_gui_stage(self):
+        print("verify_gui_stage")
+        if not self.error_tracking:
+            load_datas = True
+
+            with open(self.project_infos_path, "r", encoding="utf-8") as file:
+                data = yaml.safe_load(file) or {}
+
+
+            if "8. Otimization Datas" in data:
+                print("tem data")
+
+                data = data["8. Otimization Datas"]
+                if data["Status"] == "Done":
+                    print("Done")
+                    self.ui.pages.setCurrentIndex(9)
+
+                elif data["Status"] == "pending":
+                    for _, info in data["Last Iteration Values"].items():
+                        if info == None:
+                            load_datas = None
+
+                    print(load_datas)
+                    if load_datas:
+                        print("Restart")
+                        self.ui.pages.setCurrentIndex(8)
+                        OtimizationManager.main(self)
+                    else:
+                        print("Do inicio")
+                        pass
+
+
+if __name__ == "__main__":
+    cp = GetPsoAndSimulation()
+    cp.create_python_files()

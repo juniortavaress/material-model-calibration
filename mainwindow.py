@@ -5,10 +5,12 @@ from frontend.interface.ui_form import Ui_MainWindow
 
 from frontend.aux_files.buttons_callback import ButtonsCallback
 from frontend.aux_files.variables_manager import ManagerVariables
-
+from PySide6.QtCore import Signal, QObject
 
 sys.dont_write_bytecode = True
+
 class MainWindow(QMainWindow):
+    otimization_signal = Signal(str)
     def __init__(self, parent=None):
         super().__init__(parent)
         self.ui = Ui_MainWindow()

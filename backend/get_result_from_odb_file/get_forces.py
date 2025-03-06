@@ -13,10 +13,16 @@ class GetForces():
         """
         Initialize the GetForces instance, process ODB files, and extract data.
         """
+        if len(sys.argv) > 1:
+            print(sys.argv)
+            self.odb_dir = sys.argv[1]
+            self.json_dir = sys.argv[2]
+        else:
+            print("No directory argument provided.")
+            sys.exit(1)
+        
         # Get and verify result directories.
         sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))))
-        self.odb_dir = r"S:/Junior/abaqus-with-python/otimization-scripts/new-version/material-model-calibration\Teste\auxiliary_files\odb_processing"
-        self.json_dir = r"S:/Junior/abaqus-with-python/otimization-scripts/new-version/material-model-calibration\Teste\auxiliary_files\defaut/jsonFiles"       
 
         # Process ODB files
         self._process_odb_files()

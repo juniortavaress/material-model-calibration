@@ -1,33 +1,31 @@
-import yaml 
 import os 
 import re 
+import yaml 
 import numpy as np 
-import uuid
-
 
 class InpEditor():
     def manager_edit(self):
-        self.project_infos_path = r"C:\MaterialOtimization\Teste.yaml"
-        self.inp_path = r"S:/Junior/abaqus-with-python/otimization-scripts/new-version/material-model-calibration\Teste\auxiliary_files\defaut/INPFiles"
-        self.simulation_inp_files = r"S:/Junior/abaqus-with-python/otimization-scripts/new-version/material-model-calibration\Teste\auxiliary_files\simulation_inp_files"
-        self.user_config = r"S:/Junior/abaqus-with-python/otimization-scripts/new-version/material-model-calibration\Teste\auxiliary_files\config"
-        yaml_path = os.path.join(self.user_config, "parameters.yaml")
-
-        with open(yaml_path, "r", encoding="utf-8") as file:
-            data = yaml.safe_load(file)
-
-        dict_param_to_change = data[sorted(data.keys())[-1]]
-
+        """
+        Main function to edit inp files based on parameters in a YAML file.
+        Returns a list of directories where the modified INP files are saved and a dictionary of index names.
+        """
+        # Creating variables
         lis_dir_inp = []
         index_names = {}
         global_index = 0
-        
-        for set, info in dict_param_to_change.items():
 
+        # Loading datas
+        yaml_path = os.path.join(self.user_config, "parameters.yaml")
+        with open(yaml_path, "r", encoding="utf-8") as file:
+            data = yaml.safe_load(file)
+        dict_param_to_change = data[sorted(data.keys())[-1]]     
+        
+        # Loop through the parameter sets and apply changes to corresponding inp files
+        for set, info in dict_param_to_change.items():
             for file in os.listdir(self.inp_path):
-                #print(file)
                 file_path = os.path.join(self.inp_path, file)
                 filename = os.path.basename(file_path)[:-4]
+
                 with open(file_path, 'r') as file:
                     lines = file.readlines()
 
@@ -63,21 +61,20 @@ class InpEditor():
                     else:
                         pass
         
-                # Saving
+                # Saving inp file modified
                 params = f"{filename}_int_{int(sorted(data.keys())[-1][-3:]):02}_set_{int(set[-2:]):02}.inp"
-                # params = "teste.inp"
                 dir_inp = os.path.join(self.simulation_inp_files, params[:-4])
 
                 if not os.path.exists(dir_inp):
                     os.makedirs(dir_inp)
                     with open(os.path.join(dir_inp, params), 'w') as file:
                         file.writelines(lines)
-                    lis_dir_inp.append(dir_inp)
+                lis_dir_inp.append(dir_inp)
 
                 index_names[global_index] = params[:-4]
                 global_index += 1
-
         return lis_dir_inp, index_names
+
 
     def change_A(self, lines, A):
         #print("A")
@@ -90,6 +87,7 @@ class InpEditor():
                 break
         return lines
     
+
     def change_B(self, lines, B):
         #print("B")
         pattern = r"^\*Plastic, hardening=USER*"  
@@ -101,6 +99,7 @@ class InpEditor():
                 break
         return lines
     
+
     def change_n(self, lines, n):
         #print("n")
         pattern = r"^\*Plastic, hardening=USER*"  
@@ -112,6 +111,7 @@ class InpEditor():
                 break
         return lines
     
+
     def change_C1(self, lines, C1):
         #print("C1")
         pattern = r"^\*Plastic, hardening=USER*"  
@@ -123,6 +123,7 @@ class InpEditor():
                 break
         return lines
     
+
     def change_C2(self, lines, C2):
         #print("C2")
         pattern = r"^\*Plastic, hardening=USER*"  
@@ -134,6 +135,7 @@ class InpEditor():
                 break
         return lines
     
+
     def change_C3(self, lines, C3):
         #print("C3")
         pattern = r"^\*Plastic, hardening=USER*"  
@@ -145,6 +147,7 @@ class InpEditor():
                 break
         return lines
        
+
     def change_k(self, lines, k):
         #print("k")
         pattern = r"^\*Plastic, hardening=USER*"  
@@ -155,6 +158,7 @@ class InpEditor():
                 lines[i + 1] = ','.join(values)  
                 break
         return lines
+
 
     def change_Ts(self, lines, Ts):
         #print("Ts")
@@ -169,6 +173,7 @@ class InpEditor():
                 break
         return lines
         
+
     def change_D1(self, lines, value):
         #print("D1")
         pattern = r"^\*Damage Initiation.*JOHNSON COOK.*"  
@@ -181,6 +186,7 @@ class InpEditor():
                 break
         return lines
     
+
     def change_D2(self, lines, value):
         #print("D2")
         pattern = r"^\*Damage Initiation.*JOHNSON COOK.*"  
@@ -193,6 +199,7 @@ class InpEditor():
                 break
         return lines
     
+
     def change_D3(self, lines, value):
         #print("D3")
         pattern = r"^\*Damage Initiation.*JOHNSON COOK.*"  
@@ -205,6 +212,7 @@ class InpEditor():
                 break
         return lines
     
+
     def change_D4(self, lines, value):
         #print("D4")
         pattern = r"^\*Damage Initiation.*JOHNSON COOK.*"  
@@ -217,6 +225,7 @@ class InpEditor():
                 break
         return lines
     
+
     def change_D5(self, lines, value):
         #print("D5")
         pattern = r"^\*Damage Initiation.*JOHNSON COOK.*"  
@@ -229,6 +238,7 @@ class InpEditor():
                 break
         return lines
     
+
     def change_p(self, lines, p):
         #print("p")
         pattern = r"^\*Damage Evolution.*"  
@@ -250,7 +260,3 @@ class InpEditor():
             values[0] = f"{value:.9f}"
             lines[line_index] = ','.join(values)
         return lines
-
-if __name__ == "__main__":
-    a = InpEditor()
-    a.manager_edit()

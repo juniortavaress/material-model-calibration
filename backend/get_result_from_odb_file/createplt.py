@@ -1,7 +1,7 @@
 import os 
 import numpy as np
 import matplotlib
-matplotlib.use('Agg')  # Usar um backend não interativo
+matplotlib.use('Agg') 
 import matplotlib.pyplot as plt
 
 class createPlots:

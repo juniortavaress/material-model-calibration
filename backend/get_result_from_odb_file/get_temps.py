@@ -5,6 +5,7 @@ import json
 import inspect
 from odbAccess import openOdb
 from data_processing_and_odb_utils import OdbUtils
+
 sys.dont_write_bytecode = True
 
 class GetTemps:
@@ -13,10 +14,16 @@ class GetTemps:
         """
         Initialize the GetTemps instance, process ODB files, and extract data.
         """
+        if len(sys.argv) > 1:
+            print(sys.argv)
+            self.odb_dir = sys.argv[1]
+            self.json_dir = sys.argv[2]
+        else:
+            print("No directory argument provided.")
+            sys.exit(1)
+        
         # Get and verify result directories.
         sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))))
-        self.odb_dir = r"S:/Junior/abaqus-with-python/otimization-scripts/new-version/material-model-calibration\Teste\auxiliary_files\odb_processing"
-        self.json_dir = r"S:/Junior/abaqus-with-python/otimization-scripts/new-version/material-model-calibration\Teste\auxiliary_files\defaut/jsonFiles"     
 
         # Initialize mappings for node ranges and tool nodes and process ODB files
         node_range_strs, spanwinkel_nodes = OdbUtils().initialize_data()
@@ -43,6 +50,7 @@ class GetTemps:
             try: 
                 # Extract information from the filename (e.g., gam and h values)
                 gam_value_key, h_value_key = OdbUtils.extract_info_from_filename(filename)
+                print(h_value_key)
                 # gam_value_key, h_value_key = "h75"
 
                 # Check if extracted parameters match the predefined mappings
