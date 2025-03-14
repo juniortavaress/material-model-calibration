@@ -12,21 +12,17 @@
         "frontend/aux_files/get_pso_and_simulation_info.py",
         "backend/aux_files/code_to_run_simulation.py",
         "frontend/aux_files/show_status_message.py",
-        "backend/aux_files/thread_manager.py",
         "backend/pso/start_otimization.py",
         "backend/pso/pso_manager.py",
         "backend/pso/edit_input_file.py",
         "backend/pso/pararel_simulation.py",
         "backend/pso/simualtion_manager.py",
-        "backend/get_result_from_odb_file/aux_info.py",
         "backend/get_result_from_odb_file/convert_json_to_excel.py",
         "backend/get_result_from_odb_file/convert_obj_to_excel.py",
-        "backend/get_result_from_odb_file/createplt.py",
-        "backend/get_result_from_odb_file/data_processing_and_odb_utils.py",
-        "backend/get_result_from_odb_file/excel_utils.py",
-        "backend/get_result_from_odb_file/get_chip_obj_file.py",
-        "backend/get_result_from_odb_file/get_forces.py",
-        "backend/get_result_from_odb_file/get_temps.py",
-        "backend/get_result_from_odb_file/main_results.py"
+        "backend/get_result_from_odb_file/main_results.py",
+        "backend/aux_files/thread/thread_manager.py",
+        "backend/get_result_from_odb_file/create_graphs.py",
+        "backend/get_result_from_odb_file/excel_manager.py",
+        "backend/config/config_software.py"
     ]
 }

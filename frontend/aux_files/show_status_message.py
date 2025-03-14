@@ -1,4 +1,6 @@
+import traceback
 import numpy as np
+
 
 class StatusMessage:
     def set_text(self, message):
@@ -23,29 +25,16 @@ class StatusMessage:
             messages = ["<br>Collecting results from .odb file<br><br>"]
 
         elif message == "message-id_05":
-            print("message", message)
-            print(self.error)
-            print(self.error_cutting_force)
-            print(self.error_normal_force)
-            print(self.error_CCR)
-            print(self.error_CSR)
-            print(self.best_parameters)
-
-            try:
-                messages.extend(["Best Result of Iteration<br>--------------------------<br>"])
-                messages.extend(["Optimized Parameters: <br>"])
-                messages.extend("<br>".join(["{0}: {1:.3f}".format(key, value) for key, value in self.best_parameters.items()]))
-                messages.extend(["<br><br>Average Error: {0:.1f}%<br>".format(self.error * 100)])
-                # messages.extend(["Average Error Temperature: {0:.1f}%<br>".format(self.error_temp * 100)])
-                messages.extend(["Average Error Cutting Force: {0:.1f}%<br>".format(self.error_cutting_force * 100)])
-                messages.extend(["Average Error Normal Force: {0:.1f}%<br>".format(self.error_normal_force * 100)])
-                messages.extend(["Average Error Chip Compression Ratio: {0:.1f}%<br>".format(self.error_CCR * 100)])
-                messages.extend(["Average Error Chip Segmentation Ratio: {0:.1f}%<br>".format(self.error_CSR * 100)])
-                messages.extend(["<br><b>==========================================</b>"])
-            except Exception as e:
-                import traceback
-                print("Erro na thread:", e)  # Exibe o erro no terminal
-                traceback.print_exc()
+            messages.extend(["Best Result of Iteration<br>--------------------------<br>"])
+            messages.extend(["Optimized Parameters: <br>"])
+            messages.extend("<br>".join(["{0}: {1:.3f}".format(key, value) for key, value in self.best_parameters.items()]))
+            messages.extend(["<br><br>Average Error: {0:.1f}%<br>".format(self.error * 100)])
+            # messages.extend(["Average Error Temperature: {0:.1f}%<br>".format(self.error_temp * 100)])
+            messages.extend(["Average Error Cutting Force: {0:.1f}%<br>".format(self.error_cutting_force * 100)])
+            messages.extend(["Average Error Normal Force: {0:.1f}%<br>".format(self.error_normal_force * 100)])
+            messages.extend(["Average Error Chip Compression Ratio: {0:.1f}%<br>".format(self.error_CCR * 100)])
+            messages.extend(["Average Error Chip Segmentation Ratio: {0:.1f}%<br>".format(self.error_CSR * 100)])
+            messages.extend(["<br><b>==========================================</b>"])
 
         elif message == "message-id_06":
             messages = ["<br><br><b>BEST RESULT</b><br><br>"]
@@ -68,7 +57,6 @@ class StatusMessage:
             messages.extend(["<br><b>==========================================</b><br>"])
 
         if messages:
-            # print("dentro do if", messages)
             [self.ui.label_code_status.setText(self.ui.label_code_status.text() + str(message)) for message in messages]
         else:
-            print("Deu erro cumpadre")
+            pass

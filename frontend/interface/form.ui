@@ -71,7 +71,7 @@ padding: 5px;}
     <item>
      <widget class="QStackedWidget" name="pages">
       <property name="currentIndex">
-       <number>8</number>
+       <number>9</number>
       </property>
       <widget class="QWidget" name="page_login">
        <property name="styleSheet">
@@ -8853,8 +8853,8 @@ background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5
                         <rect>
                          <x>0</x>
                          <y>0</y>
-                         <width>909</width>
-                         <height>925</height>
+                         <width>51</width>
+                         <height>34</height>
                         </rect>
                        </property>
                        <layout class="QVBoxLayout" name="verticalLayout_60">
@@ -9456,7 +9456,7 @@ border: 1px solid rgb(113, 113, 113);}
                                </item>
                                <item>
                                 <property name="text">
-                                 <string>All</string>
+                                 <string>aa</string>
                                 </property>
                                </item>
                               </widget>
@@ -9572,17 +9572,7 @@ border: 1px solid rgb(113, 113, 113);}
                                </property>
                                <item>
                                 <property name="text">
-                                 <string>None</string>
-                                </property>
-                               </item>
-                               <item>
-                                <property name="text">
                                  <string>Forces</string>
-                                </property>
-                               </item>
-                               <item>
-                                <property name="text">
-                                 <string>Temperature</string>
                                 </property>
                                </item>
                                <item>
@@ -9590,118 +9580,14 @@ border: 1px solid rgb(113, 113, 113);}
                                  <string>Chip Format</string>
                                 </property>
                                </item>
-                              </widget>
-                             </item>
-                            </layout>
-                           </widget>
-                          </item>
-                         </layout>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="QFrame" name="frame_type_rf">
-                         <property name="minimumSize">
-                          <size>
-                           <width>0</width>
-                           <height>80</height>
-                          </size>
-                         </property>
-                         <property name="frameShape">
-                          <enum>QFrame::Shape::StyledPanel</enum>
-                         </property>
-                         <property name="frameShadow">
-                          <enum>QFrame::Shadow::Raised</enum>
-                         </property>
-                         <layout class="QVBoxLayout" name="verticalLayout_84">
-                          <property name="spacing">
-                           <number>0</number>
-                          </property>
-                          <property name="leftMargin">
-                           <number>0</number>
-                          </property>
-                          <property name="topMargin">
-                           <number>0</number>
-                          </property>
-                          <property name="rightMargin">
-                           <number>0</number>
-                          </property>
-                          <property name="bottomMargin">
-                           <number>0</number>
-                          </property>
-                          <item>
-                           <widget class="QFrame" name="frame_154">
-                            <property name="frameShape">
-                             <enum>QFrame::Shape::StyledPanel</enum>
-                            </property>
-                            <property name="frameShadow">
-                             <enum>QFrame::Shadow::Raised</enum>
-                            </property>
-                            <layout class="QVBoxLayout" name="verticalLayout_85">
-                             <property name="leftMargin">
-                              <number>1</number>
-                             </property>
-                             <item>
-                              <widget class="QLabel" name="label_143">
-                               <property name="font">
-                                <font>
-                                 <family>Yu Gothic UI Semilight</family>
-                                 <pointsize>14</pointsize>
-                                 <bold>true</bold>
-                                </font>
-                               </property>
-                               <property name="frameShape">
-                                <enum>QFrame::Shape::NoFrame</enum>
-                               </property>
-                               <property name="text">
-                                <string>Select the RF:</string>
-                               </property>
-                              </widget>
-                             </item>
-                            </layout>
-                           </widget>
-                          </item>
-                          <item>
-                           <widget class="QFrame" name="frame_155">
-                            <property name="frameShape">
-                             <enum>QFrame::Shape::StyledPanel</enum>
-                            </property>
-                            <property name="frameShadow">
-                             <enum>QFrame::Shadow::Raised</enum>
-                            </property>
-                            <layout class="QVBoxLayout" name="verticalLayout_86">
-                             <item>
-                              <widget class="QComboBox" name="combobox_rf_type">
-                               <property name="enabled">
-                                <bool>true</bool>
-                               </property>
-                               <property name="minimumSize">
-                                <size>
-                                 <width>0</width>
-                                 <height>20</height>
-                                </size>
-                               </property>
-                               <property name="maximumSize">
-                                <size>
-                                 <width>16777215</width>
-                                 <height>20</height>
-                                </size>
-                               </property>
-                               <property name="styleSheet">
-                                <string notr="true"/>
-                               </property>
                                <item>
                                 <property name="text">
-                                 <string>None</string>
+                                 <string>Temperature vs. Time</string>
                                 </property>
                                </item>
                                <item>
                                 <property name="text">
-                                 <string>RF1</string>
-                                </property>
-                               </item>
-                               <item>
-                                <property name="text">
-                                 <string>RF2</string>
+                                 <string>Temperature vs. Penetration Depth</string>
                                 </property>
                                </item>
                               </widget>

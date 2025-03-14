@@ -1,16 +1,11 @@
 # -*- coding: utf-8 -*-
 import os 
 import json
+import traceback
 import pandas as pd
 from backend.get_result_from_odb_file.create_graphs import createPlots
 
 class DataConverter():
-    def __init__(self):
-        self.excel_files = r"S:/Junior/abaqus-with-python/otimization-scripts/new-version/material-model-calibration\Teste\excel_files"
-        self.json_defaut_path = r"S:/Junior/abaqus-with-python/otimization-scripts/new-version/material-model-calibration\Teste\auxiliary_files\json_and_obj_files/jsonFiles"
-        DataConverter.main_json_to_excel(self)
-        
-
     def main_json_to_excel(self, file_name):
         """
         Main function to process JSON files and generate an Excel file with results.
@@ -54,9 +49,7 @@ class DataConverter():
                                 pass
                     DataConverter.json_to_combined_excel(self, file_name, stats_list, start_percent, end_percent, workpiece_width_experiment, workpiece_width_simulation, temperature_threshold, json_file_path_forces, json_file_path_temp)
         except Exception as e:
-            import traceback
             traceback.print_exc()
-            print(f"Error writing Excel file: {e}")
 
 
     def json_to_combined_excel(self, file_name, stats_list, start_percent, end_percent, workpiece_width_experiment, workpiece_width_simulation, temperature_threshold, json_file_path_forces = None, json_file_path_temp = None):
@@ -104,9 +97,24 @@ class DataConverter():
         ISSO SAO OS DADOS PARA OS GRAFICOS INDIVIDUAIS
         TEM QUE SALVAR PARA DEPOIS PLOTAR NA INTERFACE
         """
-        createPlots.create_forces_graphs(combined_forces_df_with_results) 
-        createPlots.create_temp_graps(combined_temp_df_with_results) 
-            
+
+        force_file = os.path.join(self.graph_folder, "forces_result.xlsx")
+        temperature_file = os.path.join(self.graph_folder, "temperature_result.xlsx")
+
+        if os.path.exists(force_file):
+            # Append new sheet to the existing Excel file
+            with pd.ExcelWriter(force_file, mode='a', engine='openpyxl') as writer:
+                combined_forces_df_with_results.to_excel(writer, sheet_name=file_name[4:], index=False)
+        else:
+            combined_forces_df_with_results.to_excel(force_file, sheet_name=file_name[4:], index=False, engine="openpyxl")
+        
+        # Save or append the temperature DataFrame
+        if os.path.exists(temperature_file):
+            with pd.ExcelWriter(temperature_file, mode='a', engine='openpyxl') as writer:
+                combined_temp_df_with_results.to_excel(writer, sheet_name=file_name[4:], index=False)
+        else:
+            combined_temp_df_with_results.to_excel(temperature_file, sheet_name=file_name[4:], index=False, engine="openpyxl")
+    
 
     @staticmethod
     def combine_forces_data(data, workpiece_width_experiment, workpiece_width_simulation):
@@ -227,7 +235,6 @@ class DataConverter():
         if "Temperature Last Frame [°C]" in df.columns:
             max_temp_last_frame = df["Temperature Last Frame [°C]"].max()
         else:
-            print("Temperature column not found for the last frame.")
             max_temp_last_frame = None
 
         # Check for penetration depth where temperature is below the threshold
@@ -235,14 +242,12 @@ class DataConverter():
         if not temp_below_threshold.empty:
             min_depth_last_frame = temp_below_threshold["Penetration Depth [µm]"].min()
         else:
-            print(f"No values below {temperature_threshold}°C found.")
             min_depth_last_frame = None
 
         # Check for temperature data at max temperature node
         if "Temperature at Max Temperature Node [°C]" in df.columns:
             max_temp_at_max_node = df["Temperature at Max Temperature Node [°C]"].max()
         else:
-            print("Temperature column not found for the max temperature node.")
             max_temp_at_max_node = None
 
         # Check for penetration depth where temperature at the max node is below the threshold
@@ -250,7 +255,6 @@ class DataConverter():
         if not temp_below_threshold.empty:
             min_depth_at_max_node = temp_below_threshold["Penetration Depth [µm]"].min()
         else:
-            print(f"No values below {temperature_threshold}°C found.")
             min_depth_at_max_node = None
 
         # Add results to statistics
@@ -261,6 +265,3 @@ class DataConverter():
             f"Penetration Depth at Max Node < {temperature_threshold}°C [µm]": min_depth_at_max_node}
         return stats
 
-
-if __name__ == "__main__":
-    DataConverter()

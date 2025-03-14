@@ -2,6 +2,7 @@ import os
 import traceback
 import alphashape
 import numpy as np
+import pandas as pd
 from scipy.signal import find_peaks
 from shapely.geometry import MultiPolygon
 from backend.get_result_from_odb_file.create_graphs import createPlots
@@ -12,9 +13,6 @@ class GetChipMeasure():
         Main function to process OBJ files, calculate chip thickness statistics,
         and save results and plots.
         """
-        # file_directory = r"S:\Junior\abaqus-with-python\otimization-scripts\new-version\material-model-calibration\Teste\auxiliary_files\json_and_obj_files\objFiles"
-        # self.chip_datas={}
-
         file_groups = {}
         file_directory = self.obj_path
         file_groups = GetChipMeasure.process_datas(self, file_directory, file_groups, filename)
@@ -43,8 +41,17 @@ class GetChipMeasure():
                     file_groups[base_name].append((file, absolute_minimum, absolute_maximum))
 
                     if "Frame50" in file or "Frame46" in file:
-                        createPlots.create_plots(self, file, min_distances, peaks, valleys, sides, points)
+                        createPlots.create_chip_img(self, file, min_distances, peaks, valleys, sides, points)
                     
+                    if "Frame50" in file:
+                        df_points = pd.DataFrame(points, columns=["X", "Y"])
+                        output_excel_path = os.path.join(self.graph_folder, "chip_shape.xlsx")
+                        if os.path.exists(output_excel_path):
+                            with pd.ExcelWriter(output_excel_path, mode='a', engine='openpyxl', if_sheet_exists='replace') as writer:
+                                df_points.to_excel(writer, sheet_name=base_name[4:], index=False)
+                        else:
+                            df_points.to_excel(output_excel_path, sheet_name=base_name[4:], index=False, engine="openpyxl")
+
                 except Exception as e:
                     traceback.print_exc()
                     continue 
@@ -124,17 +131,13 @@ class GetChipMeasure():
         """
         arc = np.loadtxt(file_path, skiprows=2, max_rows=num_lines - 2, usecols=(1, 2, 3))
 
-        # Mine
         y_min = np.min(arc[:, 1])
         y_max = np.max(arc[:, 1])
         z_min = np.min(arc[:, 2])
         z_max = np.max(arc[:, 2])
+
         points = arc[(arc[:, 2] >= 0.7 * z_min) & (arc[:, 2] <= 1.3 * z_max)]
         points = points[(points[:, 1] >= 1.03 * y_min) & (points[:, 1] <= 0.97 * y_max)]
-
-        # Severin
-        # points = arc[arc[:, 2] == 0.02]
-        # points = points[(points[:, 1] >= 0.02) & (points[:, 1] <= 0.5)]
         return np.delete(points, 2, axis=1) 
 
 
@@ -210,26 +213,28 @@ class GetChipMeasure():
         upper_chip_side = [] 
         vertical_line = GetChipMeasure.find_vertical_lines(contour_points)
         vertical_line = np.array(vertical_line, dtype=object).squeeze()
-
         horizontal_lines = GetChipMeasure.find_horizontal_lines(contour_points, ymin)
 
-        # Determine the upper chip side based on vertical and horizontal segments
-        if horizontal_lines:  # If horizontal lines are found
-            # Select the horizontal line with the highest y-coordinate
-            horizontal_lines = sorted(horizontal_lines, key=lambda line: np.max(line[:, 1]), reverse=True)
-            horizontal_line = horizontal_lines[0]
+        try:
+            # Determine the upper chip side based on vertical and horizontal segments
+            if horizontal_lines:  # If horizontal lines are found
+                # Select the horizontal line with the highest y-coordinate
+                horizontal_lines = sorted(horizontal_lines, key=lambda line: np.max(line[:, 1]), reverse=True)
+                horizontal_line = horizontal_lines[0]
 
-            # Combine with vertical lines, if present
-            if vertical_line.size > 0:
-                upper_chip_side = np.vstack((vertical_line, horizontal_line))
+                # Combine with vertical lines, if present
+                if vertical_line.size > 0:
+                    upper_chip_side = np.vstack((vertical_line, horizontal_line))
+                else:
+                    upper_chip_side = horizontal_line
             else:
-                upper_chip_side = horizontal_line
-        else:
-            # Fallback: Only vertical lines or points at ymax
-            if vertical_line.size > 0:
-                upper_chip_side = vertical_line
-            else:
-                upper_chip_side = contour_points[contour_points[:, 1] == ymax]
+                # Fallback: Only vertical lines or points at ymax
+                if vertical_line.size > 0:
+                    upper_chip_side = vertical_line
+                else:
+                    upper_chip_side = contour_points[contour_points[:, 1] == ymax]
+        except:
+            traceback.print_exc()
         return upper_chip_side
 
 
@@ -316,12 +321,15 @@ class GetChipMeasure():
             else:
                 # Check if the vertical line is long enough
                 if len(current_line) >= 5:
-                    vertical_lines.append(current_line)
+                    vertical_lines.append(np.array(current_line))
                 current_line = [(x2, y2)]
 
         # Final check for the last segment
         if len(current_line) >= 5:
             vertical_lines.append(np.array(current_line))
+        
+        if vertical_lines:
+            return np.vstack(vertical_lines)
         return vertical_lines
 
 
@@ -350,18 +358,22 @@ class GetChipMeasure():
         """
         curve1 = np.array(curve1)
         curve2 = np.array(curve2)
+
         # Adjustment of the dimensions
         curve1_exp = np.expand_dims(curve1, axis=1)
         curve2_exp = np.expand_dims(curve2, axis=0)
+
         # Calculation of Euclidean distances
         distances = np.sqrt(np.sum((curve1_exp - curve2_exp) ** 2, axis=2))
+
         # Calculation of minimal distances and corresponding indices
         min_indices = np.argmin(distances, axis=1)
         min_distances = distances[np.arange(len(curve1)), min_indices]
+
         # Get the first and last point of curve2
         first_point = curve2[0]
         last_point = curve2[-1]
-        
+
         # Filter out measurements involving the first or last point of curve2
         filtered_indices = [i for i, idx in enumerate(min_indices) if not (np.array_equal(curve2[idx], first_point) or np.array_equal(curve2[idx], last_point))]
         filtered_distances = min_distances[filtered_indices]
@@ -388,11 +400,3 @@ class GetChipMeasure():
             means_min = 0
         self.chip_datas[base_name] = {"Chip Compression Ratio (CCR)": np.mean(means_max)/h, "Chip Segmentatio Ratio (CSR)": np.mean(means_max)/np.mean(means_min)}
 
-
-if __name__ == "__main__":
-    filename = "PA01_vc10_h0025_gam+6_IT5_Set06"
-    # filename = "sim_v1000_h100_gam-6_p_0.90_D2_0.96_Ts_625.12"
-    # filename = "sim_v166_h100_gam6_int_01_set_01"
-    # filename = "PA09_vc60_h0025_gam+6_IT5_Set06"
-    chip = GetChipMeasure()
-    chip.main_to_chip_results(filename)

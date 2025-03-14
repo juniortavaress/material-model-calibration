@@ -1,23 +1,244 @@
 import os 
-import numpy as np
 import matplotlib
-matplotlib.use('Agg') 
+import alphashape
+import numpy as np
+import pandas as pd 
 import matplotlib.pyplot as plt
+from shapely.geometry import Polygon
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
 
-class createPlots:
-    def create_plots(self, file_path, min_distances, peaks, valleys, sides, points):
-        # self.chip_images = r"S:\Junior\abaqus-with-python\otimization-scripts\new-version\material-model-calibration\Teste\chip_images"
+class createPlots():
+    """
+    Class for generating and displaying plots related to forces, temperature, and chip shape.
+    """
+    def canvas(self, figure=None):
+        """
+        Creates and displays a Matplotlib canvas in the Qt interface.
 
+        Args:
+            figure (matplotlib.figure.Figure, optional): A Matplotlib figure to be displayed. Defaults to None, which creates a blank canvas.
+        """
+        if figure:
+            self.canvas = FigureCanvas(figure)
+
+            self.canvas.setStyleSheet("background: transparent;")
+            self.canvas.figure.patch.set_facecolor('none')
+            ax = self.canvas.figure.get_axes()[0]
+            ax.set_facecolor('none')
+
+            layout = self.ui.frame_results_graph.layout()
+            if layout is not None:
+                # Limpando o layout antes de adicionar o novo gráfico
+                for i in reversed(range(layout.count())):
+                    widget = layout.itemAt(i).widget()
+                    if widget is not None:
+                        widget.deleteLater()
+
+            layout.addWidget(self.canvas)
+            self.canvas.figure.tight_layout(pad=1)
+
+        else:
+            if not hasattr(self, 'canvas'):
+                self.canvas = FigureCanvas(Figure(figsize=(12, 8)))  # Inicializa o canvas em branco
+
+            # Clear Layout
+            layout = self.ui.frame_results_graph.layout()
+            if layout is not None:
+                for i in reversed(range(layout.count())):
+                    widget = layout.itemAt(i).widget()
+                    if widget is not None:
+                        widget.deleteLater()
+        self.canvas.draw()
+
+
+    def graphs_manager(self):
+        """
+        Manages the generation of different types of graphs based on the selected file and analysis type.
+        """
+        filename = self.ui.combobox_file.currentText()
+        type = self.ui.combobox_analysis_type.currentText()
+
+        if filename != "None":
+            try:
+                if type == "Forces":
+                    createPlots.plot_force_graphs(self, filename)
+                elif type == "Temperature vs. Time":
+                    createPlots.plot_temp_time_graph(self, filename)
+                elif type == "Temperature vs. Penetration Depth":
+                    createPlots.plot_temp_penetration_graph(self, filename)
+                elif type == "Chip Format":
+                    createPlots.plot_chip(self, filename)
+            except:
+                createPlots.canvas(self)
+        else:
+            createPlots.canvas(self)
+
+
+    def plot_force_graphs(self, filename):
+        """
+        Generates and displays force-related graphs using Matplotlib.
+
+        Args:
+            filename (str): Name of the sheet in the Excel file.
+        """
+        matplotlib.use('QtAgg') 
+        path = os.path.join(self.graph_folder, "forces_result.xlsx")
+        df = pd.read_excel(path, sheet_name=filename[4:])
+        
+        # Create a new figure
+        figure = Figure(figsize=(12, 8))
+        ax = figure.add_subplot(111)
+        ax.set_facecolor('none')
+
+        # Plot the data on the graph
+        ax.plot(df.iloc[:, 0], df.iloc[:, 1], label="Cutting Force Fc [N]", linewidth=1.5)
+        ax.plot(df.iloc[:, 0], df.iloc[:, 2], label="Normal Cutting Force FcN [N]", linewidth=1.5)
+
+        # Set title and labels
+        ax.set_xlabel("Time t [ms]", fontsize=11)
+        ax.set_ylabel("Force Component Fi [N]", fontsize=11)
+        ax.legend(fontsize=11)
+
+        # Customize axis appearance
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        createPlots.canvas(self, figure)
+
+
+    def plot_temp_penetration_graph(self, filename):
+        """
+        Generates and displays temperature-related graphs using Matplotlib.
+
+        Args:
+            filename (str): Name of the sheet in the Excel file.
+        """
+        matplotlib.use('QtAgg')
+        path = os.path.join(self.graph_folder, "temperature_result.xlsx")
+        df = pd.read_excel(path, sheet_name=filename[4:])
+
+        # Create a new figure for Temperature vs. Penetration Depth
+        figure = Figure(figsize=(12, 8))
+        ax = figure.add_subplot(111)
+
+        ax.plot(df.iloc[:, 0], df.iloc[:, 1], label="Temperature at the last frame", linewidth=1.5)
+        ax.plot(df.iloc[:, 0], df.iloc[:, 2], label="Maximum temperature", linewidth=1.5)
+
+        ax.set_xlabel("Penetration Depth [µm]", fontsize=11)
+        ax.set_ylabel("Temperature T [°C]", fontsize=11)
+        ax.legend(fontsize=11)
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        # Create the canvas and add it to the UI
+        createPlots.canvas(self, figure)
+
+
+    def plot_temp_time_graph(self, filename):
+        """
+        Generates and displays temperature vs time graph using Matplotlib.
+
+        Args:
+            filename (str): Name of the sheet in the Excel file containing the time-temperature data.
+        """
+        matplotlib.use('QtAgg')
+        path = os.path.join(self.graph_folder, "temperature_result.xlsx")
+        df = pd.read_excel(path, sheet_name=filename[4:])
+
+        # Create the graph for Temperature at Node vs Time
+        figure = Figure(figsize=(12, 8))
+        ax = figure.add_subplot(111)
+        ax.plot(df.iloc[:, 3], df.iloc[:, 4], label="Temperature at Node 1", linewidth=1.5)
+
+        ax.set_xlabel("Time t [ms]", fontsize=11)
+        ax.set_ylabel("Temperature at Node 1 [°C]", fontsize=11)
+        ax.legend(fontsize=11)
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        # Create the canvas and add it to the UI
+        createPlots.canvas(self, figure)
+
+  
+    def plot_chip(self, filename):
+        """
+        Generates and displays the chip contour using Alpha Shape.
+
+        Args:
+            filename (str): Name of the sheet in the Excel file.
+        """
+        matplotlib.use('QtAgg') 
+        path = os.path.join(self.graph_folder, "chip_shape.xlsx")
+        df = pd.read_excel(path, sheet_name=filename[4:])
+
+        pontos = df[['X', 'Y']].values
+
+        # Generate the closed contour
+        hull = alphashape.alphashape(pontos, alpha = 250)
+
+        # Plot chip contour
+        figure = Figure(figsize=(12, 8))
+        ax = figure.add_subplot(111)
+
+        if isinstance(hull, Polygon): 
+            x, y = hull.exterior.xy
+            ax.fill(x, y, color="blue", alpha=0.5, label="Corpo sólido")
+            ax.plot(x, y, 'b-', linewidth=2)
+
+        ax.set_xlabel("X")
+        ax.set_ylabel("Y")
+        ax.axis("equal")
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        createPlots.canvas(self, figure)
+
+
+    def create_chip_img(self, file_path, min_distances, peaks, valleys, sides, points):
+        """
+        Creates images of chip shape and stores them in a folder.
+
+        Args:
+            file_path (str): Path to the input file.
+            min_distances (list): List of minimum distances.
+            peaks (list): List of peak points.
+            valleys (list): List of valley points.
+            sides (list): List of detected sides.
+            points (array): Array of points representing the chip geometry.
+        """
+        matplotlib.use('Agg') 
         folder = os.path.join(self.chip_images, os.path.basename(file_path)[:-12])
         if not os.path.isdir(folder):
             os.makedirs(folder)
 
         graph_names = ["_thickness_profile.png", "_detected_sides.png", "_minimal_distances.png", "_measurement_lines.png"]
         for graph_name in graph_names:
-            createPlots.plot(self, graph_name, folder, file_path, min_distances, peaks, valleys, sides, points)
+            plt.figure(figsize=(10, 10))
+            plt.title('Detected Chip Sides')
+            plt.xlabel('X Coordinates [mm]')
+            plt.ylabel('Y Coordinates [mm]')
+            plt.grid()
 
-        
+            if graph_name == "_thickness_profile.png":
+                createPlots.plot_trickness_profile(self, min_distances, peaks, valleys)
+            elif graph_name == "_detected_sides.png":
+                createPlots.plot_chip_geometry(self, points, sides)
+            elif graph_name == "_minimal_distances.png":
+                createPlots.plot_minimal_distances(self, min_distances)
+            elif graph_name == "_measurement_lines.png":
+                createPlots.plot_measurement_lines(self, sides, points)
+
+            save_path = os.path.join(folder, os.path.basename(file_path)[-11:].replace('.obj', graph_name))
+            plt.savefig(save_path)
+            plt.close()  
+
+
     def plot_trickness_profile(self, min_distances, peaks, valleys):
+        """
+        Plots the thickness profile of the chip.
+
+        Args:
+            min_distances (list): List of minimum distances (thickness) at each point.
+            peaks (list): List of peak indices in the thickness profile.
+            valleys (list): List of valley indices in the thickness profile.
+        """
         plt.plot(range(len(min_distances)), min_distances, '-', color='blue', linewidth=1.5, label='Chip Thickness')
         plt.plot(peaks, min_distances[peaks], 'ro', label='Maximal Thickness')  
         plt.plot(valleys, min_distances[valleys], 'go', label='Minimal Thickness') 
@@ -26,6 +247,13 @@ class createPlots:
 
 
     def plot_chip_geometry(self, points, sides):
+        """
+        Plots the geometry of the chip, showing the detected sides.
+
+        Args:
+            points (array): Points representing the chip geometry.
+            sides (list): List of sides of the chip.
+        """
         plt.axis('equal')
         plt.plot(points[:, 0], points[:, 1], 'b.', markersize=5, label='Points')
         plt.plot(sides[0][:, 0], sides[0][:, 1], 'c-', linewidth=2, label='Lower chip side')
@@ -34,10 +262,23 @@ class createPlots:
     
 
     def plot_minimal_distances(self, min_distances):
+        """
+        Plots the minimal distances of the chip.
+
+        Args:
+            min_distances (list): List of minimum distances between points.
+        """
         plt.plot(range(len(min_distances)), min_distances, 'o-', color='blue', markersize=3, label='Minimal Distances')
 
 
     def plot_measurement_lines(self, sides, points):
+        """
+        Plots the measurement lines between sides of the chip.
+
+        Args:
+            sides (list): List of detected sides of the chip.
+            points (array): Points representing the chip geometry.
+        """
         left_points = np.array(sides[2])
         right_points = np.array(sides[3])
 
@@ -70,103 +311,3 @@ class createPlots:
             plt.plot([p1[0], p2[0]], [p1[1], p2[1]], 'k--', linewidth=1)  # Draw connecting line
 
 
-    def plot(self, graph_name, folder, file_path, min_distances, peaks, valleys, sides, points): 
-        plt.figure(figsize=(10, 10))
-        plt.title('Detected Chip Sides')
-        plt.xlabel('X Coordinates [mm]')
-        plt.ylabel('Y Coordinates [mm]')
-        plt.grid()
-
-        if graph_name == "_thickness_profile.png":
-            createPlots.plot_trickness_profile(self, min_distances, peaks, valleys)
-        elif graph_name == "_detected_sides.png":
-            createPlots.plot_chip_geometry(self, points, sides)
-        elif graph_name == "_minimal_distances.png":
-            createPlots.plot_minimal_distances(self, min_distances)
-        elif graph_name == "_measurement_lines.png":
-            createPlots.plot_measurement_lines(self, sides, points)
-
-        save_path = os.path.join(folder, os.path.basename(file_path)[-11:].replace('.obj', graph_name))
-        plt.savefig(save_path)
-        plt.close()
-
-
-    @staticmethod
-    def create_forces_graphs(df):
-        """
-        Generates and saves force-related graphs using Matplotlib.
-
-        Args:
-            df (pd.DataFrame): DataFrame containing the data for the charts.
-            sheet_name (str): Name to be used for the saved image file.
-        """
-        sheet_name = "Forces"
-        print("DF FORCES: ", df.head())
-        # Criar a figura
-        plt.figure(figsize=(8, 5))
-
-        # Plotar os dados
-        plt.plot(df.iloc[:, 0], df.iloc[:, 1], label="Cutting Force Fc [N]", linewidth=1.5)
-        plt.plot(df.iloc[:, 0], df.iloc[:, 2], label="Normal Cutting Force FcN [N]", linewidth=1.5)
-
-        # Configurar títulos e legendas
-        plt.title(sheet_name, fontsize=14)
-        plt.xlabel("Time t [ms]", fontsize=11)
-        plt.ylabel("Force Component Fi [N]", fontsize=11)
-        plt.legend(fontsize=11)
-        plt.grid(True)
-
-        # Salvar a imagem no diretório atual
-        image_path = os.path.join(os.getcwd(), f"{sheet_name}.png")
-        plt.savefig(image_path, dpi=300, bbox_inches="tight")
-
-        # Fechar a figura para evitar consumo de memória
-        plt.close()
-
-        print(f"Graph saved as {image_path}")
-
-
-    @staticmethod
-    def create_temp_graps(df):
-        """
-        Generates and saves temperature-related graphs using Matplotlib.
-
-        Args:
-            df (pd.DataFrame): DataFrame containing the data for the charts.
-            sheet_name (str): Name to be used for the saved image files.
-        """
-        print("DF TEMP: ", df.head())
-        # Directory to save the images
-        sheet_name = "Temp"
-        save_path = os.getcwd()
-
-        # Chart 1: Temperature vs. Penetration Depth
-        plt.figure(figsize=(8, 5))
-        plt.plot(df.iloc[:, 0], df.iloc[:, 1], label="Temperature at the last frame", linewidth=1.5)
-        plt.plot(df.iloc[:, 0], df.iloc[:, 2], label="Maximum temperature", linewidth=1.5)
-
-        plt.title(sheet_name, fontsize=14)
-        plt.xlabel("Penetration Depth [µm]", fontsize=11)
-        plt.ylabel("Temperature T [°C]", fontsize=11)
-        plt.legend(fontsize=11)
-        plt.grid(True)
-
-        image_path1 = os.path.join(save_path, f"{sheet_name}_penetration_vs_temp.png")
-        plt.savefig(image_path1, dpi=300, bbox_inches="tight")
-        plt.close()
-
-        # Chart 2: Temperature at Node vs. Time
-        plt.figure(figsize=(8, 5))
-        plt.plot(df.iloc[:, 3], df.iloc[:, 4], label="Temperature at Node 1", linewidth=1.5)
-
-        plt.title(sheet_name, fontsize=14)
-        plt.xlabel("Time t [ms]", fontsize=11)
-        plt.ylabel("Temperature at Node 1 [°C]", fontsize=11)
-        plt.legend(fontsize=11)
-        plt.grid(True)
-
-        image_path2 = os.path.join(save_path, f"{sheet_name}_time_vs_temp.png")
-        plt.savefig(image_path2, dpi=300, bbox_inches="tight")
-        plt.close()
-
-        print(f"Graphs saved as {image_path1} and {image_path2}")

@@ -77,7 +77,6 @@ class InpEditor():
 
 
     def change_A(self, lines, A):
-        #print("A")
         pattern = r"^\*Plastic, hardening=USER*"  
         for i, line in enumerate(lines):
             if re.match(pattern, line):
@@ -89,7 +88,6 @@ class InpEditor():
     
 
     def change_B(self, lines, B):
-        #print("B")
         pattern = r"^\*Plastic, hardening=USER*"  
         for i, line in enumerate(lines):
             if re.match(pattern, line):
@@ -101,7 +99,6 @@ class InpEditor():
     
 
     def change_n(self, lines, n):
-        #print("n")
         pattern = r"^\*Plastic, hardening=USER*"  
         for i, line in enumerate(lines):
             if re.match(pattern, line):
@@ -113,7 +110,6 @@ class InpEditor():
     
 
     def change_C1(self, lines, C1):
-        #print("C1")
         pattern = r"^\*Plastic, hardening=USER*"  
         for i, line in enumerate(lines):
             if re.match(pattern, line):
@@ -125,7 +121,6 @@ class InpEditor():
     
 
     def change_C2(self, lines, C2):
-        #print("C2")
         pattern = r"^\*Plastic, hardening=USER*"  
         for i, line in enumerate(lines):
             if re.match(pattern, line):
@@ -137,7 +132,6 @@ class InpEditor():
     
 
     def change_C3(self, lines, C3):
-        #print("C3")
         pattern = r"^\*Plastic, hardening=USER*"  
         for i, line in enumerate(lines):
             if re.match(pattern, line):
@@ -149,7 +143,6 @@ class InpEditor():
        
 
     def change_k(self, lines, k):
-        #print("k")
         pattern = r"^\*Plastic, hardening=USER*"  
         for i, line in enumerate(lines):
             if re.match(pattern, line):
@@ -161,7 +154,6 @@ class InpEditor():
 
 
     def change_Ts(self, lines, Ts):
-        #print("Ts")
         pattern = r"^\*Plastic, hardening=USER*"  
         for i, line in enumerate(lines):
             if re.match(pattern, line):
@@ -169,78 +161,66 @@ class InpEditor():
                 values = lines[i + 2].split(',')
                 values[0] = f"{Ts:>7}" 
                 lines[i + 2] = ','.join(values)  
-                #print(lines[i + 2])
                 break
         return lines
         
 
     def change_D1(self, lines, value):
-        #print("D1")
         pattern = r"^\*Damage Initiation.*JOHNSON COOK.*"  
         for i, line in enumerate(lines):
             if re.match(pattern, line):
                 values = lines[i + 1].split(',')
                 values[0] = f"{value:>7}"   
                 lines[i + 1] = ','.join(values)  
-                #print(lines[i + 1])
                 break
         return lines
     
 
     def change_D2(self, lines, value):
-        #print("D2")
         pattern = r"^\*Damage Initiation.*JOHNSON COOK.*"  
         for i, line in enumerate(lines):
             if re.match(pattern, line):
                 values = lines[i + 1].split(',')
                 values[1] = f"{value:>7}"   
                 lines[i + 1] = ','.join(values)  
-                #print(lines[i + 1])
                 break
         return lines
     
 
     def change_D3(self, lines, value):
-        #print("D3")
         pattern = r"^\*Damage Initiation.*JOHNSON COOK.*"  
         for i, line in enumerate(lines):
             if re.match(pattern, line):
                 values = lines[i + 1].split(',')
                 values[2] = f"{value:>7}"   
                 lines[i + 1] = ','.join(values)  
-                #print(lines[i + 1])
                 break
         return lines
     
 
     def change_D4(self, lines, value):
-        #print("D4")
         pattern = r"^\*Damage Initiation.*JOHNSON COOK.*"  
         for i, line in enumerate(lines):
             if re.match(pattern, line):
                 values = lines[i + 1].split(',')
                 values[3] = f"{value:>7}"   
                 lines[i + 1] = ','.join(values)  
-                #print(lines[i + 1])
                 break
         return lines
     
 
     def change_D5(self, lines, value):
-        #print("D5")
         pattern = r"^\*Damage Initiation.*JOHNSON COOK.*"  
         for i, line in enumerate(lines):
             if re.match(pattern, line):
                 values = lines[i + 1].split(',')
                 values[4] = f"{value:>7}"   
                 lines[i + 1] = ','.join(values)  
-                #print(lines[i + 1])
                 break
         return lines
     
 
     def change_p(self, lines, p):
-        #print("p")
         pattern = r"^\*Damage Evolution.*"  
         for i, line in enumerate(lines):
             if re.match(pattern, line):

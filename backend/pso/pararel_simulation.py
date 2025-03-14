@@ -8,8 +8,16 @@ import concurrent.futures
 
 
 class PararelSimulation():
+    """
+    A class to handle parallel simulation execution using Abaqus.
+
+    The class manages the retrieval of input files, execution of simulations 
+    in parallel, and the movement of output files to a designated directory.
+    """
     def __init__(self):
+        """ Initialize the PararelSimulation object. """
         super(PararelSimulation, self).__init__()
+
 
     def start_simulation(self, id, list_folder_path, server_folder, drive_folder, number_of_cores):  
         """
@@ -17,10 +25,12 @@ class PararelSimulation():
         and running simulations in parallel.
 
         Args:
+            id (str): The identifier for the computer or simulation group.
             list_folder_path (list): List of folder paths containing .inp files.
+            server_folder (str): The folder on the server where the simulation files are stored.
+            drive_folder (str): The folder on the drive where the output files will be stored.
             number_of_cores (int): Number of CPU cores to use for each simulation.
-            number_parallel_sim (int): Number of parallel simulations to run.
-        """           
+        """        
         self.path = list_folder_path
         self.number_of_cores = number_of_cores
         self.numberFiles = PararelSimulation.calculate_number_pararel_simulation(self, number_of_cores)
@@ -29,6 +39,15 @@ class PararelSimulation():
     
 
     def calculate_number_pararel_simulation(self, number_of_cores):
+        """
+        Calculate the number of parallel simulations that can be run based on available CPU cores.
+
+        Args:
+            number_of_cores (int): Number of CPU cores to allocate for each simulation.
+
+        Returns:
+            int: The number of parallel simulations that can be executed.
+        """
         threshold = 8
         cpu_percentages = psutil.cpu_percent(percpu=True)
         num_physical_cores = psutil.cpu_count(logical=False)
@@ -36,7 +55,6 @@ class PararelSimulation():
         return int((availableCores - 2) / number_of_cores)
 
         
-
     def getINPFile(self, server_folder):
         """
         Retrieve all .inp files from the provided directories.
@@ -49,22 +67,24 @@ class PararelSimulation():
             if os.path.isdir(folder_path):
                 for file in os.listdir(folder_path):
                     source_path = os.path.join(folder_path, file)
-                    destination_path = os.path.join(server_folder, os.path.basename(folder_path))
+                    destination_folder = os.path.join(server_folder, os.path.basename(folder_path))
+                    destination_path = os.path.join(server_folder, os.path.basename(folder_path), file)
 
-                    if not os.path.exists(destination_path):
-                        os.makedirs(destination_path)
+                    if not os.path.exists(destination_folder):
+                        os.makedirs(destination_folder)
 
                     if file.endswith('.inp'):
                         try:
                             shutil.copy2(source_path, destination_path) 
                             self.inpFiles.append(os.path.join(destination_path, file))  
                         except Exception as e:
-                            print(f"Error copying {source_path} to {destination_path}: {e}")
+                            traceback.print_exc()
                     else:
                         try:
-                            shutil.move(source_path, destination_path) 
+                            if not os.path.exists(destination_path):
+                                shutil.move(source_path, destination_path) 
                         except Exception as e:
-                            pass
+                            traceback.print_exc()
 
         self.commands = []
         for inp in self.inpFiles:
@@ -81,23 +101,27 @@ class PararelSimulation():
         and simulations are executed concurrently using a thread pool executor.
         """       
         def runSimulationAux(inp_dir, command, server_folder, drive_folder):
+            """
+            Auxiliary function to run a single simulation.
+
+            Args:
+                inp_dir (str): The directory containing the .inp file.
+                command (str): The command to execute the simulation.
+                server_folder (str): The server folder for storing simulation files.
+                drive_folder (str): The drive folder for storing output files.
+            """
             retries = 3
             job_name = command.split('job=')[1].split()[0]
             output_file = os.path.join(inp_dir, f"{job_name}.odb")
 
             for attempt in range(1, retries + 1):
                 try:
-                    os.chdir(inp_dir)
-                    # process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                    # stdout, stderr = process.communicate()
-                    # print(f"stdout: {stdout.decode()}\n", f"stderr: {stderr.decode()}\n")
-                    # process.wait()
-
-                    ##############################
-
-                    input("coloca ai a sim")
-
-                    ##############################
+                    print("TRY")
+                    os.chdir(os.path.dirname(inp_dir))
+                    process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                    stdout, stderr = process.communicate()
+                    print(f"stdout: {stdout.decode()}\n", f"stderr: {stderr.decode()}\n")
+                    process.wait()
 
                     filename = command.split("job=")[1].split()[0]
                     if os.path.exists(output_file):
@@ -109,12 +133,10 @@ class PararelSimulation():
                 except Exception as e:
                     return f"Failed: {command}. Error: {str(e)}"
             
-        # Using ThreadPoolExecutor to manage the queue of simulations
+        # Execute simulations concurrently using ThreadPoolExecutor
         with concurrent.futures.ThreadPoolExecutor(max_workers=self.numberFiles) as executor:
-            # Submit all commands to the executor
             futures = {executor.submit(runSimulationAux, inp_dir, command, server_folder, drive_folder): command for inp_dir, command in self.commands}
 
-            # Process as they complete
             for future in concurrent.futures.as_completed(futures):
                 command = futures[future]
                 try:                 
@@ -129,10 +151,18 @@ class PararelSimulation():
                         yaml.dump(data, file)
 
                 except Exception as e:
-                    print(f"Simulation {command} generated an exception: {e}")
+                    traceback.print_exc()
         
 
     def move_odb(self, filename, server_folder, drive_folder):
+        """
+        Move the .odb file from the simulation folder to the destination folder.
+
+        Args:
+            filename (str): The name of the .odb file to move.
+            server_folder (str): The server folder where the simulation files are stored.
+            drive_folder (str): The drive folder where the output files will be stored.
+        """
         try:
             destination_odb_folder = os.path.join(drive_folder, r"auxiliary_files\odb_processing")
             for folder_name in os.listdir(server_folder):

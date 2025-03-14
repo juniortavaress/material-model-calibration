@@ -1,11 +1,22 @@
 import os
 import re
 import yaml
-from frontend.aux_files.yaml_generator import YamlClass
 from PySide6.QtCore import QTimer
+from frontend.aux_files.yaml_generator import YamlClass
+
 
 class GetParameters:
+    """
+    Class responsible for managing material properties and parameters.
+    It handles reading, defining, saving, and displaying material data
+    from YAML files and INP files.
+    """
+        
     def parameter_and_interface_manager(self):
+        """
+        Manages the parameters and interface by getting the material data,
+        defining variables, and displaying the values.
+        """
         if not self.error_tracking:
             material_info = GetParameters.get_available_parameters(self)
             GetParameters.define_variables_name(self, material_info)
@@ -14,9 +25,17 @@ class GetParameters:
 
 
     def get_available_parameters(self):
+        """
+        Reads the material parameters from the input file and returns the data
+        in a structured dictionary format.
+
+        Returns:
+            dict: A dictionary with material names as keys and their properties as values.
+        """
         material_info = {}
         valid_properties = {"Damage Initiation", "Damage Evolution", "Plastic"}
 
+        # Check if project information exists and get path to input file
         if os.path.exists(self.project_infos_path):
             with open(self.project_infos_path, "r", encoding="utf-8") as file:
                 data = yaml.safe_load(file) or {}
@@ -26,7 +45,7 @@ class GetParameters:
                     if condition == "Condition 01":
                         path_to_inp = value["Cutting Properties"]["inputFile"]
 
-            # Settings
+            # Parse the input file for material data
             i = 0
             current_material = None
             current_property = None
@@ -42,7 +61,7 @@ class GetParameters:
                 if match_material:
                     current_material = match_material.group(1).strip()
                     material_info[current_material] = {}
-                    current_property = None  # Resetar propriedade atual
+                    current_property = None  
                     i += 1
                     continue
 
@@ -77,6 +96,13 @@ class GetParameters:
 
 
     def define_variables_name(self, dict):
+        """
+        Defines the variable names for the material properties and updates
+        the dictionary with the appropriate names.
+
+        Args:
+            dict (dict): The dictionary containing material properties.
+        """
         for mat, values in dict.items():
             if 'Plastic' in values and len(values['Plastic']) > 0:
                 values['Plastic'] = {
@@ -101,19 +127,28 @@ class GetParameters:
                         "e": values['Damage Initiation'][7],
                         "p": values['Damage Evolution'][-1][0]}
 
+        # Save the updated material properties to a YAML file
         yaml_path = os.path.join(self.user_config, "material_properties.yaml")
         with open(yaml_path, "w", encoding="utf-8") as file:
             yaml.dump(dict, file, default_flow_style=False, allow_unicode=True, width=float("inf"))
 
 
-
     def get_list_with_parameters_name(self):
+        """
+        Collects the available material properties and saves them in the
+        YAML file.
+
+        Updates:
+            self.materials_properties (dict): A dictionary with material names and 
+            their properties as a list of booleans indicating availability.
+        """
         self.materials_properties = {}
         yaml_path = os.path.join(self.user_config, "material_properties.yaml")
         if os.path.exists(yaml_path):
             with open(yaml_path, "r", encoding="utf-8") as file:
                 data = yaml.safe_load(file)
 
+                # Gather the material properties
                 for material_name, material_data in data.items():
                     material_props = {}
 
@@ -126,6 +161,12 @@ class GetParameters:
 
 
     def show_paramters_values(self):
+        """
+        Displays the material properties on the user interface.
+
+        This method shows the values for the material properties based on
+        the selected material.
+        """
         self.ui.frame_material_model.hide()
         self.ui.frame_damage_model.hide()
 
@@ -133,7 +174,7 @@ class GetParameters:
         with open(yaml_path, "r", encoding="utf-8") as file:
             data = yaml.safe_load(file)
 
-
+        # Display the values of material properties on the UI
         for material, info in data.items():
             self.ui.comboBox_material.addItem(material)
             self.ui.comboBox_material.setCurrentIndex(0)
@@ -166,6 +207,12 @@ class GetParameters:
 
 
     def save_parameters(self, call=None):
+        """
+        Saves the selected parameters to the project YAML file.
+
+        Args:
+            call (str, optional): The action to be performed, either "save" or "load".
+        """
         with open(self.project_infos_path, "r", encoding="utf-8") as file:
             data = yaml.safe_load(file)
 
@@ -197,7 +244,6 @@ class GetParameters:
 
 
         elif call == "load":
-
             if "5. Parameters to Iterate" in data:
                 for param, value in data["5. Parameters to Iterate"].items():
                     if value == True:
@@ -211,6 +257,9 @@ class GetParameters:
 
 
     def show_parameters_limits(self):
+        """
+        Displays the limits of the parameters.
+        """
         with open(self.project_infos_path, "r", encoding="utf-8") as file:
             data = yaml.safe_load(file)
 
@@ -222,11 +271,9 @@ class GetParameters:
 
             if value == True:
                 frame.show()
-
                 if param in data.get("6. Parameters Limits", {}):
                     min.setText(data["6. Parameters Limits"][param]["min"])
                     max.setText(data["6. Parameters Limits"][param]["max"])
-
             else:
                 min.setText("")
                 max.setText("")
@@ -237,6 +284,9 @@ class GetParameters:
 
 
     def save_parameters_limits(self):
+        """
+        Save the limits of the parameters for later use.
+        """
         next_page = True
         with open(self.project_infos_path, "r", encoding="utf-8") as file:
             data = yaml.safe_load(file)

@@ -4,8 +4,9 @@ import shutil
 import traceback
 import numpy as np
 from backend.pso.edit_input_file import InpEditor
-from backend.get_result_from_odb_file.main_results import getResults
 from frontend.aux_files.show_status_message import StatusMessage
+from backend.get_result_from_odb_file.main_results import getResults
+
 
 class SimulationManager:
     def __init__(self):
@@ -54,8 +55,7 @@ class SimulationManager:
                     SimulationManager.run_simulation(self, "cp1", computer_dict["Computer 1"]["files"])
             except Exception as e:
                 SimulationManager.except_function(self, e, "Rodando Simulação")
-        else:
-            print("Main computer off")
+
 
         while True:
             yaml_path = os.path.join(self.python_files, "computers_list.yaml")
@@ -66,7 +66,6 @@ class SimulationManager:
             for computers, infos in data.items():
                 for info_type, value in infos.items():
                     if info_type == "status":
-                        # print(value)
                         if value:
                             all_finished = False  
             if all_finished:
@@ -83,6 +82,12 @@ class SimulationManager:
             except Exception as e:
                 SimulationManager.except_function(self, e, "Collecting results")
 
+
+        if not self.error_tracking:
+            try:    
+                SimulationManager.copy_file(self, "ODB")
+            except Exception as e:
+                SimulationManager.except_function(self, e, "Moving ODB")
         
 
     def copy_file(self, type):
@@ -90,17 +95,12 @@ class SimulationManager:
         Transfers .odb files from the simulation directory to the results directory.
         """
         if type == "ODB":
-            destination_odb_folder = self.odb_files
-            for folder_name in os.listdir(self.simulation_inp_files):
-                folder_path = os.path.join(self.simulation_inp_files, folder_name)
-                if os.path.isdir(folder_path) and folder_name.lower() != "defaut":
-                    for root, dirs, files in os.walk(folder_path):
-                        for file in files:
-                            if file.endswith(".odb"):
-                                source_path = os.path.join(root, file) 
-                                destination_path = os.path.join(destination_odb_folder, file)  
-                                shutil.copy2(source_path, destination_path)
-                                os.remove(source_path)
+            destination_odb_folder = self.server_folder
+            for file in os.listdir(self.odb_processing):
+                source_path = os.path.join(self.odb_processing, file)
+                destination_path = os.path.join(destination_odb_folder, file[:-4], file)  
+                shutil.copy2(source_path, destination_path)
+                os.remove(source_path)
 
         elif type == "CompiledFiles":
             compiled_files_dir = os.path.join(self.software_path, "compiled")
@@ -110,7 +110,8 @@ class SimulationManager:
                     source_path_list = ["abaqus_v6.env", "explicitU-D.dll", "explicitU.dll"]
                     for file in source_path_list:
                         source_path = os.path.join(compiled_files_dir, file)
-                        shutil.copy2(source_path, folder_path)
+                        destination_path = os.path.join(folder_path, file)
+                        shutil.copy2(source_path, destination_path)
 
 
     def run_simulation(self, id, path_list_to_inp_folders):
@@ -120,8 +121,8 @@ class SimulationManager:
         from backend.pso.pararel_simulation import PararelSimulation
         number_of_cores = 4
         drive_folder = self.user_result_folder
-        server_folder = os.path.join(os.getenv("SystemDrive", "C:") , f"\MaterialOtimization\{self.project_name}\SimulationFolder")
-        PararelSimulation.start_simulation(self, id, path_list_to_inp_folders, server_folder, drive_folder, number_of_cores)
+        self.server_folder = os.path.join(os.getenv("SystemDrive", "C:") , f"\MaterialOtimization\{self.project_name}\simulation_folder")
+        PararelSimulation.start_simulation(self, id, path_list_to_inp_folders, self.server_folder, drive_folder, number_of_cores)
        
 
     def except_function(self, exception, stage):

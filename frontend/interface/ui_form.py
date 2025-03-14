@@ -3687,7 +3687,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 909, 925))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 51, 34))
         self.verticalLayout_60 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_60.setObjectName(u"verticalLayout_60")
         self.label_code_status = QLabel(self.scrollAreaWidgetContents)
@@ -4005,56 +4005,6 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_73.addWidget(self.frame_150)
 
-        self.frame_type_rf = QFrame(self.frame_131)
-        self.frame_type_rf.setObjectName(u"frame_type_rf")
-        self.frame_type_rf.setMinimumSize(QSize(0, 80))
-        self.frame_type_rf.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frame_type_rf.setFrameShadow(QFrame.Shadow.Raised)
-        self.verticalLayout_84 = QVBoxLayout(self.frame_type_rf)
-        self.verticalLayout_84.setSpacing(0)
-        self.verticalLayout_84.setObjectName(u"verticalLayout_84")
-        self.verticalLayout_84.setContentsMargins(0, 0, 0, 0)
-        self.frame_154 = QFrame(self.frame_type_rf)
-        self.frame_154.setObjectName(u"frame_154")
-        self.frame_154.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frame_154.setFrameShadow(QFrame.Shadow.Raised)
-        self.verticalLayout_85 = QVBoxLayout(self.frame_154)
-        self.verticalLayout_85.setObjectName(u"verticalLayout_85")
-        self.verticalLayout_85.setContentsMargins(1, -1, -1, -1)
-        self.label_143 = QLabel(self.frame_154)
-        self.label_143.setObjectName(u"label_143")
-        self.label_143.setFont(font7)
-        self.label_143.setFrameShape(QFrame.Shape.NoFrame)
-
-        self.verticalLayout_85.addWidget(self.label_143)
-
-
-        self.verticalLayout_84.addWidget(self.frame_154)
-
-        self.frame_155 = QFrame(self.frame_type_rf)
-        self.frame_155.setObjectName(u"frame_155")
-        self.frame_155.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frame_155.setFrameShadow(QFrame.Shadow.Raised)
-        self.verticalLayout_86 = QVBoxLayout(self.frame_155)
-        self.verticalLayout_86.setObjectName(u"verticalLayout_86")
-        self.combobox_rf_type = QComboBox(self.frame_155)
-        self.combobox_rf_type.addItem("")
-        self.combobox_rf_type.addItem("")
-        self.combobox_rf_type.addItem("")
-        self.combobox_rf_type.setObjectName(u"combobox_rf_type")
-        self.combobox_rf_type.setEnabled(True)
-        self.combobox_rf_type.setMinimumSize(QSize(0, 20))
-        self.combobox_rf_type.setMaximumSize(QSize(16777215, 20))
-        self.combobox_rf_type.setStyleSheet(u"")
-
-        self.verticalLayout_86.addWidget(self.combobox_rf_type)
-
-
-        self.verticalLayout_84.addWidget(self.frame_155)
-
-
-        self.verticalLayout_73.addWidget(self.frame_type_rf)
-
         self.verticalSpacer_12 = QSpacerItem(20, 15, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
 
         self.verticalLayout_73.addItem(self.verticalSpacer_12)
@@ -4238,7 +4188,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.pages.setCurrentIndex(8)
+        self.pages.setCurrentIndex(9)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -4479,18 +4429,13 @@ class Ui_MainWindow(object):
         self.interface_name_11.setText(QCoreApplication.translate("MainWindow", u"RESULTS", None))
         self.label_141.setText(QCoreApplication.translate("MainWindow", u"Select files", None))
         self.combobox_file.setItemText(0, QCoreApplication.translate("MainWindow", u"None", None))
-        self.combobox_file.setItemText(1, QCoreApplication.translate("MainWindow", u"All", None))
+        self.combobox_file.setItemText(1, QCoreApplication.translate("MainWindow", u"aa", None))
 
         self.label_142.setText(QCoreApplication.translate("MainWindow", u"Type of analysis:", None))
-        self.combobox_analysis_type.setItemText(0, QCoreApplication.translate("MainWindow", u"None", None))
-        self.combobox_analysis_type.setItemText(1, QCoreApplication.translate("MainWindow", u"Forces", None))
-        self.combobox_analysis_type.setItemText(2, QCoreApplication.translate("MainWindow", u"Temperature", None))
-        self.combobox_analysis_type.setItemText(3, QCoreApplication.translate("MainWindow", u"Chip Format", None))
-
-        self.label_143.setText(QCoreApplication.translate("MainWindow", u"Select the RF:", None))
-        self.combobox_rf_type.setItemText(0, QCoreApplication.translate("MainWindow", u"None", None))
-        self.combobox_rf_type.setItemText(1, QCoreApplication.translate("MainWindow", u"RF1", None))
-        self.combobox_rf_type.setItemText(2, QCoreApplication.translate("MainWindow", u"RF2", None))
+        self.combobox_analysis_type.setItemText(0, QCoreApplication.translate("MainWindow", u"Forces", None))
+        self.combobox_analysis_type.setItemText(1, QCoreApplication.translate("MainWindow", u"Chip Format", None))
+        self.combobox_analysis_type.setItemText(2, QCoreApplication.translate("MainWindow", u"Temperature vs. Time", None))
+        self.combobox_analysis_type.setItemText(3, QCoreApplication.translate("MainWindow", u"Temperature vs. Penetration Depth", None))
 
         self.label_144.setText(QCoreApplication.translate("MainWindow", u"Steady State Values", None))
         self.label_150.setText(QCoreApplication.translate("MainWindow", u"Cutting Force:", None))

@@ -1,8 +1,7 @@
 import os
 import yaml
 
-
-class YamlClass:
+class YamlClassBackEnd:
     def save_yaml_info(self, yaml_path, condition, datas):
         """
         Save or update YAML files.

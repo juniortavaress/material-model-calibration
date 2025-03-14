@@ -8,10 +8,12 @@ import pandas as pd
 from backend.pso.simualtion_manager import SimulationManager
 from frontend.aux_files.show_status_message import StatusMessage
 
+
 class PsoManager():
     """
     Manages the Particle Swarm Optimization (PSO) algorithm.
     """
+
     def run_pso(self):
         """
         Runs the PSO algorithm to minimize the objective function.
@@ -87,6 +89,9 @@ class PsoManager():
 
 
     def verify_stage(self):
+        """
+        Verify the atual stage of the otimization and load datas
+        """
         # Load the YAML file with project information
         with open(self.project_infos_path, "r", encoding="utf-8") as file:
             data = yaml.safe_load(file)
@@ -115,7 +120,6 @@ class PsoManager():
                     global_best_scores_history = eval(data["8. Otimization Datas"]["Last Iteration Values"]["global_best_score_history"]["value"])
                     return velocities, positions, personal_best_positions, personal_best_scores, global_best_position, global_best_score, global_best_scores_history
                 except Exception as e:
-                    print(f"Error loading optimization data: {e}")
                     self.reload = False
                     return None, None, None, None, None, None, None                   
             
@@ -321,6 +325,7 @@ class PsoManager():
         
 
     def save_iteration_info(self, velocities, positions, personal_best_positions, personal_best_scores, global_best_position, global_best_score, global_best_scores_history):
+        """ Save iteration infos for restart if necessary """
         self.count_iteration += 1
         self.number_of_iterations -= 1
 
@@ -347,6 +352,7 @@ class PsoManager():
 
 
     def show_datas(self, call=None):
+        """ Get datas to show in the interface """
         best_set = None
         min_error = float("inf")
         current_iteration = f"Iteration 0{self.count_iteration - 1}" if call == "finished" else f"Iteration 0{self.count_iteration}"     
@@ -390,12 +396,8 @@ class PsoManager():
         self.stage = stage
         self.error_tracking = True
         StatusMessage.set_text(self, "message-error")
-        print(f"Error in {stage}:", exception)
         traceback.print_exc()
 
-        # For the test version, to try solve the problem (This part should be deleted)
-        # input("\n🔧 PAUSED: Resolve the issue and press Enter to continue...")
-        # self.error_tracking = False
 
 
 

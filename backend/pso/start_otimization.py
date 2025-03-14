@@ -3,7 +3,7 @@ import time
 import shutil
 import traceback
 from backend.pso.pso_manager import PsoManager
-from backend.aux_files.thread_manager import WorkerThread
+from backend.aux_files.thread.thread_manager import WorkerThread
 from frontend.aux_files.show_status_message import StatusMessage
 
 class OtimizationManager:
@@ -94,9 +94,5 @@ class OtimizationManager:
         self.stage = stage
         self.error_tracking = True
         StatusMessage.set_text(self, "message-error")
-        print(f"Error in {stage}:", exception)
         traceback.print_exc()
 
-        # For the test version, to try solve the problem (This part should be deleted)
-        # input("\n🔧 PAUSED: Resolve the issue and press Enter to continue...")
-        # self.error_tracking = False
