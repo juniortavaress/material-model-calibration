@@ -5,6 +5,7 @@ import json
 import time
 import yaml 
 import traceback
+from pararel_simulation import PararelSimulation
 from PySide6.QtWidgets import QApplication, QFileDialog
 
 class ComputerXX():
@@ -65,7 +66,6 @@ class ComputerXX():
             try:
                 if data["Computer X"]["status"] == True:
                     id = "cpXX"
-                    from pararel_simulation import PararelSimulation
                     simulation = PararelSimulation
                     simulation.start_simulation(simulation, id, list_comp_XX, server_folder, drive_folder, number_of_cores = cores_by_simulation)
 

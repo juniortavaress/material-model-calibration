@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os 
+import sys
 import yaml
 import shutil
 import pandas as pd
@@ -24,9 +25,16 @@ class SoftwareConfig():
         """
         # Defining paths
         self.software_path = os.path.join(os.getenv("SystemDrive", "C:") , "\MaterialOtimization")
-        source_results_dir = r"backend\aux_files\results"
+
+        if getattr(sys, 'frozen', False):  
+            base_path = sys._MEIPASS
+        else:
+            base_path = os.getcwd() 
+
+        # AQUI
+        source_results_dir = os.path.join(base_path, r"backend\aux_files\results")
         self.destination_results_dir = os.path.join(self.software_path, "extract_results")
-        source_subrotine_dir = r"backend\aux_files\subrotine"
+        source_subrotine_dir = os.path.join(base_path, r"backend\aux_files\subrotine")
         destination_subrotine_dir = os.path.join(self.software_path, "compiled")
         folder_to_create = [self.software_path, self.destination_results_dir, destination_subrotine_dir]
 
