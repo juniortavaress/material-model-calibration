@@ -101,6 +101,10 @@ class DataConverter():
         force_file = os.path.join(self.graph_folder, "forces_result.xlsx")
         temperature_file = os.path.join(self.graph_folder, "temperature_result.xlsx")
 
+        sheet_name = file_name[4:]
+        if len(sheet_name) > 31:
+            sheet_name = sheet_name[:31]
+
         if os.path.exists(force_file):
             # Append new sheet to the existing Excel file
             with pd.ExcelWriter(force_file, mode='a', engine='openpyxl') as writer:
@@ -109,11 +113,15 @@ class DataConverter():
             combined_forces_df_with_results.to_excel(force_file, sheet_name=file_name[4:], index=False, engine="openpyxl")
         
         # Save or append the temperature DataFrame
+        sheet_name = file_name[4:]
+        if len(sheet_name) > 31:
+            sheet_name = sheet_name[:31]
+
         if os.path.exists(temperature_file):
             with pd.ExcelWriter(temperature_file, mode='a', engine='openpyxl') as writer:
-                combined_temp_df_with_results.to_excel(writer, sheet_name=file_name[4:], index=False)
+                combined_temp_df_with_results.to_excel(writer, sheet_name=sheet_name, index=False)
         else:
-            combined_temp_df_with_results.to_excel(temperature_file, sheet_name=file_name[4:], index=False, engine="openpyxl")
+            combined_temp_df_with_results.to_excel(temperature_file, sheet_name=sheet_name, index=False, engine="openpyxl")
     
 
     @staticmethod

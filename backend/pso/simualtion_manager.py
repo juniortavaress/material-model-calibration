@@ -34,11 +34,11 @@ class SimulationManager:
         # Step 3: Creating list for computers
         if not self.error_tracking:
             try:
-                splits = np.array_split(lis_dir_inp, self.number_of_cp)
-                
                 if self.main_computer == "Yes":
+                    splits = np.array_split(lis_dir_inp, self.number_of_cp)
                     computer_dict = {f"Computer {i+1}": {"status": bool(split.tolist()), "files": split.tolist()} for i, split in enumerate(splits)}
                 else:
+                    splits = np.array_split(lis_dir_inp, self.number_of_cp-1)
                     computer_dict = {f"Computer {i+2}": {"status": bool(split.tolist()), "files": split.tolist()} for i, split in enumerate(splits)}
 
                 with open(os.path.join(self.python_files, "computers_list.yaml"), "w") as file:

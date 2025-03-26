@@ -27,6 +27,7 @@ class GetChipMeasure():
             file_directory (str): Path to the directory containing OBJ files.
             file_groups (dict): Dictionary to store grouped file results.
         """
+        save_datas = True
         for file in os.listdir(file_directory):
             if file.endswith('.obj') and file.startswith(filename):
                 base_name = '_'.join(file.split('_')[:-1])  
@@ -43,15 +44,22 @@ class GetChipMeasure():
                     if "Frame50" in file or "Frame46" in file:
                         createPlots.create_chip_img(self, file, min_distances, peaks, valleys, sides, points)
                     
-                    if "Frame50" in file:
+                    if save_datas:
                         df_points = pd.DataFrame(points, columns=["X", "Y"])
                         output_excel_path = os.path.join(self.graph_folder, "chip_shape.xlsx")
+
+                        sheet_name = base_name[4:]
+                        if len(sheet_name) > 31:
+                            sheet_name = sheet_name[:31]
+
                         if os.path.exists(output_excel_path):
                             with pd.ExcelWriter(output_excel_path, mode='a', engine='openpyxl', if_sheet_exists='replace') as writer:
-                                df_points.to_excel(writer, sheet_name=base_name[4:], index=False)
+                                df_points.to_excel(writer, sheet_name=sheet_name, index=False)
                         else:
-                            df_points.to_excel(output_excel_path, sheet_name=base_name[4:], index=False, engine="openpyxl")
+                            df_points.to_excel(output_excel_path, sheet_name=sheet_name, index=False, engine="openpyxl")
 
+                        save_datas = False
+                        
                 except Exception as e:
                     traceback.print_exc()
                     continue 

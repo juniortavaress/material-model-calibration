@@ -103,7 +103,7 @@ class GetPsoAndSimulation:
             main_activated = data["7. PSO and Simulation"]["Main Computer"]
             project_name = data["1. Info"]["Project Name"]
 
-            i = 1 if main_activated == "No" else  2
+            i = 1 if main_activated == "Yes" else  2
             for computer in range(i, int(computers) + 1):
                 computer_file = os.path.join(self.python_files, f"computer_0{computer}.py")
                 with open(defaut_file, 'r') as file:

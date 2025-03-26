@@ -11,11 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>AbaqusOtimization</string>
-  </property>
-  <property name="windowIcon">
-   <iconset>
-    <normaloff>C:/Users/adam-ua769pu3t3n7k4o/Downloads/web-optimization.png</normaloff>C:/Users/adam-ua769pu3t3n7k4o/Downloads/web-optimization.png</iconset>
+   <string>MainWindow</string>
   </property>
   <property name="styleSheet">
    <string notr="true">QFrame {

@@ -48,11 +48,14 @@ class PararelSimulation():
         Returns:
             int: The number of parallel simulations that can be executed.
         """
-        threshold = 8
-        cpu_percentages = psutil.cpu_percent(percpu=True)
-        num_physical_cores = psutil.cpu_count(logical=False)
-        availableCores = sum(1 for i, usage in enumerate(cpu_percentages) if usage < threshold and i < num_physical_cores)
-        return int((availableCores - 2) / number_of_cores)
+        number_of_files = 0
+        while number_of_files < 2:
+            threshold = 8
+            cpu_percentages = psutil.cpu_percent(percpu=True)
+            num_physical_cores = psutil.cpu_count(logical=False)
+            availableCores = sum(1 for i, usage in enumerate(cpu_percentages) if usage < threshold and i < num_physical_cores)
+            number_of_files = int((availableCores - 2) / number_of_cores)
+        return number_of_files
 
         
     def getINPFile(self, server_folder):
@@ -117,7 +120,14 @@ class PararelSimulation():
             for attempt in range(1, retries + 1):
                 try:
                     print("TRY")
-                    os.chdir(os.path.dirname(inp_dir))
+                    print(command)
+
+                    os.chdir(inp_dir)
+                    
+
+                    print("Diretório atual:", os.getcwd())
+                    # print("Comando:", command)
+
                     process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                     stdout, stderr = process.communicate()
                     print(f"stdout: {stdout.decode()}\n", f"stderr: {stderr.decode()}\n")

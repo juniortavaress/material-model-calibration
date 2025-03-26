@@ -82,9 +82,13 @@ class createPlots():
         Args:
             filename (str): Name of the sheet in the Excel file.
         """
+        sheet_name = filename[4:]
+        if len(sheet_name) > 31:
+            sheet_name = sheet_name[:31]
+
         matplotlib.use('QtAgg') 
         path = os.path.join(self.graph_folder, "forces_result.xlsx")
-        df = pd.read_excel(path, sheet_name=filename[4:])
+        df = pd.read_excel(path, sheet_name=sheet_name)
         
         # Create a new figure
         figure = Figure(figsize=(12, 8))
@@ -113,9 +117,13 @@ class createPlots():
         Args:
             filename (str): Name of the sheet in the Excel file.
         """
+        sheet_name = filename[4:]
+        if len(sheet_name) > 31:
+            sheet_name = sheet_name[:31]
+
         matplotlib.use('QtAgg')
         path = os.path.join(self.graph_folder, "temperature_result.xlsx")
-        df = pd.read_excel(path, sheet_name=filename[4:])
+        df = pd.read_excel(path, sheet_name=sheet_name)
 
         # Create a new figure for Temperature vs. Penetration Depth
         figure = Figure(figsize=(12, 8))
@@ -140,9 +148,13 @@ class createPlots():
         Args:
             filename (str): Name of the sheet in the Excel file containing the time-temperature data.
         """
+        sheet_name = filename[4:]
+        if len(sheet_name) > 31:
+            sheet_name = sheet_name[:31]
+
         matplotlib.use('QtAgg')
         path = os.path.join(self.graph_folder, "temperature_result.xlsx")
-        df = pd.read_excel(path, sheet_name=filename[4:])
+        df = pd.read_excel(path, sheet_name=sheet_name)
 
         # Create the graph for Temperature at Node vs Time
         figure = Figure(figsize=(12, 8))
@@ -165,9 +177,13 @@ class createPlots():
         Args:
             filename (str): Name of the sheet in the Excel file.
         """
+        sheet_name = filename[4:]
+        if len(sheet_name) > 31:
+            sheet_name = sheet_name[:31]
+
         matplotlib.use('QtAgg') 
         path = os.path.join(self.graph_folder, "chip_shape.xlsx")
-        df = pd.read_excel(path, sheet_name=filename[4:])
+        df = pd.read_excel(path, sheet_name=sheet_name)
 
         pontos = df[['X', 'Y']].values
 
@@ -203,6 +219,7 @@ class createPlots():
             sides (list): List of detected sides.
             points (array): Array of points representing the chip geometry.
         """
+
         matplotlib.use('Agg') 
         folder = os.path.join(self.chip_images, os.path.basename(file_path)[:-12])
         if not os.path.isdir(folder):

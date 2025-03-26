@@ -9,7 +9,6 @@ sys.dont_write_bytecode = True
 
 class MainWindow(QMainWindow):
     """Main application window."""
-
     def __init__(self, parent=None):
         super().__init__(parent)
         self.ui = Ui_MainWindow()
@@ -22,11 +21,11 @@ class MainWindow(QMainWindow):
         ButtonsCallback.activate_buttons(self)
 
 
-    def __setattr__(self, name, value):
-        """Override setattr to track variable assignments."""
-        if not hasattr(self, name):  
-            ManagerVariables.print_paths(self)
-        super().__setattr__(name, value)
+    # def __setattr__(self, name, value):
+    #     """Override setattr to track variable assignments."""
+    #     if not hasattr(self, name):  
+    #         ManagerVariables.print_paths(self)
+    #     super().__setattr__(name, value)
 
 
 
