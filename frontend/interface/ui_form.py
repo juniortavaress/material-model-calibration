@@ -26,6 +26,9 @@ class Ui_MainWindow(object):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
         MainWindow.resize(941, 1129)
+        icon = QIcon()
+        icon.addFile(u"C:/Users/adam-ua769pu3t3n7k4o/Downloads/web-optimization.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        MainWindow.setWindowIcon(icon)
         MainWindow.setStyleSheet(u"QFrame {\n"
 "border: none;}\n"
 "\n"
@@ -377,9 +380,9 @@ class Ui_MainWindow(object):
         self.button_abaqus.setMinimumSize(QSize(34, 34))
         self.button_abaqus.setMaximumSize(QSize(34, 34))
         self.button_abaqus.setStyleSheet(u"")
-        icon = QIcon()
-        icon.addFile(u":/folder1/Icons/import.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.button_abaqus.setIcon(icon)
+        icon1 = QIcon()
+        icon1.addFile(u":/folder1/Icons/import.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.button_abaqus.setIcon(icon1)
         self.button_abaqus.setIconSize(QSize(35, 35))
 
         self.horizontalLayout_3.addWidget(self.button_abaqus)
@@ -421,7 +424,7 @@ class Ui_MainWindow(object):
         self.button_result.setObjectName(u"button_result")
         self.button_result.setMinimumSize(QSize(34, 34))
         self.button_result.setMaximumSize(QSize(34, 34))
-        self.button_result.setIcon(icon)
+        self.button_result.setIcon(icon1)
         self.button_result.setIconSize(QSize(35, 35))
 
         self.horizontalLayout_2.addWidget(self.button_result)
@@ -930,7 +933,7 @@ class Ui_MainWindow(object):
         self.button_input_file.setObjectName(u"button_input_file")
         self.button_input_file.setMinimumSize(QSize(25, 25))
         self.button_input_file.setMaximumSize(QSize(25, 25))
-        self.button_input_file.setIcon(icon)
+        self.button_input_file.setIcon(icon1)
         self.button_input_file.setIconSize(QSize(35, 35))
 
         self.horizontalLayout_7.addWidget(self.button_input_file)
@@ -4195,7 +4198,7 @@ class Ui_MainWindow(object):
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"AbaqusOtimization", None))
         self.icon_interface_3.setText("")
         self.interface_name_3.setText(QCoreApplication.translate("MainWindow", u"MATERIAL OTIMIZATION", None))
         self.label_14.setText(QCoreApplication.translate("MainWindow", u"Login", None))

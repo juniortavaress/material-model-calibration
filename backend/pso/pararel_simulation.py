@@ -76,7 +76,7 @@ class PararelSimulation():
                     if file.endswith('.inp'):
                         try:
                             shutil.copy2(source_path, destination_path) 
-                            self.inpFiles.append(os.path.join(destination_path, file))  
+                            self.inpFiles.append(destination_path)  
                         except Exception as e:
                             traceback.print_exc()
                     else:
@@ -123,7 +123,10 @@ class PararelSimulation():
                     print(f"stdout: {stdout.decode()}\n", f"stderr: {stderr.decode()}\n")
                     process.wait()
 
+                    # x = input("simulacao")
+
                     filename = command.split("job=")[1].split()[0]
+                    print('aaaaaaaaaaaaa', os.path.exists(output_file))
                     if os.path.exists(output_file):
                         PararelSimulation.move_odb(self, filename, server_folder, drive_folder)
                         return "Sucess"

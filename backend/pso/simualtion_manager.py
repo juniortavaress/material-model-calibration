@@ -83,11 +83,11 @@ class SimulationManager:
                 SimulationManager.except_function(self, e, "Collecting results")
 
 
-        if not self.error_tracking:
-            try:    
-                SimulationManager.copy_file(self, "ODB")
-            except Exception as e:
-                SimulationManager.except_function(self, e, "Moving ODB")
+        # if not self.error_tracking:
+        #     try:    
+        #         SimulationManager.copy_file(self, "ODB")
+        #     except Exception as e:
+        #         SimulationManager.except_function(self, e, "Moving ODB")
         
 
     def copy_file(self, type):
@@ -96,8 +96,10 @@ class SimulationManager:
         """
         if type == "ODB":
             destination_odb_folder = self.server_folder
+            os.makedirs(destination_odb_folder, exist_ok=True)
             for file in os.listdir(self.odb_processing):
                 source_path = os.path.join(self.odb_processing, file)
+                os.makedirs(os.path.join(destination_odb_folder, file[:-4]), exist_ok=True)
                 destination_path = os.path.join(destination_odb_folder, file[:-4], file)  
                 shutil.copy2(source_path, destination_path)
                 os.remove(source_path)
