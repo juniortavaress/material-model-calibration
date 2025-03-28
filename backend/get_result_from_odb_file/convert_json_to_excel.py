@@ -83,6 +83,7 @@ class DataConverter():
 
             combined_temp_df_with_results = DataConverter.combine_temp_data(data)
             temp_stats = DataConverter.calculate_temp_statistics(combined_temp_df_with_results, temperature_threshold)
+            
         else:
             temp_stats = {}
 
@@ -91,12 +92,6 @@ class DataConverter():
             "Normal Force [N].mean": round(forces_stats["Cutting Normal Force FcN [N]"]["mean"], 2),
             "Cutting Force [N].mean": round(forces_stats["Cutting Force Fc [N]"]["mean"], 2),
             "Maximum Temperature at Last Frame [°C]": round(temp_stats["Max Temperature Last Frame [°C]"], 2)}
-        
-
-        """
-        ISSO SAO OS DADOS PARA OS GRAFICOS INDIVIDUAIS
-        TEM QUE SALVAR PARA DEPOIS PLOTAR NA INTERFACE
-        """
 
         force_file = os.path.join(self.graph_folder, "forces_result.xlsx")
         temperature_file = os.path.join(self.graph_folder, "temperature_result.xlsx")
@@ -104,6 +99,8 @@ class DataConverter():
         sheet_name = file_name[4:]
         if len(sheet_name) > 31:
             sheet_name = sheet_name[:31]
+
+        # print(f"\n\n\n\n\n\n {file_name[4:]} \n\n\n\n\n")
 
         if os.path.exists(force_file):
             # Append new sheet to the existing Excel file

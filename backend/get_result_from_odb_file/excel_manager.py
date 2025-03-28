@@ -7,24 +7,52 @@ from openpyxl.worksheet.table import Table, TableStyleInfo
 
 class ExcelManager():
     def create_excel_results(self):
-        # Get parameters names
+        # Caminho do arquivo Excel
+        data_path = os.path.join(self.excel_files, "datas.xlsx")
+
+        # Obter nomes dos parâmetros
         yaml_path = os.path.join(self.user_config, "parameters.yaml")
         with open(yaml_path, "r", encoding="utf-8") as file:
             data = yaml.safe_load(file)
+
         param_set = next((param_values["Parameters"] for values in data.values() for param_values in values.values()))
         parameter_names = list(param_set.keys())
 
-        # Creating the excel file to save the datas
-        data_path = os.path.join(self.excel_files, "datas.xlsx")
+        # Criar DataFrame de Dados se o arquivo não existir
         if not os.path.exists(data_path):
-            columns = ["Iteration number", "Parameter Set", "Condition", "Error", "Error Fc", "Error Fn", "Error CCR", "Error CSR"]
-            
+            columns = ["Iteration Number", "Parameter Set", "Best Set of Iteration", "Condition", "Error", "Error Fc", "Error Fn", "Error CCR", "Error CSR"]
             parameter_columns = [f"Parameter {key}" for key in parameter_names]
-            columns = columns[:3] + parameter_columns + columns[3:]
-            df = pd.DataFrame(columns=columns)   
-            df = pd.DataFrame(0, columns=columns, index=range(1))
-            df.index.name = "Simulation"
-            df.to_excel(data_path, index=True, engine="openpyxl")
+            columns = columns[:4] + parameter_columns + columns[4:]
+
+            df_data = pd.DataFrame(0, columns=columns, index=range(1))
+            # df_data.index.name = "Simulation"
+        else:
+            df_data = pd.read_excel(data_path, sheet_name="Data", engine="openpyxl")
+
+
+
+        # Carregar informações do YAML
+        formatted_names = {}
+        with open(self.project_infos_path, "r", encoding="utf-8") as file:
+            cond_data = yaml.safe_load(file)
+
+        for value in cond_data.get("3. Conditions", {}).values():
+            cond = value["Cutting Properties"]["name"]
+            v = value["Cutting Properties"]["velocity"]
+            h = value["Cutting Properties"]["deepCuth"]
+            gam = value["Cutting Properties"]["rakeAngle"]
+
+            formatted_name = f"v{v}_h{h}_gam{gam}"
+            formatted_names[cond] = formatted_name
+
+        df_info = pd.DataFrame(list(formatted_names.items()), columns=["Condition", "Values"])
+
+        # Salvar no arquivo Excel com múltiplas planilhas
+        with pd.ExcelWriter(data_path, engine="openpyxl") as writer:
+            df_data.to_excel(writer, sheet_name="Data", index=False)
+            df_info.to_excel(writer, sheet_name="Info", index=False)
+
+
 
 
     def create_datas(self):
@@ -34,14 +62,6 @@ class ExcelManager():
         for filename, force_and_temp_datas in self.force_and_temp_datas.items():
             file = filename
             chip_datas = self.chip_datas[filename]
-
-            odb_inp_path = os.path.join(self.odb_processing, file)
-            output_dir = os.path.join(self.software_path, self.project_name, "odb_processed")
-            odb_out_file = os.path.join(output_dir, f"{file}.odb")
-
-            # if not os.path.exists(output_dir):
-            #     os.makedirs(output_dir)
-            # shutil.move(odb_inp_path, odb_out_file)
 
             info = file.split("_int")
             condition = file.split("_int_")[0]
@@ -77,7 +97,7 @@ class ExcelManager():
             error_csr = (chip_segmentation_ratio - target_chip_segentatio_ratio)/target_chip_segentatio_ratio
             error = (0.5 * abs(error_fc)) + (0.1 * abs(error_fn)) + (0.2 * abs(error_ccr)) + (0.2 * abs(error_csr))
 
-            data = {"Iteration number": int(iteration_number), "Parameter Set": int(set_number),"Condition": condition[4:]}
+            data = {"Iteration Number": int(iteration_number), "Parameter Set": int(set_number),"Condition": condition[4:]}
 
             for key, value in param_set.items():
                 data[f"Parameter {key}"] = value
@@ -91,74 +111,73 @@ class ExcelManager():
             
             new_info = pd.DataFrame([data])
             data_path = os.path.join(self.excel_files, "datas.xlsx")
-
-            old_df = pd.read_excel(data_path, engine="openpyxl", index_col=0)
-            new_df = pd.concat([old_df, new_info], ignore_index=True)
-            # y = input("testa ai")
+            old_df = pd.read_excel(data_path, engine="openpyxl")
+            new_df = pd.concat([old_df, new_info], ignore_index=True)  # Sem ignore_index para manter o índice original
             new_df = new_df.loc[~(new_df == 0).all(axis=1)]  
 
+            last_iteration = new_df["Iteration Number"].max()
+            df_last_iteration = new_df[new_df["Iteration Number"] == last_iteration]
+            best_row = df_last_iteration.loc[df_last_iteration["Error"].idxmin()]
+            best_parameter_set = best_row["Parameter Set"]
+            
+            new_df.loc[new_df["Iteration Number"] == last_iteration, "Best Set of Iteration"] = best_parameter_set
+            columns = list(new_df.columns)
+            columns.insert(2, columns.pop(columns.index("Best Set of Iteration"))) 
+            new_df = new_df[columns] 
 
-            new_df.index.name = "Simulation"
-            new_df.to_excel(data_path, index=True, engine="openpyxl")
+            with pd.ExcelWriter(data_path, engine="openpyxl", mode="a", if_sheet_exists="replace") as writer:
+                new_df.to_excel(writer, sheet_name="Data", index=False)
 
-            # Defining the best set 
-            df_information = pd.read_excel(data_path, engine="openpyxl", index_col=0)
-            df_information.index.name = "Simulation"
-            df_information["Best Set of Iteraction"] = df_information.groupby("Iteration number")["Error"].transform(lambda x: df_information.loc[x.idxmin(), "Parameter Set"])
-            column_order = df_information.columns.tolist()  
-            column_order.insert(2, column_order.pop(column_order.index("Best Set of Iteraction")))  # Move "Best Set" para a posição 3
-            df_information = df_information[column_order]   
-            df_information.to_excel(data_path, index=True, engine="openpyxl")
             ExcelManager.format_file(self, data_path)
-
 
     def format_file(self, data_path):
         # Ajustar formatação do Excel
         wb = openpyxl.load_workbook(data_path)  # Abrir o arquivo Excel
-        ws = wb.active  # Selecionar a aba ativa
+        
 
-        # Ajustar largura das colunas e centralizar o texto
-        bold_font = Font(bold=True)
-        for cell in ws[1]:  # Primeira linha (cabeçalho)
-            cell.font = bold_font
+        for i, ws in enumerate(wb.worksheets):
+            # Ajustar largura das colunas e centralizar o texto
+            bold_font = Font(bold=True)
+            for cell in ws[1]:  # Primeira linha (cabeçalho)
+                cell.font = bold_font
 
-        for col in ws.columns:
-            max_length = 0
-            col_letter = col[0].column_letter  # Letra da coluna no Excel
+            ws.sheet_view.showGridLines = False
 
-            for cell in col:
-                if cell.value:
-                    cell.alignment = Alignment(horizontal="center", vertical="center")  # Centralizar texto
-                    max_length = max(max_length, len(str(cell.value)))  # Verificar maior tamanho do texto
+            for col in ws.columns:
+                max_length = 0
+                col_letter = col[0].column_letter  # Letra da coluna no Excel
 
-            ws.column_dimensions[col_letter].width = max_length + 2  # Ajustar largura da coluna
+                for cell in col:
+                    if cell.value:
+                        cell.alignment = Alignment(horizontal="center", vertical="center")  # Centralizar texto
+                        max_length = max(max_length, len(str(cell.value)))  # Verificar maior tamanho do texto
 
-        for col in ws.columns:
-            for cell in col:
-                if cell.value and isinstance(cell.value, (int, float)):
-                    # Verificar se o nome da coluna começa com "Error"
-                    if ws.cell(row=1, column=cell.column).value.startswith("Error"):
-                        # Aplicar formato de porcentagem para as células de erro
-                        cell.number_format = '0.00%'
+                ws.column_dimensions[col_letter].width = max_length + 2  # Ajustar largura da coluna
 
-        if self.number_of_iterations == 1:
-            # Definir o intervalo da tabela (assumindo que a tabela começa na célula A1 e vai até o final dos dados)
-            table_range = f"A1:{openpyxl.utils.get_column_letter(ws.max_column)}{ws.max_row}"
+            for col in ws.columns:
+                for cell in col:
+                    if cell.value and isinstance(cell.value, (int, float)):
+                        # Verificar se o nome da coluna começa com "Error"
+                        if ws.cell(row=1, column=cell.column).value.startswith("Error"):
+                            # Aplicar formato de porcentagem para as células de erro
+                            cell.number_format = '0.00%'
 
-            # Criar a tabela
-            table = Table(displayName="ResultsTable", ref=table_range)
+            existing_table_names = set(ws.tables.keys())
+            if self.number_of_iterations == 1:
+                table_name = f"ResultsTable_{i}"
+                
+                if table_name not in existing_table_names:
+                    table_range = f"A1:{openpyxl.utils.get_column_letter(ws.max_column)}{ws.max_row}"
+                    table = Table(displayName=table_name, ref=table_range)
 
-            # Aplicar estilo à tabela
-            style = TableStyleInfo(
-                showFirstColumn=False,
-                showLastColumn=False,
-                showRowStripes=True,
-                showColumnStripes=True
-            )
-            table.tableStyleInfo = style
-
-            # Adicionar a tabela à planilha
-            ws.add_table(table)
+                    style = TableStyleInfo(
+                        showFirstColumn=False,
+                        showLastColumn=False,
+                        showRowStripes=True,
+                        showColumnStripes=True
+                    )
+                    table.tableStyleInfo = style
+                    ws.add_table(table)
 
             # Salvar as modificações
             wb.save(data_path)

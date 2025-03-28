@@ -25,6 +25,7 @@ class getResults():
         ExcelManager.create_excel_results(self)
         getResults.manage_abaqus_script(self)
         getResults.convert_json_to_excel(self)
+        ExcelManager.create_datas(self)
         
 
     def manage_abaqus_script(self):
@@ -84,7 +85,7 @@ class getResults():
         """
         Converts the generated JSON files into Excel format using the conversion script.
         """
-        # input("coloca os json da temp ai")
+        # input("TEMP:")
 
         self.chip_datas = {}
         self.force_and_temp_datas = {}
@@ -94,7 +95,7 @@ class getResults():
             GetChipMeasure.main_to_chip_results(self, base_name_file)
             DataConverter.main_json_to_excel(self, base_name_file)
             self.ui.combobox_file.addItems([base_name_file])
-        ExcelManager.create_datas(self)
+        
         
 
     def create_path_to_chip_analysis(self):

@@ -119,13 +119,13 @@ class PararelSimulation():
 
             for attempt in range(1, retries + 1):
                 try:
-                    print("TRY")
-                    print(command)
+                    # print("TRY")
+                    # print(command)
 
                     os.chdir(inp_dir)
                     
 
-                    print("Diretório atual:", os.getcwd())
+                    # print("Diretório atual:", os.getcwd())
                     # print("Comando:", command)
 
                     process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -133,10 +133,10 @@ class PararelSimulation():
                     print(f"stdout: {stdout.decode()}\n", f"stderr: {stderr.decode()}\n")
                     process.wait()
 
-                    # x = input("simulacao")
+                    # x = input("SIM:")
 
                     filename = command.split("job=")[1].split()[0]
-                    print('aaaaaaaaaaaaa', os.path.exists(output_file))
+                    # print('aaaaaaaaaaaaa', os.path.exists(output_file))
                     if os.path.exists(output_file):
                         PararelSimulation.move_odb(self, filename, server_folder, drive_folder)
                         return "Sucess"

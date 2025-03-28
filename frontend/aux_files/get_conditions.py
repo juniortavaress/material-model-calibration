@@ -85,8 +85,10 @@ class GetCondition:
 
             condition = self.ui.comboBox_condition.currentText()
 
+            # print(f"cond_{condition[-2:]}")
             data["3. Conditions"][condition] = {
                 "Cutting Properties": {
+                    "name": f"cond{condition[-2:]}",
                     "velocity": velocity, 
                     "deepCuth": deep_cuth, 
                     "rakeAngle": rake_angle, 
@@ -163,13 +165,14 @@ class GetCondition:
         for info, value in data.items():
             for key, condition_data in value.items():
                 if key[:9] == "Condition":
-                    v = condition_data["Cutting Properties"]["velocity"]
-                    h = condition_data["Cutting Properties"]["deepCuth"]
-                    gam = condition_data["Cutting Properties"]["rakeAngle"]
+                    cond = condition_data["Cutting Properties"]["name"]
+                    # v = condition_data["Cutting Properties"]["velocity"]
+                    # h = condition_data["Cutting Properties"]["deepCuth"]
+                    # gam = condition_data["Cutting Properties"]["rakeAngle"]
                     input_file_path = condition_data["Cutting Properties"]["inputFile"]
 
                     if os.path.exists(input_file_path):
-                        new_input_file_path = os.path.join(self.inp_path, f"sim_v{v}_h{h}_gam{gam}.inp")
+                        new_input_file_path = os.path.join(self.inp_path, f"sim_{cond}.inp")
                         shutil.copy(input_file_path, new_input_file_path)
 
 

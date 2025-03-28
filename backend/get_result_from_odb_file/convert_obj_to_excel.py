@@ -1,4 +1,5 @@
 import os
+import yaml
 import traceback
 import alphashape
 import numpy as np
@@ -398,7 +399,16 @@ class GetChipMeasure():
             output_directory (str): Path to the output directory.
         """
         for base_name, group_results in file_groups.items():
-            h = float(f"{base_name.split('h')[1].split('_g')[0]}")
+            cond = base_name.split("_")[1]
+
+            with open(self.project_infos_path, "r", encoding="utf-8") as file:
+                data = yaml.safe_load(file)
+            for condition in data.get("3. Conditions", {}).values():
+                if condition["Cutting Properties"]["name"] == "cond01":
+                    h = int(condition["Cutting Properties"]["deepCuth"])
+                    break  
+
+            # h = float(f"{base_name.split('h')[1].split('_g')[0]}")
             means_min = [frame_info[1] for frame_info in group_results]
             means_max = [frame_info[2] for frame_info in group_results]
 

@@ -103,7 +103,7 @@ class GetPsoAndSimulation:
             with open(self.project_infos_path, "r", encoding="utf-8") as file:
                 data = yaml.safe_load(file) or {}
 
-            defaut_file = os.path.join(base_path, r"backend\aux_files\code_to_run_simulation.py")
+            defaut_file = os.path.join(base_path, r"backend\aux_files\aux_simulation\code_to_run_simulation.py")
             computers = data["7. PSO and Simulation"]["Computers"]
             cores_by_simulation = data["7. PSO and Simulation"]["Cores by Simulation"]
             main_activated = data["7. PSO and Simulation"]["Main Computer"]

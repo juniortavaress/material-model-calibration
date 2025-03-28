@@ -83,11 +83,11 @@ class SimulationManager:
                 SimulationManager.except_function(self, e, "Collecting results")
 
 
-        # if not self.error_tracking:
-        #     try:    
-        #         SimulationManager.copy_file(self, "ODB")
-        #     except Exception as e:
-        #         SimulationManager.except_function(self, e, "Moving ODB")
+        if not self.error_tracking:
+            try:    
+                SimulationManager.copy_file(self, "ODB")
+            except Exception as e:
+                SimulationManager.except_function(self, e, "Moving ODB")
         
 
     def copy_file(self, type):

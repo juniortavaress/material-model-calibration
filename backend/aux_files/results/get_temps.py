@@ -44,22 +44,6 @@ class GetTemps:
             path = info_condition["Cutting Properties"]["tempPath"]
             node_range_strs[h] = path
 
-        # # Mine
-        # node_range_strs = {
-        #     "h25": "900, 10860:10818:-1, 148, 6768:6755:-1, 433, 99947:100955:1, 6358",
-        #     "h50": "880, 10850:10813:-1, 148, 6768:6755:-1, 433, 98947:99955:1, 6338",
-        #     "h75": "860, 10840:10807:-1, 148, 6768:6755:-1, 433, 97947:98955:1, 6318",
-        #     "h100": "840, 10830:10802:-1, 148, 6768:6755:-1, 433, 97947:97955:1, 6298"
-        # }
-        
-        # Severin
-        # node_range_strs = {
-        #     "h0025": "681, 16409:16381:-1, 1085, 20456:20443:-1, 1429, 79613:79605:-1, 5483",
-        #     "h0050": "701, 17859:17831:-1, 1105, 21906:21893:-1, 1449, 81063:81055:-1, 5493",
-        #     "h0075": "721, 19309:19281:-1, 1125, 23356:23343:-1, 1469, 82513:82505:-1, 5503",
-        #     "h0100": "741, 20759:20731:-1, 1145, 24806:24793:-1, 1489, 83963:83955:-1, 5513"
-        # }
-
         spanwinkel_nodes = {
             "6": 2878,  # Spanwinkel +6° → Knoten 2878
             "-6": 1795   # Spanwinkel -6° → Knoten 1795
@@ -82,13 +66,24 @@ class GetTemps:
             filename = os.path.splitext(odb_file)[0]
             odb_file_path = os.path.join(self.odb_dir, odb_file)
             output_folder = os.path.join(self.json_dir, filename)
+            if not os.path.exists(output_folder):
+                os.makedirs(output_folder)
             output_json = os.path.join(output_folder, "temperature.json")
             
             try: 
-                # Extract information from the filename (e.g., gam and h values)
-                # gam_value_key, h_value_key = OdbUtils.extract_info_from_filename(filename)
-                gam_value_key = re.search(r"_gam(-?\d+)_", filename).group(1) 
-                h_value_key = "h{}".format(re.search(r"h(\d+)", filename).group(1))
+
+                cond = filename.split("_")[1]
+                with open(self.project_infos_path, "r") as file:
+                    data_cond = yaml.safe_load(file)
+
+                # Itera sobre as condições e verifica se o "name" é o que você deseja
+                for condition, info in data_cond["3. Conditions"].items():
+                    if info["Cutting Properties"]["name"] == cond:
+                        h_value_key = "h{}".format(info["Cutting Properties"]["deepCuth"])
+                        gam_value_key = info["Cutting Properties"]["rakeAngle"]
+                
+                print(cond, h_value_key, gam_value_key)
+
 
                 # Check if extracted parameters match the predefined mappings
                 if h_value_key in node_range_strs and gam_value_key in spanwinkel_nodes:

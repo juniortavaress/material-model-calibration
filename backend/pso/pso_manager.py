@@ -66,7 +66,7 @@ class PsoManager():
             for conditions, value in conditions_info.items():
                 for info, info_value in value.items():
                     if info == "Cutting Properties":
-                        name = f"v{info_value['velocity']}_h{info_value['deepCuth']}_gam{info_value['rakeAngle']}"
+                        name = info_value['name']
                     elif info == "Experimental Datas":
                         values = {"fc": float(info_value["cutting_force"]), "fn": float(info_value["normal_force"]), "ccr": float(info_value["chip_compression"]), "csr": float(info_value["chip_segmentation"])}
                         self.target_values[name] = values
@@ -191,7 +191,8 @@ class PsoManager():
         """
         try:
             # Perform PSO optimization
-            for _ in range(self.number_of_iterations):
+            
+            for iteration in range(self.number_of_iterations):
                 for i in range(self.number_of_particles):
                     r1, r2 = np.random.rand(), np.random.rand()
 
@@ -227,7 +228,7 @@ class PsoManager():
                 positions = [p.tolist() for p in positions] 
 
                 PsoManager.save_iteration_info(self, velocities, positions, personal_best_positions, personal_best_scores, global_best_position, global_best_score, global_best_scores_history)
-                return global_best_position, global_best_score
+            return global_best_position, global_best_score
         except Exception as e:
             PsoManager._handle_error(self, e, "Error at def pso_iterations")
 
@@ -377,7 +378,7 @@ class PsoManager():
         if best_set is not None:
             data_path = os.path.join(self.excel_files, "datas.xlsx")
             df_info = pd.read_excel(data_path, engine="openpyxl")
-            filtered_mean = df_info[(df_info["Iteration number"] == iteration_number) & (df_info["Parameter Set"] == int(best_set))].mean(numeric_only=True)            
+            filtered_mean = df_info[(df_info["Iteration Number"] == iteration_number) & (df_info["Parameter Set"] == int(best_set))].mean(numeric_only=True)            
             set = f"set-0{best_set}" if best_set < 10 else f"set-{best_set}"
             self.best_parameters = self.info_set[current_iteration][set]["Parameters"]
             self.error = filtered_mean["Error"]
@@ -392,6 +393,7 @@ class PsoManager():
         """
         Handles errors by logging them, updating error tracking, and sending a status message.
         """
+        print("DEU ERRO CARALHO")
         self.e = exception
         self.stage = stage
         self.error_tracking = True
