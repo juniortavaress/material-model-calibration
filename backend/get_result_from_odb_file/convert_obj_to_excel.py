@@ -117,13 +117,16 @@ class GetChipMeasure():
         peaks, _ = find_peaks(min_distances)
         valleys, _ = find_peaks(-min_distances)
 
-        if len(peaks) == 0:
-            print("No peaks were found in the distance data.")
-        if len(valleys) == 0:
-            print("No valleys were found in the distance data.")
-
-        absolute_maximum = np.max(min_distances[peaks]) * 1000
-        absolut_minimum = np.min(min_distances[valleys]) * 1000
+        if len(peaks) > 0:
+            absolute_maximum = np.max(min_distances[peaks]) * 1000
+        else:
+            absolute_maximum = 0
+           
+        if len(valleys) > 0:
+            absolut_minimum = np.min(min_distances[valleys]) * 1000
+        else:
+            absolut_minimum = 0      
+        
         return min_distances, peaks, valleys, sides, points, absolut_minimum, absolute_maximum
 
 

@@ -11,7 +11,11 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>MMCA</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>C:/Users/adam-ua769pu3t3n7k4o/Downloads/web-optimization.png</normaloff>C:/Users/adam-ua769pu3t3n7k4o/Downloads/web-optimization.png</iconset>
   </property>
   <property name="styleSheet">
    <string notr="true">QFrame {
@@ -71,7 +75,7 @@ padding: 5px;}
     <item>
      <widget class="QStackedWidget" name="pages">
       <property name="currentIndex">
-       <number>9</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="page_login">
        <property name="styleSheet">
