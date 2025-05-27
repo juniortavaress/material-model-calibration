@@ -68,7 +68,7 @@ class GetCondition:
         velocity = GetCondition.check_values(self, self.ui.lineEdit_velocity.text().replace(',', '.'))
         deep_cuth = GetCondition.check_values(self, self.ui.lineEdit_deepCuth.text().replace(',', '.'))
         rake_angle = GetCondition.check_values(self, self.ui.lineEdit_rakeAngle.text().replace(',', '.').replace('+', ''))
-        temp_path = self.ui.lineEdit_tempPath.text()
+        temp_path = self.ui.lineEdit_tempPath.text() if self.ui.lineEdit_tempPath.text() else None
         inputFile = self.ui.label_input.text()
 
         cutting_force = GetCondition.check_values(self, self.ui.lineEdit_cutting_force.text().replace(',', '.'))
@@ -76,7 +76,7 @@ class GetCondition:
         chip_compression = GetCondition.check_values(self, self.ui.lineEdit_CCR.text().replace(',', '.'))
         chip_segmentation = GetCondition.check_values(self, self.ui.lineEdit_CSR.text().replace(',', '.'))
 
-        if velocity and deep_cuth and rake_angle and temp_path and inputFile:
+        if velocity and deep_cuth and rake_angle and inputFile:
             with open(self.project_infos_path, "r", encoding="utf-8") as file:
                 data = yaml.safe_load(file) or {}
 

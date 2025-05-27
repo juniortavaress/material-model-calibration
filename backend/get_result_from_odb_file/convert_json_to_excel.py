@@ -36,6 +36,7 @@ class DataConverter():
         """        
         stats_list = []
         try:
+            json_file_path_forces, json_file_path_temp = None, None
             for folder in os.listdir(folder_path):
                 if folder == file_name:
                     folder_full_path = os.path.join(folder_path, folder)
@@ -91,7 +92,7 @@ class DataConverter():
         self.force_and_temp_datas[file_name] = {
             "Normal Force [N].mean": round(forces_stats["Cutting Normal Force FcN [N]"]["mean"], 2),
             "Cutting Force [N].mean": round(forces_stats["Cutting Force Fc [N]"]["mean"], 2),
-            "Maximum Temperature at Last Frame [°C]": round(temp_stats["Max Temperature Last Frame [°C]"], 2)}
+            "Maximum Temperature at Last Frame [°C]": round(temp_stats.get("Max Temperature Last Frame [°C]", 0), 2)}
 
         force_file = os.path.join(self.graph_folder, "forces_result.xlsx")
         temperature_file = os.path.join(self.graph_folder, "temperature_result.xlsx")
@@ -100,25 +101,22 @@ class DataConverter():
         if len(sheet_name) > 31:
             sheet_name = sheet_name[:31]
 
-        # print(f"\n\n\n\n\n\n {file_name[4:]} \n\n\n\n\n")
-
         if os.path.exists(force_file):
             # Append new sheet to the existing Excel file
-            with pd.ExcelWriter(force_file, mode='a', engine='openpyxl') as writer:
+            with pd.ExcelWriter(force_file, mode='a', engine='openpyxl', if_sheet_exists='replace') as writer:
                 combined_forces_df_with_results.to_excel(writer, sheet_name=file_name[4:], index=False)
         else:
-            combined_forces_df_with_results.to_excel(force_file, sheet_name=file_name[4:], index=False, engine="openpyxl")
+            # Create a new Excel file
+            with pd.ExcelWriter(force_file, engine='openpyxl') as writer:
+                combined_forces_df_with_results.to_excel(writer, sheet_name=file_name[4:], index=False)
         
         # Save or append the temperature DataFrame
-        sheet_name = file_name[4:]
-        if len(sheet_name) > 31:
-            sheet_name = sheet_name[:31]
-
-        if os.path.exists(temperature_file):
-            with pd.ExcelWriter(temperature_file, mode='a', engine='openpyxl') as writer:
-                combined_temp_df_with_results.to_excel(writer, sheet_name=sheet_name, index=False)
-        else:
-            combined_temp_df_with_results.to_excel(temperature_file, sheet_name=sheet_name, index=False, engine="openpyxl")
+        if json_file_path_temp:
+            if os.path.exists(temperature_file):
+                with pd.ExcelWriter(temperature_file, mode='a', engine='openpyxl', if_sheet_exists='replace') as writer:
+                    combined_temp_df_with_results.to_excel(writer, sheet_name=sheet_name, index=False)
+            else:
+                combined_temp_df_with_results.to_excel(temperature_file, sheet_name=sheet_name, index=False, engine="openpyxl")
     
 
     @staticmethod

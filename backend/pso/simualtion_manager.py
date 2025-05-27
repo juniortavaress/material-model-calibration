@@ -37,6 +37,7 @@ class SimulationManager:
                 if self.main_computer == "Yes":
                     splits = np.array_split(lis_dir_inp, self.number_of_cp)
                     computer_dict = {f"Computer {i+1}": {"status": bool(split.tolist()), "files": split.tolist()} for i, split in enumerate(splits)}
+                    
                 else:
                     splits = np.array_split(lis_dir_inp, self.number_of_cp-1)
                     computer_dict = {f"Computer {i+2}": {"status": bool(split.tolist()), "files": split.tolist()} for i, split in enumerate(splits)}

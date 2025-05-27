@@ -37,19 +37,29 @@ class getResults():
 
         # Defining Paths to Chip Analysis
         getResults.create_path_to_chip_analysis(self)
-
+   
         # Define Abaqus command strings
         abaqus_command_temperatures = rf'C:\SIMULIA\Commands\abq2021.bat python {self.software_path}\extract_results\get_temps.py {self.odb_processing} {self.json_defaut_path} {self.project_infos_path}'
         abaqus_command_forces = rf'C:\SIMULIA\Commands\abq2021.bat python {self.software_path}\extract_results\get_forces.py {self.odb_processing} {self.json_defaut_path}'
         abaqus_command_chip_obj = rf'C:\SIMULIA\Commands\abq2021.bat cae script={self.software_path}\extract_results\get_chip_obj_file.py'
 
-        commands = [abaqus_command_forces, abaqus_command_temperatures, abaqus_command_chip_obj]
-        # commands = [abaqus_command_forces, abaqus_command_temperatures]
-        # commands = [abaqus_command_chip_obj, abaqus_command_forces]
+        with open(self.project_infos_path, "r") as file:
+            data = yaml.safe_load(file)
+        
+        first_condition = next(iter(data["3. Conditions"].values()))
+        path = first_condition["Cutting Properties"]["tempPath"]
+        
+        if path:
+            process_names = ["get_forces", "get_temps", "get_chip"]
+            commands = [abaqus_command_forces, abaqus_command_temperatures, abaqus_command_chip_obj]
+        else:
+            process_names = ["get_forces", "get_chip"]
+            commands = [abaqus_command_chip_obj, abaqus_command_forces]
     
+        print('VERIFICA OS COMANDO AI MEU QUERIDO', commands)
+
         # Start processes for each Abaqus script
         processes = []
-        process_names = ["get_temps", "get_forces", "get_chip"]
         for name, command in zip(process_names, commands):
             process_name = f"Process_{name}"
             process = multiprocessing.Process(target=getResults.get_data_from_odb, args=(command, ))

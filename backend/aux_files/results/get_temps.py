@@ -27,8 +27,8 @@ class GetTemps:
         sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))))
 
         # Initialize mappings for node ranges and tool nodes and process ODB files
-        node_range_strs, spanwinkel_nodes = GetTemps.initialize_data(self)
-        self._process_odb_files(node_range_strs, spanwinkel_nodes)
+        node_range_strs = GetTemps.initialize_data(self)
+        self._process_odb_files(node_range_strs)
 
 
     def initialize_data(self):
@@ -44,14 +44,10 @@ class GetTemps:
             path = info_condition["Cutting Properties"]["tempPath"]
             node_range_strs[h] = path
 
-        spanwinkel_nodes = {
-            "6": 2878,  # Spanwinkel +6° → Knoten 2878
-            "-6": 1795   # Spanwinkel -6° → Knoten 1795
-        }
-        return node_range_strs, spanwinkel_nodes
+        return node_range_strs
 
 
-    def _process_odb_files(self, node_range_strs, spanwinkel_nodes):
+    def _process_odb_files(self, node_range_strs):
         """
         Process all ODB files in the folder.
 
@@ -80,17 +76,12 @@ class GetTemps:
                 for condition, info in data_cond["3. Conditions"].items():
                     if info["Cutting Properties"]["name"] == cond:
                         h_value_key = "h{}".format(info["Cutting Properties"]["deepCuth"])
-                        gam_value_key = info["Cutting Properties"]["rakeAngle"]
                 
-                print(cond, h_value_key, gam_value_key)
-
 
                 # Check if extracted parameters match the predefined mappings
-                if h_value_key in node_range_strs and gam_value_key in spanwinkel_nodes:
+                if h_value_key in node_range_strs:
                     node_range_str = node_range_strs[h_value_key]
-                    # node_range_str = self.temp_path
-                    tool_node_label = spanwinkel_nodes[gam_value_key]
-                    data = self._extract_data(filename, odb_file_path, node_range_str, tool_node_label)
+                    data = self._extract_data(filename, odb_file_path, node_range_str)
     
                 # Save the data as a JSON file and 
                 with open(output_json, "w") as file:
@@ -100,7 +91,7 @@ class GetTemps:
                 traceback.print_exc()
 
 
-    def _extract_data(self, filename, odb_file, node_range_str, tool_node_label):
+    def _extract_data(self, filename, odb_file, node_range_str):
         """
         Extract temperature data from the ODB file.
 

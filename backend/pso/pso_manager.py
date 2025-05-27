@@ -243,7 +243,7 @@ class PsoManager():
         """
         try:
             error_list = []
-            current_iteration = f"Iteration 0{self.count_iteration}"      
+            current_iteration = f"Iteration 0{self.count_iteration}" if self.count_iteration < 10 else f"Iteration {self.count_iteration}"      
 
             # Format the parameters 
             for index, param in enumerate(parameters):

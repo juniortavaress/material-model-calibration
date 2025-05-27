@@ -76,6 +76,12 @@ class GetForces():
         # Get the available history regions from the step
         sets_and_nodes = step.historyRegions.keys()
 
+        region_name = None
+        for region in sets_and_nodes:
+            if 'tool' in region.lower():  # Verifica se 'tool' está no nome da região
+                region_name = region
+                break
+
         # Select the last region as the region of interest (e.g., a node or part)
         region_name = sets_and_nodes[-1]
         region = step.historyRegions[region_name]

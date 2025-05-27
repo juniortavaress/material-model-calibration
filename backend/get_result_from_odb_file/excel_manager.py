@@ -1,5 +1,6 @@
 import os
 import yaml
+import math
 import pandas as pd
 import openpyxl
 from openpyxl.styles import Alignment, Font
@@ -89,13 +90,14 @@ class ExcelManager():
                 target_cutting_force = self.target_values[condition[4:]].get("fc")
                 target_normal_force = self.target_values[condition[4:]].get("fn")
                 target_chip_compression_ratio = self.target_values[condition[4:]].get("ccr")
-                target_chip_segentatio_ratio = self.target_values[condition[4:]].get("csr")
+                target_chip_segentation_ratio = self.target_values[condition[4:]].get("csr")
 
             error_fc = (simulated_cutting_forces - target_cutting_force)/target_cutting_force
             error_fn = (simulated_normal_forces - target_normal_force)/target_normal_force
             error_ccr = (chip_compression_ratio - target_chip_compression_ratio)/target_chip_compression_ratio
-            error_csr = (chip_segmentation_ratio - target_chip_segentatio_ratio)/target_chip_segentatio_ratio
-            error = (0.5 * abs(error_fc)) + (0.1 * abs(error_fn)) + (0.2 * abs(error_ccr)) + (0.2 * abs(error_csr))
+            error_csr = (chip_segmentation_ratio - target_chip_segentation_ratio)/target_chip_segentation_ratio
+            
+            error = math.sqrt((0.5 * (error_fc)**2) + (0.1 * (error_fn)**2) + (0.2 * (error_ccr)**2) + (0.2 * (error_csr)**2))
 
             data = {"Iteration Number": int(iteration_number), "Parameter Set": int(set_number),"Condition": condition[4:]}
 
@@ -117,10 +119,24 @@ class ExcelManager():
 
             last_iteration = new_df["Iteration Number"].max()
             df_last_iteration = new_df[new_df["Iteration Number"] == last_iteration]
-            best_row = df_last_iteration.loc[df_last_iteration["Error"].idxmin()]
-            best_parameter_set = best_row["Parameter Set"]
+
+
+            # best_row = df_last_iteration.loc[df_last_iteration["Error"].idxmin()]
+            # best_parameter_set = best_row["Parameter Set"]
             
-            new_df.loc[new_df["Iteration Number"] == last_iteration, "Best Set of Iteration"] = best_parameter_set
+
+            # Agrupar por "Parameter Set" e calcular a média de "Error" apenas para a última iteração
+            df_avg_errors_last_iter = df_last_iteration.groupby("Parameter Set")["Error"].mean().reset_index()
+            # Encontrar o conjunto de parâmetros com o menor erro médio na última iteração
+            best_row_last_iter = df_avg_errors_last_iter.loc[df_avg_errors_last_iter["Error"].idxmin()]
+            # Obter o conjunto de parâmetros com o menor erro
+            best_parameter_set_last_iter = best_row_last_iter["Parameter Set"]
+            # Atualizar o DataFrame com o melhor conjunto de parâmetros para a última iteração
+            new_df.loc[new_df["Iteration Number"] == last_iteration, "Best Set of Iteration"] = best_parameter_set_last_iter
+
+
+
+            new_df.loc[new_df["Iteration Number"] == last_iteration, "Best Set of Iteration"] = best_parameter_set_last_iter
             columns = list(new_df.columns)
             columns.insert(2, columns.pop(columns.index("Best Set of Iteration"))) 
             new_df = new_df[columns] 

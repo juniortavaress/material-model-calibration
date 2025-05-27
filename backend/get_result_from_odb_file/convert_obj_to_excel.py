@@ -147,9 +147,11 @@ class GetChipMeasure():
         y_max = np.max(arc[:, 1])
         z_min = np.min(arc[:, 2])
         z_max = np.max(arc[:, 2])
-
+        y_lim_min = 1.03 * y_min if y_min > 0 else 0
+        
         points = arc[(arc[:, 2] >= 0.7 * z_min) & (arc[:, 2] <= 1.3 * z_max)]
-        points = points[(points[:, 1] >= 1.03 * y_min) & (points[:, 1] <= 0.97 * y_max)]
+        points = points[(points[:, 1] >= y_lim_min) & (points[:, 1] <= 0.97 * y_max)]
+        
         return np.delete(points, 2, axis=1) 
 
 
@@ -407,7 +409,7 @@ class GetChipMeasure():
             with open(self.project_infos_path, "r", encoding="utf-8") as file:
                 data = yaml.safe_load(file)
             for condition in data.get("3. Conditions", {}).values():
-                if condition["Cutting Properties"]["name"] == "cond01":
+                if condition["Cutting Properties"]["name"] == cond:
                     h = int(condition["Cutting Properties"]["deepCuth"])
                     break  
 
@@ -416,8 +418,13 @@ class GetChipMeasure():
             means_max = [frame_info[2] for frame_info in group_results]
 
         # If no value is found, set the averages to 0 to avoid generating an error.
-        if not means_min and not means_max:
-            means_max = 0
-            means_min = 0
-        self.chip_datas[base_name] = {"Chip Compression Ratio (CCR)": np.mean(means_max)/h, "Chip Segmentatio Ratio (CSR)": np.mean(means_max)/np.mean(means_min)}
+        if not means_min or not means_max:
+            CCR = 1
+            CSR = 1
+        else:
+            CCR = np.mean(means_max)/h
+            CSR = np.mean(means_max)/np.mean(means_min)
+
+
+        self.chip_datas[base_name] = {"Chip Compression Ratio (CCR)": CCR, "Chip Segmentatio Ratio (CSR)": CSR}
 

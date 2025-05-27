@@ -69,11 +69,6 @@ class ComputerXX():
                     simulation = PararelSimulation
                     simulation.start_simulation(simulation, id, list_comp_XX, server_folder, drive_folder, number_of_cores = cores_by_simulation)
 
-                data["Computer X"]["status"] = False
-
-                with open(info_pcXX, "w") as file:
-                    json.dump(data, file, indent=4)
-
             except Exception as e:
                 traceback.print_exc()
 

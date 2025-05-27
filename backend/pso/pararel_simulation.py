@@ -5,7 +5,7 @@ import psutil
 import traceback
 import subprocess
 import concurrent.futures
-
+from filelock import FileLock
 
 class PararelSimulation():
     """
@@ -37,6 +37,22 @@ class PararelSimulation():
         PararelSimulation.getINPFile(self, server_folder)
         PararelSimulation.runSimulations(self, id, server_folder, drive_folder)
     
+        yaml_path = os.path.join(drive_folder, "auxiliary_files\python_files_to_computers\computers_list.yaml")
+        lock_path = yaml_path + ".lock"
+        lock = FileLock(lock_path)
+
+        with lock:
+            with open(yaml_path, "r") as file:
+                data = yaml.safe_load(file)
+
+            data[f"Computer {id[-1:]}"]["status"] = False
+            print("CP1: ", data["Computer 1"]["status"])
+            print("CP2: ",data["Computer 2"]["status"])
+            import time
+            time.sleep(10)
+            with open(yaml_path, "w") as file:
+                yaml.dump(data, file)
+
 
     def calculate_number_pararel_simulation(self, number_of_cores):
         """
@@ -119,14 +135,7 @@ class PararelSimulation():
 
             for attempt in range(1, retries + 1):
                 try:
-                    # print("TRY")
-                    # print(command)
-
                     os.chdir(inp_dir)
-                    
-
-                    # print("Diretório atual:", os.getcwd())
-                    # print("Comando:", command)
 
                     process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                     stdout, stderr = process.communicate()
@@ -136,7 +145,6 @@ class PararelSimulation():
                     # x = input("SIM:")
 
                     filename = command.split("job=")[1].split()[0]
-                    # print('aaaaaaaaaaaaa', os.path.exists(output_file))
                     if os.path.exists(output_file):
                         PararelSimulation.move_odb(self, filename, server_folder, drive_folder)
                         return "Sucess"
@@ -154,15 +162,6 @@ class PararelSimulation():
                 command = futures[future]
                 try:                 
                     result = future.result()
-
-                    yaml_path = os.path.join(drive_folder, "auxiliary_files\python_files_to_computers\computers_list.yaml")
-                    with open(yaml_path, "r") as file:
-                        data = yaml.safe_load(file)
-
-                    data[f"Computer {id[-1:]}"]["status"] = False
-                    with open(yaml_path, "w") as file:
-                        yaml.dump(data, file)
-
                 except Exception as e:
                     traceback.print_exc()
         

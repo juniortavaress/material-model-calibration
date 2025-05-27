@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 14.0.1, 2025-03-11T13:17:22. -->
+<!-- Written by QtCreator 14.0.1, 2025-05-27T10:31:02. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -553,7 +553,7 @@
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">backend\config\config_software.py</value>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">PythonEditor.RunConfiguration.S:/Junior/abaqus-with-python/otimization-scripts/new-version/material-model-calibration/backend/config/config_software.py</value>
     <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">S:/Junior/abaqus-with-python/otimization-scripts/new-version/material-model-calibration/backend/config/config_software.py</value>
-    <value type="bool" key="ProjectExplorer.RunConfiguration.Customized">false</value>
+    <value type="bool" key="ProjectExplorer.RunConfiguration.Customized">true</value>
     <value type="QString" key="PythonEditor.RunConfiguation.Script">S:\Junior\abaqus-with-python\otimization-scripts\new-version\material-model-calibration\backend\config\config_software.py</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>

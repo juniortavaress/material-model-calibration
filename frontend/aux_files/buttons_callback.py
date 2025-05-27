@@ -22,7 +22,9 @@ class ButtonsCallback():
         self.ui.label_pso_result_warning.hide()
         self.ui.button_settings_next_page.setEnabled(False)
         self.resize(1000, 400) if not self.isMaximized() else None
-        self.ui.pages.setCurrentIndex(0)
+
+        self.ui.frame_20.hide()
+        # self.ui.pages.setCurrentIndex(0)
 
         # Page 01 - Project Name
         self.ui.button_login_next_page.clicked.connect(lambda: SoftwareConfig.project_setup(self))
