@@ -150,7 +150,7 @@ class GetCondition:
     def move_inp_files(self):
         """ Moves the input files to the appropriate directory if no errors are found in the conditions. """
         if os.path.exists(self.project_infos_path) and not self.error_tracking:
-            self.ui.pages.setCurrentIndex(4)
+            self.ui.pages.setCurrentIndex(6)
             GetCondition.move_files(self)
         else:
             self.ui.label_condition_warning.show()

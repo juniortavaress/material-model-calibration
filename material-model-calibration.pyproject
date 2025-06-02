@@ -3,14 +3,12 @@
         "mainwindow.py",
         "frontend/interface/form.ui",
         "frontend/interface/icons.qrc",
-        "frontend/aux_files/aux_dict.py",
         "frontend/aux_files/buttons_callback.py",
         "frontend/aux_files/get_conditions.py",
         "frontend/aux_files/variables_manager.py",
         "frontend/aux_files/yaml_generator.py",
         "frontend/aux_files/get_parameters.py",
         "frontend/aux_files/get_pso_and_simulation_info.py",
-        "backend/aux_files/code_to_run_simulation.py",
         "frontend/aux_files/show_status_message.py",
         "backend/pso/start_otimization.py",
         "backend/pso/pso_manager.py",
@@ -23,6 +21,17 @@
         "backend/aux_files/thread/thread_manager.py",
         "backend/get_result_from_odb_file/create_graphs.py",
         "backend/get_result_from_odb_file/excel_manager.py",
-        "backend/config/config_software.py"
+        "backend/config/config_software.py",
+        "backend/aux_files/results/get_chip_obj_file.py",
+        "backend/aux_files/results/get_forces.py",
+        "backend/aux_files/results/get_temps.py",
+        "backend/aux_files/aux_simulation/code_to_run_simulation.py",
+        "backend/aux_files/aux_geometry/layout/graphLayout.py",
+        "backend/aux_files/aux_geometry/layout/pageLayout.py",
+        "backend/aux_files/aux_geometry/geometry/facesGenerator.py",
+        "backend/aux_files/aux_geometry/geometry/getGeometry.py",
+        "backend/aux_files/aux_geometry/datas/setAndSaveDefautDatas.py",
+        "backend/aux_files/aux_geometry/auxFiles/dictionaries.py",
+        "backend/aux_files/aux_geometry/auxFiles/generalFunctions.py"
     ]
 }

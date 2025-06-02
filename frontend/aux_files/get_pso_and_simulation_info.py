@@ -85,7 +85,7 @@ class GetPsoAndSimulation:
                 "Main Computer": main_computer}
 
             YamlClass.save_yaml_info(self, self.project_infos_path, "7. PSO and Simulation", data["7. PSO and Simulation"])
-            self.ui.pages.setCurrentIndex(8)
+            self.ui.pages.setCurrentIndex(10)
         else:
             self.ui.label_pso_result_warning.show()
             QTimer.singleShot(3000, lambda: self.ui.label_pso_result_warning.hide())

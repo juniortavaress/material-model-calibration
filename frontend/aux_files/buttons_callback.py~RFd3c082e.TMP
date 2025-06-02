@@ -27,7 +27,7 @@ class ButtonsCallback():
         self.resize(1000, 400) if not self.isMaximized() else None
 
         self.ui.frame_20.hide()
-        self.ui.pages.setCurrentIndex(0)
+        # self.ui.pages.setCurrentIndex(0)
 
         # Page 01 - Project Name
         self.ui.button_login_next_page.clicked.connect(lambda: SoftwareConfig.project_setup(self))
@@ -54,13 +54,15 @@ class ButtonsCallback():
 
         # Page 0X
         self.ax_geometry, self.fig_geometry, self.canvas_geometry = GraphLayout.create_plot_areas(self, self.ui.plot, '3d')
+        # self.ax_Result, self.fig_Result, self.canvas_Result = GraphLayout.create_plot_areas(self, self.ui.plotResult)
         self.resizeEvent = lambda event: GraphLayout.resize(self)
+
         self.ui.tabWidget.currentChanged.connect(lambda: GetGeometry.set_info(self))
         self.ui.button_create_geometry_back.clicked.connect(lambda: self.ui.pages.setCurrentIndex(3))
         self.ui.button_create_geometry_next.clicked.connect(lambda: self.ui.pages.setCurrentIndex(5))
-        self.ui.defautValues.stateChanged.connect(lambda: DataInicialization.get_defaut_datas(self))
-
         # self.ui.button_create_geometry_next.clicked.connect(lambda: GetGeometry.save_infos(self))
+
+        self.ui.defautValues.stateChanged.connect(lambda: DataInicialization.get_defaut_datas(self))
         # self.ui.applyButton.clicked.connect(lambda: GetGeometry.set_info(self))
 
 
@@ -72,37 +74,34 @@ class ButtonsCallback():
         self.ui.comboBox_condition.currentIndexChanged.connect(lambda: GetCondition.change_combobox_info(self))
         self.ui.button_input_file.clicked.connect(lambda: GetCondition.get_input_path(self))
         self.ui.button_newCondition.clicked.connect(lambda: GetCondition.get_defaut_user_conditions(self, "new"))
-
-
         self.ui.button_conditions_next_page.clicked.connect(lambda: GetParameters.save_parameters(self, "load"))
         self.ui.button_conditions_next_page.clicked.connect(lambda: GetCondition.save_conditions(self))
         self.ui.button_conditions_next_page.clicked.connect(lambda: GetParameters.parameter_and_interface_manager(self))
 
-
         # Page 05 - Selection of Parameters to Calibrate
-        self.ui.button_parameter_selection_back.clicked.connect(lambda: self.ui.pages.setCurrentIndex(5))
-        self.ui.button_parameter_selection_next_page.clicked.connect(lambda: self.ui.pages.setCurrentIndex(7))
+        self.ui.button_parameter_selection_back.clicked.connect(lambda: self.ui.pages.setCurrentIndex(3))
+        self.ui.button_parameter_selection_next_page.clicked.connect(lambda: self.ui.pages.setCurrentIndex(5))
         self.ui.button_parameter_selection_next_page.clicked.connect(lambda: GetParameters.save_parameters(self, "save"))
 
         # Page 06 - Parameters Boundary Definition
-        self.ui.button_parameter_limits_back.clicked.connect(lambda: self.ui.pages.setCurrentIndex(6))
+        self.ui.button_parameter_limits_back.clicked.connect(lambda: self.ui.pages.setCurrentIndex(4))
         self.ui.button_parameter_limits_next_page.clicked.connect(lambda: GetParameters.save_parameters_limits(self))
 
         # Page 07 - PSO Explanation
-        self.ui.button_pso_explanation_next_page.clicked.connect(lambda: self.ui.pages.setCurrentIndex(9))
-        self.ui.button_pso_explanation_back.clicked.connect(lambda: self.ui.pages.setCurrentIndex(7))
+        self.ui.button_pso_explanation_next_page.clicked.connect(lambda: self.ui.pages.setCurrentIndex(7))
+        self.ui.button_pso_explanation_back.clicked.connect(lambda: self.ui.pages.setCurrentIndex(5))
         self.ui.button_pso_explanation_next_page.clicked.connect(lambda: GetPsoAndSimulation.load_info(self))
 
         # Page 08 - PSO Parameters Definition
-        self.ui.button_pso_back.clicked.connect(lambda: self.ui.pages.setCurrentIndex(8))
+        self.ui.button_pso_back.clicked.connect(lambda: self.ui.pages.setCurrentIndex(6))
         self.ui.button_pso_next_page.clicked.connect(lambda: GetPsoAndSimulation.save_info(self))
         self.ui.button_pso_next_page.clicked.connect(lambda: OtimizationManager.main(self))
 
         # Page 09 - Model Calibration
-        self.ui.button_code_tracking_next_page.clicked.connect(lambda: self.ui.pages.setCurrentIndex(11))
-        self.ui.button_code_tracking_back.clicked.connect(lambda: self.ui.pages.setCurrentIndex(9))
+        self.ui.button_code_tracking_next_page.clicked.connect(lambda: self.ui.pages.setCurrentIndex(9))
+        self.ui.button_code_tracking_back.clicked.connect(lambda: self.ui.pages.setCurrentIndex(7))
 
         # Page 10 - Results Visualization
-        self.ui.button_result_back.clicked.connect(lambda: self.ui.pages.setCurrentIndex(10))
+        self.ui.button_result_back.clicked.connect(lambda: self.ui.pages.setCurrentIndex(8))
         self.ui.combobox_file.currentIndexChanged.connect(lambda: createPlots.graphs_manager(self))
         self.ui.combobox_analysis_type.currentIndexChanged.connect(lambda: createPlots.graphs_manager(self))

@@ -309,7 +309,7 @@ class GetParameters:
                     next_page = False
 
         if next_page:
-            self.ui.pages.setCurrentIndex(6)
+            self.ui.pages.setCurrentIndex(8)
         else:
             self.ui.label_limits_warning.show()
             QTimer.singleShot(3000, lambda: self.ui.label_limits_warning.hide())
