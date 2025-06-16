@@ -1,0 +1,82 @@
+from backend.aux_files.aux_geometry.getGeometry import GetGeometry
+from backend.aux_files.aux_geometry.generalFunctions import AuxFunctions
+import json
+
+class DataInicialization():
+    def __init__(self):
+        super(DataInicialization, self).__init__()
+
+    # Load data from JSON and store UI elements and corresponding values in a dictionary
+    def get_defaut_datas(self):
+        self.chip_elements = {self.ui.chipName: "ChipPlate",
+                              self.ui.chipHeight: 0.01,
+                              self.ui.chipWidth: 1.5,
+                              self.ui.chipTrickness: 0.02,
+                              self.ui.chipGlobalSize: 0.01,
+                              self.ui.chipMininumFactor: 0.1,
+                              self.ui.chipDeviationFactor: 0.1,
+                              self.ui.chipOtherInfo: "defaut"}
+
+        self.tool_elements = {self.ui.toolName: "Tool",
+                              self.ui.toolTrickness: 0.02,
+                              self.ui.toolClearanceAngle: 3.0,
+                              self.ui.toolRakeAngle: 12.0,
+                              self.ui.toolClearanceDimension: 3.35,
+                              self.ui.toolRakeDimension: 3.35,
+                              self.ui.toolRadius: 0.08,
+                              self.ui.toolPartition01: 1.5,
+                              self.ui.toolPartition02: 1.14,
+                              self.ui.toolGlobalSize: 0.1,
+                              self.ui.toolDeviationFactor: 0.1,
+                              self.ui.toolMinimumFactor: 0.1}
+
+        self.eulerian_elements = {self.ui.eulerianName: "Eulerian",
+                                  self.ui.eulerianWidth: 3.8,
+                                  self.ui.eulerianHeight: 5.0,
+                                  self.ui.eulerianTrickness: 0.02,
+                                  self.ui.eulerianPartitionX1: 1.5,
+                                  self.ui.eulerianPartitionX2: 2.7,
+                                  self.ui.eulerianPartitionX3: 3.0,
+                                  self.ui.eulerianPartitionX4: 3.3,
+                                  self.ui.eulerianPartitionY1: 2.8,
+                                  self.ui.eulerianPartitionY2: 1.3,
+                                  self.ui.eulerianPartitionY3: 1.23,
+                                  self.ui.eulerianPartitionY4: 1.1,
+                                  self.ui.eulerianGlobalSize: 0.2,
+                                  self.ui.eulerianDeviationFactor: 0.1,
+                                  self.ui.eulerianMininumFactor: 0.1}
+
+        self.assembly_elements = {self.ui.overWorkpiece: 0.05,
+                                  self.ui.fromTool: 0.2,
+                                  self.ui.xTool: 3.0,
+                                  self.ui.yTool: 1.3,
+                                  self.ui.feed: 0.05,
+                                  self.ui.timePeriod: 0.003}
+
+        DataInicialization.set_defaut_infos(self)
+
+
+    # Update the UI elements based on the checkbox state
+    def set_defaut_infos(self):
+        elements = [self.chip_elements, self.tool_elements, self.eulerian_elements, self.assembly_elements]
+        for element in elements:
+            for key, value in element.items():
+                key.setText(value if self.ui.defautValues.isChecked() else "")
+
+        if self.ui.defautValues.isChecked():
+            GetGeometry.set_info(self)
+        # else:
+        #     self.ui.saveButton.setEnabled(False)
+        #     self.ax_geometry.clear()
+        #     self.ax_geometry.set_axis_off()
+        #     self.canvas_geometry.draw()
+        #     [self.ui.tabWidget.setTabIcon(value, QIcon()) for value in [0, 1, 2, 3]]
+
+
+
+
+
+
+
+
+

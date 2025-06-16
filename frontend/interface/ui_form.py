@@ -807,6 +807,15 @@ class Ui_MainWindow(object):
         self.pages.addWidget(self.page)
         self.geometryPage = QWidget()
         self.geometryPage.setObjectName(u"geometryPage")
+        self.geometryPage.setStyleSheet(u"#frame_127, #frame_262 {\n"
+"    background-color: #b6b6b6;\n"
+"    border-radius: 15px;\n"
+"}\n"
+"\n"
+"#frame_262 {\n"
+"    border-radius: 15px; \n"
+"	border: 3px solid #3498db;\n"
+"}")
         self.verticalLayout_89 = QVBoxLayout(self.geometryPage)
         self.verticalLayout_89.setSpacing(0)
         self.verticalLayout_89.setObjectName(u"verticalLayout_89")
@@ -858,10 +867,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_77.setContentsMargins(0, 0, 0, 0)
         self.frame_127 = QFrame(self.frame_96)
         self.frame_127.setObjectName(u"frame_127")
-        self.frame_127.setStyleSheet(u"#frame_127 {\n"
-"    background-color: #b6b6b6;\n"
-"    border-radius: 15px;\n"
-"}")
+        self.frame_127.setStyleSheet(u"")
         self.frame_127.setFrameShape(QFrame.Shape.StyledPanel)
         self.frame_127.setFrameShadow(QFrame.Shadow.Raised)
         self.verticalLayout_84 = QVBoxLayout(self.frame_127)
@@ -3951,12 +3957,26 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_163.addWidget(self.button_create_geometry_back)
 
+        self.horizontalSpacer_7 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_163.addItem(self.horizontalSpacer_7)
+
+        self.button_create_geometry_apply = QPushButton(self.frame_136)
+        self.button_create_geometry_apply.setObjectName(u"button_create_geometry_apply")
+        self.button_create_geometry_apply.setEnabled(True)
+        self.button_create_geometry_apply.setMinimumSize(QSize(100, 38))
+        self.button_create_geometry_apply.setMaximumSize(QSize(100, 38))
+        self.button_create_geometry_apply.setStyleSheet(u"")
+
+        self.horizontalLayout_163.addWidget(self.button_create_geometry_apply)
+
         self.horizontalSpacer_6 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_163.addItem(self.horizontalSpacer_6)
 
         self.button_create_geometry_next = QPushButton(self.frame_136)
         self.button_create_geometry_next.setObjectName(u"button_create_geometry_next")
+        self.button_create_geometry_next.setEnabled(False)
         self.button_create_geometry_next.setMinimumSize(QSize(100, 38))
         self.button_create_geometry_next.setMaximumSize(QSize(100, 38))
         self.button_create_geometry_next.setStyleSheet(u"")
@@ -3976,35 +3996,29 @@ class Ui_MainWindow(object):
         sizePolicy4.setVerticalStretch(0)
         sizePolicy4.setHeightForWidth(self.frame_262.sizePolicy().hasHeightForWidth())
         self.frame_262.setSizePolicy(sizePolicy4)
-        self.frame_262.setStyleSheet(u"QLabel {\n"
-"    font-size: 15px; /* Tamanho da fonte */\n"
-"	font-family: \"Yu Gothic UI Semilight\"; /* Fam\u00edlia da fonte */\n"
-"}\n"
-"\n"
-"QFrame {\n"
-"     border-radius: 15px; \n"
-"	border: 3px solid #3498db;\n"
-"}")
+        self.frame_262.setStyleSheet(u"")
         self.frame_262.setFrameShape(QFrame.Shape.StyledPanel)
         self.frame_262.setFrameShadow(QFrame.Shadow.Raised)
         self.horizontalLayout_162 = QHBoxLayout(self.frame_262)
         self.horizontalLayout_162.setSpacing(0)
         self.horizontalLayout_162.setObjectName(u"horizontalLayout_162")
         self.horizontalLayout_162.setContentsMargins(9, 0, -1, 1)
-        self.plot = QFrame(self.frame_262)
-        self.plot.setObjectName(u"plot")
-        self.plot.setEnabled(True)
-        sizePolicy4.setHeightForWidth(self.plot.sizePolicy().hasHeightForWidth())
-        self.plot.setSizePolicy(sizePolicy4)
-        self.plot.setMinimumSize(QSize(600, 600))
-        self.plot.setStyleSheet(u"QFrame {\n"
+        self.plot_geometry_frame = QFrame(self.frame_262)
+        self.plot_geometry_frame.setObjectName(u"plot_geometry_frame")
+        self.plot_geometry_frame.setEnabled(True)
+        sizePolicy4.setHeightForWidth(self.plot_geometry_frame.sizePolicy().hasHeightForWidth())
+        self.plot_geometry_frame.setSizePolicy(sizePolicy4)
+        self.plot_geometry_frame.setMinimumSize(QSize(600, 600))
+        self.plot_geometry_frame.setStyleSheet(u"QFrame {\n"
 "     border-radius: 0 px; \n"
 "	 border: 0px solid #3498db;\n"
 "}")
-        self.plot.setFrameShape(QFrame.Shape.StyledPanel)
-        self.plot.setFrameShadow(QFrame.Shadow.Raised)
+        self.plot_geometry_frame.setFrameShape(QFrame.Shape.StyledPanel)
+        self.plot_geometry_frame.setFrameShadow(QFrame.Shadow.Raised)
+        self.verticalLayout_86 = QVBoxLayout(self.plot_geometry_frame)
+        self.verticalLayout_86.setObjectName(u"verticalLayout_86")
 
-        self.horizontalLayout_162.addWidget(self.plot)
+        self.horizontalLayout_162.addWidget(self.plot_geometry_frame)
 
 
         self.horizontalLayout_113.addWidget(self.frame_262)
@@ -7555,7 +7569,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.pages.setCurrentIndex(5)
+        self.pages.setCurrentIndex(4)
         self.tabWidget.setCurrentIndex(0)
 
 
@@ -7783,6 +7797,7 @@ class Ui_MainWindow(object):
         self.assemblyWarning.setText("")
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.assemblyTab), QCoreApplication.translate("MainWindow", u"Assembly", None))
         self.button_create_geometry_back.setText(QCoreApplication.translate("MainWindow", u"Back", None))
+        self.button_create_geometry_apply.setText(QCoreApplication.translate("MainWindow", u"Apply", None))
         self.button_create_geometry_next.setText(QCoreApplication.translate("MainWindow", u"Next", None))
         self.label_83.setText(QCoreApplication.translate("MainWindow", u"Developed by Junior Tavares, Severin Groh and Pascal Behrens", None))
         self.icon_interface_2.setText("")

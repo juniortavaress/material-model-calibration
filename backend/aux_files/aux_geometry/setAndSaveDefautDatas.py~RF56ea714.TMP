@@ -1,0 +1,18 @@
+from backend.aux_files.aux_geometry.getGeometry import GetGeometry
+from backend.aux_files.aux_geometry.generalFunctions import AuxFunctions
+import json
+
+class DataInicialization():
+    def __init__(self):
+        super(DataInicialization, self).__init__()
+
+
+
+
+
+
+
+
+
+
+

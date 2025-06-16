@@ -26,12 +26,9 @@
         "backend/aux_files/results/get_forces.py",
         "backend/aux_files/results/get_temps.py",
         "backend/aux_files/aux_simulation/code_to_run_simulation.py",
-        "backend/aux_files/aux_geometry/layout/graphLayout.py",
-        "backend/aux_files/aux_geometry/layout/pageLayout.py",
-        "backend/aux_files/aux_geometry/geometry/facesGenerator.py",
-        "backend/aux_files/aux_geometry/geometry/getGeometry.py",
-        "backend/aux_files/aux_geometry/datas/setAndSaveDefautDatas.py",
-        "backend/aux_files/aux_geometry/auxFiles/dictionaries.py",
-        "backend/aux_files/aux_geometry/auxFiles/generalFunctions.py"
+        "backend/aux_files/aux_geometry/dictionaries.py",
+        "backend/aux_files/aux_geometry/generalFunctions.py",
+        "backend/aux_files/aux_geometry/getGeometry.py",
+        "backend/aux_files/aux_geometry/graph_setup.py"
     ]
 }

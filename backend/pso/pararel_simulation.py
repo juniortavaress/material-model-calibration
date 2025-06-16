@@ -46,8 +46,8 @@ class PararelSimulation():
                 data = yaml.safe_load(file)
 
             data[f"Computer {id[-1:]}"]["status"] = False
-            print("CP1: ", data["Computer 1"]["status"])
-            print("CP2: ",data["Computer 2"]["status"])
+            # print("CP1: ", data["Computer 1"]["status"])
+            # print("CP2: ",data["Computer 2"]["status"])
             import time
             time.sleep(10)
             with open(yaml_path, "w") as file:

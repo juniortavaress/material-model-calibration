@@ -1,22 +1,57 @@
+from backend.aux_files.aux_geometry.generalFunctions import AuxFunctions
 
 class GetDictionary():
     def __init__(self):
         super(GetDictionary, self).__init__()
 
-    # Returns a dictionary containing default iteration information settings
-    def iteration_info(self):
-        iteration_info = {"Feed": {"activated": False, "min": 0, "max": 0, "step": 0},
-                          "rakeAngle": {"activated": False, "min": 0, "max": 0, "step": 0},
-                          "clearanceAngle": {"activated": False, "min": 0, "max": 0, "step": 0},
-                          "timePeriod": {"activated": False, "min": 0, "max": 0, "step": 0}}
-        return iteration_info
+    # Load data from JSON and store UI elements and corresponding values in a dictionary
+    def defaut_datas(self):
+        self.chip_elements = {self.ui.chipName: "ChipPlate",
+                              self.ui.chipHeight: 0.01,
+                              self.ui.chipWidth: 1.5,
+                              self.ui.chipTrickness: 0.02,
+                              self.ui.chipGlobalSize: 0.01,
+                              self.ui.chipMininumFactor: 0.1,
+                              self.ui.chipDeviationFactor: 0.1,
+                              self.ui.chipOtherInfo: "defaut"}
+
+        self.tool_elements = {self.ui.toolName: "Tool",
+                              self.ui.toolTrickness: 0.02,
+                              self.ui.toolClearanceAngle: 3.0,
+                              self.ui.toolRakeAngle: 12.0,
+                              self.ui.toolClearanceDimension: 3.35,
+                              self.ui.toolRakeDimension: 3.35,
+                              self.ui.toolRadius: 0.08,
+                              self.ui.toolPartition01: 1.5,
+                              self.ui.toolPartition02: 1.14,
+                              self.ui.toolGlobalSize: 0.1,
+                              self.ui.toolDeviationFactor: 0.1,
+                              self.ui.toolMinimumFactor: 0.1}
+
+        self.eulerian_elements = {self.ui.eulerianName: "Eulerian",
+                                  self.ui.eulerianWidth: 3.8,
+                                  self.ui.eulerianHeight: 5.0,
+                                  self.ui.eulerianTrickness: 0.02,
+                                  self.ui.eulerianPartitionX1: 1.5,
+                                  self.ui.eulerianPartitionX2: 2.7,
+                                  self.ui.eulerianPartitionX3: 3.0,
+                                  self.ui.eulerianPartitionX4: 3.3,
+                                  self.ui.eulerianPartitionY1: 2.8,
+                                  self.ui.eulerianPartitionY2: 1.3,
+                                  self.ui.eulerianPartitionY3: 1.23,
+                                  self.ui.eulerianPartitionY4: 1.1,
+                                  self.ui.eulerianGlobalSize: 0.2,
+                                  self.ui.eulerianDeviationFactor: 0.1,
+                                  self.ui.eulerianMininumFactor: 0.1}
+
+        self.assembly_elements = {self.ui.overWorkpiece: 0.05,
+                                  self.ui.fromTool: 0.2,
+                                  self.ui.xTool: 3.0,
+                                  self.ui.yTool: 1.3,
+                                  self.ui.feed: 0.05,
+                                  self.ui.timePeriod: 0.003}
 
 
-    # Returns the current parameters for iterations based on UI settings
-    def iteration_parameters(self):
-        values = [[self.ui.P01, self.ui.minP01, self.ui.maxP01, self.ui.stepP01], [self.ui.P02, self.ui.minP02, self.ui.maxP02, self.ui.stepP02]]
-        values = [values[0]] if self.ui.numberOfVariables.currentText() == "1" else values
-        return values
 
 
     # Collects data from the UI and formats it into a structured dictionary.
@@ -163,24 +198,4 @@ class GetDictionary():
         return [all_about_eulerian, all_about_chip, all_about_tool, all_about_assembly]
 
 
-    # Returns the color associated with the given index or based on UI selection.
-    def get_colors(self, index):
-        colors = [
-                    '#FF5733', '#33FF57', '#3357FF', '#FF33A1', '#FFC300',
-                    '#DAF7A6', '#581845', '#900C3F', '#C70039', '#FF5733',
-                    '#FF8D1B', '#33FFBD', '#33A1FF', '#FF33D4', '#FFD700',
-                    '#A6D8D2', '#D25D9E', '#5DD25C', '#D21D5D', '#5C75D2'
-                ]
 
-        if index:
-            color = colors[index % len(colors)]
-        elif self.ui.typeOfAnalisys.currentText() == 'NT11' or self.ui.typeRF.currentText() == 'RF1':
-            color = 'r'
-        elif self.ui.typeOfAnalisys.currentText() == 'RF' and self.ui.typeRF.currentText() == 'RF2':
-            color = '#003366'
-        elif self.ui.typeOfAnalisys.currentText() == 'RF' and self.ui.typeRF.currentText() == 'RF3':
-            color = '#8b5ea7'
-        else:
-            color = 'r'
-
-        return color

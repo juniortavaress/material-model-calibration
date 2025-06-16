@@ -241,55 +241,71 @@ class PsoManager():
         Returns:
             list: Errors for each parameter set.
         """
-        try:
-            error_list = []
-            current_iteration = f"Iteration 0{self.count_iteration}" if self.count_iteration < 10 else f"Iteration {self.count_iteration}"      
+        # try:
+        error_list = []
+        current_iteration = f"Iteration 0{self.count_iteration}" if self.count_iteration < 10 else f"Iteration {self.count_iteration}"      
 
-            # Format the parameters 
-            for index, param in enumerate(parameters):
-                formatted_coords = '[' + ', '.join(map(lambda x: str(np.round(x, 4)), param)) + ']'
-                self.info_set[current_iteration][f"set-0{index+1}"]["Parameters Map"] = formatted_coords
-            
-            # Run the simulation
-            SimulationManager.simulation_manager(self)
-
-            # Get the error for each parameter set
-            df = pd.read_excel(os.path.join(self.excel_files, "datas.xlsx") )
-
-            for iteration, info in self.info_set.items():
-                if iteration == current_iteration:
-                    for set_name, data in info.items():
-                        param_values = ast.literal_eval(data["Parameters Map"])                     
-                        param_columns = df.columns[5:5+len(param_values)]
-
-                        filter_conditions = [] 
-                        for i, value in enumerate(param_values): 
-                            filter_conditions.append(df[param_columns[i]] == value)  
-
-                        filtered_row = df[filter_conditions[0]] 
-
-                        for condition in filter_conditions[1:]:  
-                            filtered_row = filtered_row.loc[condition]
-                        
-                        if not filtered_row.empty:
-                            self.info_set[current_iteration][set_name]["Error"] = str(filtered_row["Error"].mean())
-                        else:
-                            self.info_set[current_iteration][set_name]["Error"] = 1  
-
-            # Creating list of error to return to the objective function
-            for iteration, info in self.info_set.items():
-                if iteration == current_iteration:
-                    for set_name, data in info.items():
-                        error_list.append(float(data["Error"]))
-
-            info_set_path = os.path.join(self.user_config, "parameters.yaml")
-            with open(info_set_path, "w") as file:
-                yaml.dump(self.info_set, file)
-
-            return error_list
+        # Format the parameters 
+        for index, param in enumerate(parameters):
+            formatted_coords = '[' + ', '.join(map(lambda x: str(np.round(x, 4)), param)) + ']'
+            self.info_set[current_iteration][f"set-0{index+1}"]["Parameters Map"] = formatted_coords
         
-        except Exception as e:
-            PsoManager._handle_error(self, e, "Error at def objective_function")
+        # Run the simulation
+        SimulationManager.simulation_manager(self)
+
+        # Get the error for each parameter set
+        df = pd.read_excel(os.path.join(self.excel_files, "datas.xlsx"))
+
+        for iteration, info in self.info_set.items():
+
+            # print('\n\n\n')
+            # print(iteration)
+            # print(current_iteration)
+            # print('\n\n\n')
+
+            if iteration == current_iteration:
+                for set_name, data in info.items():
+
+                    param_values = ast.literal_eval(data["Parameters Map"])                     
+                    param_columns = df.columns[4:4+len(param_values)]
+
+                    filter_conditions = [] 
+                    for i, value in enumerate(param_values): 
+                        filter_conditions.append(df[param_columns[i]] == value)  
+
+                    filtered_row = df[filter_conditions[0]] 
+
+                    for condition in filter_conditions[1:]:  
+                        filtered_row = filtered_row.loc[condition]
+                    
+                    # print('\n\n\n')
+                    # print(df)
+                    # print(param_values)
+                    # print('param_columns', param_columns)
+                    # print("filtered_row", filtered_row)
+                    # print("filter_conditions", filter_conditions)
+
+                    # print('\n\n\n')
+
+                    if not filtered_row.empty:
+                        self.info_set[current_iteration][set_name]["Error"] = str(filtered_row["Error"].mean())
+                    else:
+                        self.info_set[current_iteration][set_name]["Error"] = 1  
+
+        # Creating list of error to return to the objective function
+        for iteration, info in self.info_set.items():
+            if iteration == current_iteration:
+                for set_name, data in info.items():
+                    error_list.append(float(data["Error"]))
+
+        info_set_path = os.path.join(self.user_config, "parameters.yaml")
+        with open(info_set_path, "w") as file:
+            yaml.dump(self.info_set, file)
+
+        return error_list
+    
+        # except Exception as e:
+        #     PsoManager._handle_error(self, e, "Error at def objective_function")
         
 
     def save_parameters(self, num_particles, positions):
@@ -356,7 +372,13 @@ class PsoManager():
         """ Get datas to show in the interface """
         best_set = None
         min_error = float("inf")
-        current_iteration = f"Iteration 0{self.count_iteration - 1}" if call == "finished" else f"Iteration 0{self.count_iteration}"     
+
+        iteration_number = self.count_iteration - 1 if call == "finished" else self.count_iteration
+        current_iteration = f"Iteration {int(iteration_number):02d}"   
+
+        print("\n\nCURRENT ITERATION", current_iteration)
+        print("\n\nINFO SET", self.info_set)
+
         iteration_number = (self.count_iteration - 1) if call == "finished" else self.count_iteration
 
         if call == "finished":

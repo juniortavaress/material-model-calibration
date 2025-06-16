@@ -105,7 +105,7 @@ class SoftwareConfig():
                     [self.ui.combobox_file.addItems([f"sim_{name}"]) for name in sheet_names]
                     self.ui.combobox_file.setCurrentIndex(1)
                     self.ui.button_result_back.hide()
-                    self.ui.pages.setCurrentIndex(9)
+                    self.ui.pages.setCurrentIndex(11)
 
                 elif data["8. Otimization Datas"]["Status"] == "pending":
                     for _, info in data["8. Otimization Datas"]["Last Iteration Values"].items():

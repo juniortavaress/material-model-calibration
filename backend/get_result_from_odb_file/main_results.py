@@ -21,7 +21,7 @@ class getResults():
         """
         Calls all necessary methods to extract and convert results, and create data outputs.
         """
-        # input = ("ve se os odb tao no processing")
+        # a = input("ve se os odb tao no processing")
         ExcelManager.create_excel_results(self)
         getResults.manage_abaqus_script(self)
         getResults.convert_json_to_excel(self)
@@ -56,10 +56,12 @@ class getResults():
             process_names = ["get_forces", "get_chip"]
             commands = [abaqus_command_chip_obj, abaqus_command_forces]
     
-        print('VERIFICA OS COMANDO AI MEU QUERIDO', commands)
+        # print('VERIFICA OS COMANDO AI MEU QUERIDO', commands)
 
         # Start processes for each Abaqus script
         processes = []
+        # print('process_names', process_names)
+        
         for name, command in zip(process_names, commands):
             process_name = f"Process_{name}"
             process = multiprocessing.Process(target=getResults.get_data_from_odb, args=(command, ))

@@ -9,5 +9,9 @@
         <file>Icons/upArrowDis.png</file>
         <file>Icons/toggle_button.png</file>
         <file>Icons/toggle_button_activated.png</file>
+        <file>Icons/checkmark.png</file>
+    </qresource>
+    <qresource prefix="/new_Icons">
+        <file>Icons/checkmark.png</file>
     </qresource>
 </RCC>

@@ -227,24 +227,27 @@ class createPlots():
 
         graph_names = ["_thickness_profile.png", "_detected_sides.png", "_minimal_distances.png", "_measurement_lines.png"]
         for graph_name in graph_names:
-            plt.figure(figsize=(10, 10))
-            plt.title('Detected Chip Sides')
-            plt.xlabel('X Coordinates [mm]')
-            plt.ylabel('Y Coordinates [mm]')
-            plt.grid()
+            try:
+                plt.figure(figsize=(10, 10))
+                plt.title('Detected Chip Sides')
+                plt.xlabel('X Coordinates [mm]')
+                plt.ylabel('Y Coordinates [mm]')
+                plt.grid()
 
-            if graph_name == "_thickness_profile.png":
-                createPlots.plot_trickness_profile(self, min_distances, peaks, valleys)
-            elif graph_name == "_detected_sides.png":
-                createPlots.plot_chip_geometry(self, points, sides)
-            elif graph_name == "_minimal_distances.png":
-                createPlots.plot_minimal_distances(self, min_distances)
-            elif graph_name == "_measurement_lines.png":
-                createPlots.plot_measurement_lines(self, sides, points)
+                if graph_name == "_thickness_profile.png":
+                    createPlots.plot_trickness_profile(self, min_distances, peaks, valleys)
+                elif graph_name == "_detected_sides.png":
+                    createPlots.plot_chip_geometry(self, points, sides)
+                elif graph_name == "_minimal_distances.png":
+                    createPlots.plot_minimal_distances(self, min_distances)
+                elif graph_name == "_measurement_lines.png":
+                    createPlots.plot_measurement_lines(self, sides, points)
 
-            save_path = os.path.join(folder, os.path.basename(file_path)[-11:].replace('.obj', graph_name))
-            plt.savefig(save_path)
-            plt.close()  
+                save_path = os.path.join(folder, os.path.basename(file_path)[-11:].replace('.obj', graph_name))
+                plt.savefig(save_path)
+                plt.close()  
+            except:
+                print("Nao foi possivel criar o grafico")
 
 
     def plot_trickness_profile(self, min_distances, peaks, valleys):

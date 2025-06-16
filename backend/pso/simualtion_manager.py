@@ -125,6 +125,7 @@ class SimulationManager:
         number_of_cores = 4
         drive_folder = self.user_result_folder
         self.server_folder = os.path.join(os.getenv("SystemDrive", "C:") , f"\MaterialOtimization\{self.project_name}\simulation_folder")
+        # i = input("coloca as simulações ai")
         PararelSimulation.start_simulation(self, id, path_list_to_inp_folders, self.server_folder, drive_folder, number_of_cores)
        
 

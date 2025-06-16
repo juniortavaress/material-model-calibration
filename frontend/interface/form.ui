@@ -75,7 +75,7 @@ padding: 5px;}
     <item>
      <widget class="QStackedWidget" name="pages">
       <property name="currentIndex">
-       <number>5</number>
+       <number>4</number>
       </property>
       <widget class="QWidget" name="page_login">
        <property name="styleSheet">
@@ -1728,6 +1728,17 @@ background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5
        </layout>
       </widget>
       <widget class="QWidget" name="geometryPage">
+       <property name="styleSheet">
+        <string notr="true">#frame_127, #frame_262 {
+    background-color: #b6b6b6;
+    border-radius: 15px;
+}
+
+#frame_262 {
+    border-radius: 15px; 
+	border: 3px solid #3498db;
+}</string>
+       </property>
        <layout class="QVBoxLayout" name="verticalLayout_89">
         <property name="spacing">
          <number>0</number>
@@ -1861,10 +1872,7 @@ background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5
               <item>
                <widget class="QFrame" name="frame_127">
                 <property name="styleSheet">
-                 <string notr="true">#frame_127 {
-    background-color: #b6b6b6;
-    border-radius: 15px;
-}</string>
+                 <string notr="true"/>
                 </property>
                 <property name="frameShape">
                  <enum>QFrame::Shape::StyledPanel</enum>
@@ -9925,6 +9933,44 @@ background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5
                   </widget>
                  </item>
                  <item>
+                  <spacer name="horizontalSpacer_7">
+                   <property name="orientation">
+                    <enum>Qt::Orientation::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="button_create_geometry_apply">
+                   <property name="enabled">
+                    <bool>true</bool>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>100</width>
+                     <height>38</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>100</width>
+                     <height>38</height>
+                    </size>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true"/>
+                   </property>
+                   <property name="text">
+                    <string>Apply</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
                   <spacer name="horizontalSpacer_6">
                    <property name="orientation">
                     <enum>Qt::Orientation::Horizontal</enum>
@@ -9939,6 +9985,9 @@ background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5
                  </item>
                  <item>
                   <widget class="QPushButton" name="button_create_geometry_next">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
                    <property name="minimumSize">
                     <size>
                      <width>100</width>
@@ -9974,15 +10023,7 @@ background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5
               </sizepolicy>
              </property>
              <property name="styleSheet">
-              <string notr="true">QLabel {
-    font-size: 15px; /* Tamanho da fonte */
-	font-family: &quot;Yu Gothic UI Semilight&quot;; /* Família da fonte */
-}
-
-QFrame {
-     border-radius: 15px; 
-	border: 3px solid #3498db;
-}</string>
+              <string notr="true"/>
              </property>
              <property name="frameShape">
               <enum>QFrame::Shape::StyledPanel</enum>
@@ -10004,7 +10045,7 @@ QFrame {
                <number>1</number>
               </property>
               <item>
-               <widget class="QFrame" name="plot">
+               <widget class="QFrame" name="plot_geometry_frame">
                 <property name="enabled">
                  <bool>true</bool>
                 </property>
@@ -10032,6 +10073,7 @@ QFrame {
                 <property name="frameShadow">
                  <enum>QFrame::Shadow::Raised</enum>
                 </property>
+                <layout class="QVBoxLayout" name="verticalLayout_86"/>
                </widget>
               </item>
              </layout>

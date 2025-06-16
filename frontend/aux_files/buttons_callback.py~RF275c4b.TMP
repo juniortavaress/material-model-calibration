@@ -1,15 +1,14 @@
 from frontend.aux_files.get_conditions import GetCondition
 from frontend.aux_files.get_parameters import GetParameters
 from frontend.aux_files.get_pso_and_simulation_info import GetPsoAndSimulation
-
 from backend.config.config_software import SoftwareConfig
 from backend.pso.start_otimization import OtimizationManager
 from backend.get_result_from_odb_file.create_graphs import createPlots
-
-from backend.aux_files.aux_geometry.getGeometry import GetGeometry
-from backend.aux_files.aux_geometry.dictionaries import GetDictionary
-from backend.aux_files.aux_geometry.graph_setup import GraphManager
-
+from backend.aux_files.aux_geometry.layout.graphLayout import GraphLayout
+from backend.aux_files.aux_geometry.datas.setAndSaveDefautDatas import DataInicialization
+from backend.aux_files.aux_geometry.geometry.getGeometry import GetGeometry
+# from backend.aux_files.aux_geometry.geometry_graph import GetGeometry
+from frontend.aux_files.test2 import GeometryGraphs
 from PySide6.QtWidgets import QApplication, QMainWindow, QLineEdit, QFileDialog
 from PySide6.QtGui import QIcon
 
@@ -32,7 +31,7 @@ class ButtonsCallback():
         self.resize(1000, 400) if not self.isMaximized() else None
 
         self.ui.frame_20.hide()
-        self.ui.pages.setCurrentIndex(0)
+        self.ui.pages.setCurrentIndex(4)
 
         # Page 01 - Project Name
         self.ui.button_login_next_page.clicked.connect(lambda: SoftwareConfig.project_setup(self))
@@ -58,21 +57,21 @@ class ButtonsCallback():
         self.ui.button_create_geometry.clicked.connect(lambda: self.ui.frame_20.hide())
 
         # Page 0X
+        # self.ax_geometry, self.fig_geometry, self.canvas_geometry = GraphLayout.create_plot_areas(self, self.ui.plot, '3d')
+        # self.resizeEvent = lambda event: GraphLayout.resize(self)
+
+        GeometryGraphs.canvas(self)
+        self.ui.tabWidget.currentChanged.connect(lambda: GetGeometry.set_info(self))
         self.ui.button_create_geometry_back.clicked.connect(lambda: self.ui.pages.setCurrentIndex(3))
         self.ui.button_create_geometry_next.clicked.connect(lambda: self.ui.pages.setCurrentIndex(5))
+        self.ui.defautValues.stateChanged.connect(lambda: DataInicialization.get_defaut_datas(self))
+        self.ui.applyButton.clicked.connect(lambda: GetGeometry.set_info(self))
+        # self.ui.button_create_geometry_next.clicked.connect(lambda: GetGeometry.save_infos(self))
+        # self.ui.applyButton.clicked.connect(lambda: GetGeometry.set_info(self))
 
 
-
-        GraphManager.canvas(self)
-        self.ui.tabWidget.currentChanged.connect(lambda: GetGeometry.set_info(self))
-        self.ui.defautValues.stateChanged.connect(lambda: GetGeometry.get_defaut_datas(self))
-
-
-
-        self.ui.button_create_geometry_apply.clicked.connect(lambda: GetGeometry.set_info(self))
-        self.ui.button_create_geometry_apply.clicked.connect(lambda: GetGeometry.save_infos(self))
-
-
+        # for widget in self.ui.geometryPage.findChildren(QLineEdit):
+        #     widget.textChanged.connect(lambda: GetGeometry.set_info(self))
 
 
         # Page 04 - Create Conditions

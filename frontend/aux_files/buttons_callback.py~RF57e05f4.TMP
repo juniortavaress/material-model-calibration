@@ -65,7 +65,7 @@ class ButtonsCallback():
 
         GraphManager.canvas(self)
         self.ui.tabWidget.currentChanged.connect(lambda: GetGeometry.set_info(self))
-        self.ui.defautValues.stateChanged.connect(lambda: GetGeometry.get_defaut_datas(self))
+        self.ui.defautValues.stateChanged.connect(lambda: GetDictionary.get_defaut_datas(self))
 
 
 

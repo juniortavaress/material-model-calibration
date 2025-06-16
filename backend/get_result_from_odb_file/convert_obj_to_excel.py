@@ -403,6 +403,9 @@ class GetChipMeasure():
             results (list): List to store results.
             output_directory (str): Path to the output directory.
         """
+
+        # print("file_groups", file_groups)
+        
         for base_name, group_results in file_groups.items():
             cond = base_name.split("_")[1]
 
@@ -418,12 +421,18 @@ class GetChipMeasure():
             means_max = [frame_info[2] for frame_info in group_results]
 
         # If no value is found, set the averages to 0 to avoid generating an error.
-        if not means_min or not means_max:
-            CCR = 1
-            CSR = 1
-        else:
+        # print('means_min', means_min)
+        # print('means_max', means_max)
+
+        if means_max and means_min and np.mean(means_min) != 0:
             CCR = np.mean(means_max)/h
             CSR = np.mean(means_max)/np.mean(means_min)
+        elif means_max and (not means_min or np.mean(means_min)) != 0:
+            CCR = np.mean(means_max)/h
+            CSR = 0
+        else:
+            CCR = 0
+            CSR = 0
 
 
         self.chip_datas[base_name] = {"Chip Compression Ratio (CCR)": CCR, "Chip Segmentatio Ratio (CSR)": CSR}
