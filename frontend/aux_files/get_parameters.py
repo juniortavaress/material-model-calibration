@@ -17,11 +17,20 @@ class GetParameters:
         Manages the parameters and interface by getting the material data,
         defining variables, and displaying the values.
         """
-        if not self.error_tracking:
+        with open(self.project_infos_path, "r", encoding="utf-8") as file:
+            data = yaml.safe_load(file)
+
+        setup_infos = data.get("3. Setup Infos", {})
+        import_geometry = setup_infos.get("Import Geometry (.inp)")
+        print(import_geometry)
+
+        if not self.error_tracking and import_geometry:
             material_info = GetParameters.get_available_parameters(self)
             GetParameters.define_variables_name(self, material_info)
             GetParameters.get_list_with_parameters_name(self)
             GetParameters.show_paramters_values(self)
+        elif not import_geometry:
+            print("AQUI ERROR")
 
 
     def get_available_parameters(self):

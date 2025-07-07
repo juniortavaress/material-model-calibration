@@ -1,11 +1,13 @@
 import os 
+import json
 import yaml
 import shutil
 from PySide6.QtCore import QTimer
 from PySide6.QtWidgets import QFileDialog
 from frontend.aux_files.yaml_generator import YamlClass
-
-
+# from backend.create_geometry.main import Main
+from frontend.aux_files.get_parameters import GetParameters
+import subprocess
 class GetCondition:
     """
     Class that manages simulation conditions and interactions with
@@ -48,7 +50,72 @@ class GetCondition:
         file and moves the input files to the appropriate location.
         """
         GetCondition.get_defaut_user_conditions(self)
-        GetCondition.move_inp_files(self)
+
+        with open(self.project_infos_path, "r", encoding="utf-8") as file:
+            data = yaml.safe_load(file)
+
+        setup_infos = data.get("3. Setup Infos", {})
+        import_geometry = setup_infos.get("Import Geometry (.inp)")
+        print(import_geometry)
+
+        if import_geometry:
+            GetCondition.move_inp_files(self)
+
+
+
+        elif not import_geometry:
+            self.ui.pages.setCurrentIndex(6)
+            geometry_infos = data.get("3. Conditions")
+
+            for condition, data_types in geometry_infos.items():
+                cutting_props = data_types.get("Cutting Properties")
+                if cutting_props:
+                    cond = cutting_props["name"]
+                    rakeAngle = cutting_props["rakeAngle"]
+                    deepCuth = cutting_props["deepCuth"]
+                    velocity = cutting_props["velocity"]
+
+                    with open(os.path.join(self.defaut_geometry, "geometry_datas.json"), "r") as file:
+                        geo_data = json.load(file)
+
+                    new_input_file_path = os.path.join(self.defaut_geometry, f"sim_{cond}.json")
+                    geo_data["generalInformation"]["modelName"] = cond
+                    geo_data["assemblyAndSimulationData"]["toolPosition"]["Deep of Cuth"] = deepCuth
+                    geo_data["toolData"]["createPartInformation"]["rakeAngle"] = rakeAngle
+                    geo_data["assemblyAndSimulationData"]["stepsAndHistoryInformation"]["velocity"] = velocity
+
+                    with open(new_input_file_path, "w") as file:
+                        json.dump(geo_data, file, indent=4)
+
+
+            abaqus_command = r'C:\SIMULIA\Commands\abq2021.bat cae noGUI="backend/create_geometry/main.py"'
+            
+            try:
+                result = subprocess.run(abaqus_command, shell=True, check=True, capture_output=True, text=True)
+                print('=== STDOUT ===')
+                print(result.stdout)
+                print('=== STDERR ===')
+                print(result.stderr)
+            except subprocess.CalledProcessError as e:
+                print("=== ERRO NA EXECUÇÃO DO ABAQUS ===")
+                print("Código de retorno:", e.returncode)
+                print("=== STDOUT ===")
+                print(e.stdout)
+                print("=== STDERR ===")
+                print(e.stderr)
+
+
+
+
+            # EDITAR OS DADOS, GERAR UM JSON PARA CADA CONDICAO (check)
+            # COM OS JSON GERAR OS INPUTS FILE E SALVAR JUNTO (check)
+            # CHAMAR O MOVE INP FILES COM OS CAMINHOS - DA PARA CONTINUAR MOSTRANDO NA INTERFACE (check)
+            print("kmk")
+            GetParameters.parameter_and_interface_manager(self)
+            pass
+
+        else:
+            print("import_geometry is not defined.")
 
 
     def check_values(self, value):
@@ -68,8 +135,8 @@ class GetCondition:
         velocity = GetCondition.check_values(self, self.ui.lineEdit_velocity.text().replace(',', '.'))
         deep_cuth = GetCondition.check_values(self, self.ui.lineEdit_deepCuth.text().replace(',', '.'))
         rake_angle = GetCondition.check_values(self, self.ui.lineEdit_rakeAngle.text().replace(',', '.').replace('+', ''))
-        temp_path = self.ui.lineEdit_tempPath.text() if self.ui.lineEdit_tempPath.text() else None
-        inputFile = self.ui.label_input.text()
+        temp_path = self.ui.lineEdit_tempPath.text() if self.ui.lineEdit_tempPath.text() else "None"
+        inputFile = self.ui.label_input.text() if self.ui.label_input.text() else "None"
 
         cutting_force = GetCondition.check_values(self, self.ui.lineEdit_cutting_force.text().replace(',', '.'))
         normal_force = GetCondition.check_values(self, self.ui.lineEdit_normal_force.text().replace(',', '.'))
@@ -109,6 +176,7 @@ class GetCondition:
                 self.ui.comboBox_condition.addItem(new_condition)
                 self.ui.comboBox_condition.setCurrentIndex(self.ui.comboBox_condition.findText(new_condition))
         else:
+            print("EEROR AQUI")
             self.error_tracking = True
 
 
@@ -166,9 +234,6 @@ class GetCondition:
             for key, condition_data in value.items():
                 if key[:9] == "Condition":
                     cond = condition_data["Cutting Properties"]["name"]
-                    # v = condition_data["Cutting Properties"]["velocity"]
-                    # h = condition_data["Cutting Properties"]["deepCuth"]
-                    # gam = condition_data["Cutting Properties"]["rakeAngle"]
                     input_file_path = condition_data["Cutting Properties"]["inputFile"]
 
                     if os.path.exists(input_file_path):

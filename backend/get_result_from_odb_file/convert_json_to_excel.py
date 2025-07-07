@@ -44,8 +44,8 @@ class DataConverter():
                         for filename in os.listdir(folder_full_path):
                             if filename == 'reaction_forces.json':
                                 json_file_path_forces = os.path.join(folder_full_path, filename)
-                            elif filename == 'temperature.json':
-                                json_file_path_temp = os.path.join(folder_full_path, filename)
+                            # elif filename == 'temperature.json':
+                            #     json_file_path_temp = os.path.join(folder_full_path, filename)
                             else: 
                                 pass
                     DataConverter.json_to_combined_excel(self, file_name, stats_list, start_percent, end_percent, workpiece_width_experiment, workpiece_width_simulation, temperature_threshold, json_file_path_forces, json_file_path_temp)
@@ -77,25 +77,28 @@ class DataConverter():
         else:
             forces_stats = {}
 
-        # Getting temp results
-        if json_file_path_temp:
-            with open(json_file_path_temp, 'r') as file:
-                data = json.load(file)
+        # # Getting temp results
+        # if json_file_path_temp:
+        #     with open(json_file_path_temp, 'r') as file:
+        #         data = json.load(file)
 
-            combined_temp_df_with_results = DataConverter.combine_temp_data(data)
-            temp_stats = DataConverter.calculate_temp_statistics(combined_temp_df_with_results, temperature_threshold)
+        #     combined_temp_df_with_results = DataConverter.combine_temp_data(data)
+        #     temp_stats = DataConverter.calculate_temp_statistics(combined_temp_df_with_results, temperature_threshold)
             
-        else:
-            temp_stats = {}
+        # else:
+        #     temp_stats = {}
 
         # Creating variable with datas
         self.force_and_temp_datas[file_name] = {
             "Normal Force [N].mean": round(forces_stats["Cutting Normal Force FcN [N]"]["mean"], 2),
-            "Cutting Force [N].mean": round(forces_stats["Cutting Force Fc [N]"]["mean"], 2),
-            "Maximum Temperature at Last Frame [°C]": round(temp_stats.get("Max Temperature Last Frame [°C]", 0), 2)}
+            "Cutting Force [N].mean": round(forces_stats["Cutting Force Fc [N]"]["mean"], 2)}
+        # self.force_and_temp_datas[file_name] = {
+        #     "Normal Force [N].mean": round(forces_stats["Cutting Normal Force FcN [N]"]["mean"], 2),
+        #     "Cutting Force [N].mean": round(forces_stats["Cutting Force Fc [N]"]["mean"], 2),
+        #     "Maximum Temperature at Last Frame [°C]": round(temp_stats.get("Max Temperature Last Frame [°C]", 0), 2)}
 
         force_file = os.path.join(self.graph_folder, "forces_result.xlsx")
-        temperature_file = os.path.join(self.graph_folder, "temperature_result.xlsx")
+        # temperature_file = os.path.join(self.graph_folder, "temperature_result.xlsx")
 
         sheet_name = file_name[4:]
         if len(sheet_name) > 31:
@@ -111,12 +114,12 @@ class DataConverter():
                 combined_forces_df_with_results.to_excel(writer, sheet_name=file_name[4:], index=False)
         
         # Save or append the temperature DataFrame
-        if json_file_path_temp:
-            if os.path.exists(temperature_file):
-                with pd.ExcelWriter(temperature_file, mode='a', engine='openpyxl', if_sheet_exists='replace') as writer:
-                    combined_temp_df_with_results.to_excel(writer, sheet_name=sheet_name, index=False)
-            else:
-                combined_temp_df_with_results.to_excel(temperature_file, sheet_name=sheet_name, index=False, engine="openpyxl")
+        # if json_file_path_temp:
+        #     if os.path.exists(temperature_file):
+        #         with pd.ExcelWriter(temperature_file, mode='a', engine='openpyxl', if_sheet_exists='replace') as writer:
+        #             combined_temp_df_with_results.to_excel(writer, sheet_name=sheet_name, index=False)
+        #     else:
+        #         combined_temp_df_with_results.to_excel(temperature_file, sheet_name=sheet_name, index=False, engine="openpyxl")
     
 
     @staticmethod

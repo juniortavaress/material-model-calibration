@@ -9,12 +9,12 @@ from backend.get_result_from_odb_file.convert_json_to_excel import DataConverter
 from backend.get_result_from_odb_file.convert_obj_to_excel import GetChipMeasure
 
 
-class getResults():
+class GetResults():
     """
     Class to handle results extraction and conversion processes.
     """
     def __init__(self):
-        getResults.result_call(self)
+        GetResults.result_call(self)
 
 
     def result_call(self):
@@ -23,8 +23,8 @@ class getResults():
         """
         # a = input("ve se os odb tao no processing")
         ExcelManager.create_excel_results(self)
-        getResults.manage_abaqus_script(self)
-        getResults.convert_json_to_excel(self)
+        GetResults.manage_abaqus_script(self)
+        GetResults.convert_json_to_excel(self)
         ExcelManager.create_datas(self)
         
 
@@ -36,10 +36,10 @@ class getResults():
         error_track = False
 
         # Defining Paths to Chip Analysis
-        getResults.create_path_to_chip_analysis(self)
+        GetResults.create_path_to_chip_analysis(self)
    
         # Define Abaqus command strings
-        abaqus_command_temperatures = rf'C:\SIMULIA\Commands\abq2021.bat python {self.software_path}\extract_results\get_temps.py {self.odb_processing} {self.json_defaut_path} {self.project_infos_path}'
+        # abaqus_command_temperatures = rf'C:\SIMULIA\Commands\abq2021.bat python {self.software_path}\extract_results\get_temps.py {self.odb_processing} {self.json_defaut_path} {self.project_infos_path}'
         abaqus_command_forces = rf'C:\SIMULIA\Commands\abq2021.bat python {self.software_path}\extract_results\get_forces.py {self.odb_processing} {self.json_defaut_path}'
         abaqus_command_chip_obj = rf'C:\SIMULIA\Commands\abq2021.bat cae script={self.software_path}\extract_results\get_chip_obj_file.py'
 
@@ -49,12 +49,13 @@ class getResults():
         first_condition = next(iter(data["3. Conditions"].values()))
         path = first_condition["Cutting Properties"]["tempPath"]
         
-        if path:
-            process_names = ["get_forces", "get_temps", "get_chip"]
-            commands = [abaqus_command_forces, abaqus_command_temperatures, abaqus_command_chip_obj]
-        else:
-            process_names = ["get_forces", "get_chip"]
-            commands = [abaqus_command_chip_obj, abaqus_command_forces]
+        # if path:
+        #     process_names = ["get_forces", "get_temps", "get_chip"]
+        #     commands = [abaqus_command_forces, abaqus_command_temperatures, abaqus_command_chip_obj]
+        # else:
+        
+        process_names = ["get_forces", "get_chip"]
+        commands = [abaqus_command_chip_obj, abaqus_command_forces]
     
         # print('VERIFICA OS COMANDO AI MEU QUERIDO', commands)
 
@@ -64,7 +65,7 @@ class getResults():
         
         for name, command in zip(process_names, commands):
             process_name = f"Process_{name}"
-            process = multiprocessing.Process(target=getResults.get_data_from_odb, args=(command, ))
+            process = multiprocessing.Process(target=GetResults.get_data_from_odb, args=(command, ))
             process.name = process_name
             processes.append(process)
             process.start()
@@ -121,4 +122,4 @@ class getResults():
 
 
 if __name__ == "__main__":
-    getResults()
+    GetResults()

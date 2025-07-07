@@ -1,11 +1,12 @@
 import sys
+# Prevent Python from generating .pyc files
+sys.dont_write_bytecode = True
+
 from PySide6.QtWidgets import QApplication, QMainWindow
 from frontend.interface.ui_form import Ui_MainWindow
 from frontend.aux_files.buttons_callback import ButtonsCallback
 from frontend.aux_files.variables_manager import ManagerVariables
 
-# Prevent Python from generating .pyc files
-sys.dont_write_bytecode = True
 
 class MainWindow(QMainWindow):
     """Main application window."""
@@ -14,6 +15,7 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
+        
         # Error tracking variable
         self.error_tracking = False
 
@@ -34,4 +36,17 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     widget = MainWindow()
     widget.show()
+
+    widget.resize(700, 300)  # define tamanho antes do show
+    widget.show()
+
+    # Centralizar após mostrar
+    screen = app.primaryScreen()
+    screen_geometry = screen.geometry()
+    window_geometry = widget.frameGeometry()
+    center_point = screen_geometry.center()
+    window_geometry.moveCenter(center_point)
+    widget.move(window_geometry.topLeft())
+
     sys.exit(app.exec())
+    

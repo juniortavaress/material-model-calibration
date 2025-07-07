@@ -97,7 +97,8 @@ class GetPsoAndSimulation:
         else:
             base_path = os.getcwd() 
     
-        self.pararel_simulation = os.path.join(base_path, r"backend\pso\pararel_simulation.py")
+        pararel_simulation_source = os.path.join(base_path, r"backend\pso_scripts\parallel_simulation.py")
+        status_manager_source = os.path.join(base_path, r"backend\pso_scripts\status_manager.py")
 
         if not self.error_tracking:
             with open(self.project_infos_path, "r", encoding="utf-8") as file:
@@ -110,18 +111,24 @@ class GetPsoAndSimulation:
             project_name = data["1. Info"]["Project Name"]
 
             i = 1 if main_activated == "Yes" else  2
+            
             for computer in range(i, int(computers) + 1):
                 computer_file = os.path.join(self.python_files, f"computer_0{computer}.py")
                 with open(defaut_file, 'r') as file:
                     conteudo = file.read()
-
-                conteudo_modificado = conteudo.replace("XX", f"0{computer}").replace("X", f"{computer}").replace("cores_by_simulation", cores_by_simulation).replace("project_name", project_name)
-
+                conteudo_modificado_code_to_run_simulation = conteudo.replace("XX", f"0{computer}").replace("X", f"{computer}").replace("cores_by_simulation", cores_by_simulation).replace("project_name", project_name)
                 with open(computer_file, 'w') as file:
-                    file.write(conteudo_modificado)
+                    file.write(conteudo_modificado_code_to_run_simulation)
 
-            dest_pararel_file = os.path.join(self.python_files, "pararel_simulation.py")
-            shutil.copy(self.pararel_simulation, dest_pararel_file)
+
+                with open(pararel_simulation_source, 'r') as file:
+                    conteudo = file.read()
+                conteudo_modificado_parallel = conteudo.replace("from backend.pso_scripts.status_manager import StatusManager", "from status_manager import StatusManager")
+                with open(os.path.join(self.python_files, "parallel_simulation.py"), 'w') as file:
+                    file.write(conteudo_modificado_parallel)
+
+            # shutil.copy(pararel_simulation_source, os.path.join(self.python_files, "parallel_simulation.py"))
+            shutil.copy(status_manager_source, os.path.join(self.python_files, "status_manager.py"))
 
 
 if __name__ == "__main__":

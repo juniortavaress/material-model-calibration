@@ -64,15 +64,15 @@ class ExcelManager():
             file = filename
             chip_datas = self.chip_datas[filename]
 
-            info = file.split("_int")
-            condition = file.split("_int_")[0]
-            param_info = f"int{info[1]}"
-            iteration_number = (param_info.split("int_")[1]).split("_set_")[0]
-            set_number = (param_info.split("int_")[1]).split("_set_")[1]
+            info = file.split("_it")
+            condition = file.split("_it_")[0]
+            param_info = f"it{info[1]}"
+            iteration_number = (param_info.split("it_")[1]).split("_set_")[0]
+            set_number = (param_info.split("it_")[1]).split("_set_")[1]
 
             simulated_cutting_forces = force_and_temp_datas["Cutting Force [N].mean"]
             simulated_normal_forces = force_and_temp_datas["Normal Force [N].mean"]
-            simulated_temperature = force_and_temp_datas["Maximum Temperature at Last Frame [°C]"]
+            # simulated_temperature = force_and_temp_datas["Maximum Temperature at Last Frame [°C]"]
             chip_compression_ratio = chip_datas["Chip Compression Ratio (CCR)"]
             chip_segmentation_ratio = chip_datas["Chip Segmentatio Ratio (CSR)"]
 

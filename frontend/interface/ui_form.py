@@ -26,7 +26,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1433, 1129)
+        MainWindow.resize(851, 1129)
         icon = QIcon()
         icon.addFile(u"C:/Users/adam-ua769pu3t3n7k4o/Downloads/web-optimization.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         MainWindow.setWindowIcon(icon)
@@ -4008,7 +4008,7 @@ class Ui_MainWindow(object):
         self.plot_geometry_frame.setEnabled(True)
         sizePolicy4.setHeightForWidth(self.plot_geometry_frame.sizePolicy().hasHeightForWidth())
         self.plot_geometry_frame.setSizePolicy(sizePolicy4)
-        self.plot_geometry_frame.setMinimumSize(QSize(600, 600))
+        self.plot_geometry_frame.setMinimumSize(QSize(0, 600))
         self.plot_geometry_frame.setStyleSheet(u"QFrame {\n"
 "     border-radius: 0 px; \n"
 "	 border: 0px solid #3498db;\n"
@@ -7068,7 +7068,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 51, 34))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 819, 925))
         self.verticalLayout_60 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_60.setObjectName(u"verticalLayout_60")
         self.label_code_status = QLabel(self.scrollAreaWidgetContents)
@@ -7564,13 +7564,13 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 1433, 22))
+        self.menubar.setGeometry(QRect(0, 0, 851, 22))
         MainWindow.setMenuBar(self.menubar)
 
         self.retranslateUi(MainWindow)
 
         self.pages.setCurrentIndex(4)
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(3)
 
 
         QMetaObject.connectSlotsByName(MainWindow)

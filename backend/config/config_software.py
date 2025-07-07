@@ -10,7 +10,7 @@ from PySide6.QtCore import QTimer
 from PySide6.QtWidgets import QFileDialog
 
 from backend.config.yaml_generator_backend import YamlClassBackEnd
-from backend.pso.start_otimization import OtimizationManager
+from backend.pso_scripts.start_otimization import OtimizationManager
 
 
 class SoftwareConfig():
@@ -114,7 +114,7 @@ class SoftwareConfig():
 
                     # Starting otimization from previous point
                     if load_datas:
-                        self.ui.pages.setCurrentIndex(8)
+                        self.ui.pages.setCurrentIndex(10)
                         OtimizationManager.main(self)
 
 
@@ -220,6 +220,7 @@ class SoftwareConfig():
         # Auxiliary Folders 
         self.user_config = os.path.join(self.project_path, "config")
         self.cae_path = os.path.join(self.project_path, "defaut/CAE")
+        self.defaut_geometry = os.path.join(self.project_path, "defaut/geometry_datas")
         self.inp_path = os.path.join(self.project_path, "defaut/INPFiles")
         self.json_defaut_path = os.path.join(self.project_path, "json_and_obj_files/jsonFiles")
         self.obj_path = os.path.join(self.project_path, "json_and_obj_files/objFiles")
@@ -230,7 +231,7 @@ class SoftwareConfig():
 
         if "8. Otimization Datas" not in existing_data:
             # Creating folders setup
-            folders = [self.excel_files, self.chip_images, self.simulation_inp_files, self.odb_processing, self.python_files, self.user_config, self.cae_path, self.inp_path, self.json_defaut_path, self.obj_path]
+            folders = [self.excel_files, self.chip_images, self.simulation_inp_files, self.odb_processing, self.python_files, self.user_config, self.cae_path, self.inp_path, self.defaut_geometry, self.json_defaut_path, self.obj_path]
             for folder in folders:
                 if os.path.exists(folder):
                     shutil.rmtree(folder)     
