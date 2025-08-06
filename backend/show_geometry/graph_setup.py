@@ -29,7 +29,6 @@ class GraphManager():
             ax = new_canvas.figure.get_axes()[0]
             ax.set_facecolor('none')
 
-
         # Adiciona o canvas ao layout
         layout = self.ui.plot_geometry_frame.layout()
         if layout is not None:

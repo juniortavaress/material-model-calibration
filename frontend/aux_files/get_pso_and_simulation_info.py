@@ -1,55 +1,48 @@
 import os
 import sys
-import yaml
 import shutil
 import psutil
 from PySide6.QtCore import QTimer
-from frontend.aux_files.yaml_generator import YamlClass
-
+from backend.config.yaml_manager import YamlManager
+from PySide6.QtWidgets import QMessageBox
 
 class GetPsoAndSimulation:
-    def load_info(self):
-        GetPsoAndSimulation.show_pso_and_results_info(self)
-        GetPsoAndSimulation.show_available_cores(self)
-
-
+    """
+    Handles the process of saving Particle Swarm Optimization (PSO) 
+    and simulation configurations, as well as generating Python scripts 
+    for distributed simulation execution.
+    """
     def show_pso_and_results_info(self):
-        with open(self.project_infos_path, "r", encoding="utf-8") as file:
-            data = yaml.safe_load(file) or {}
-
+        data = YamlManager.load_yaml(self, self.yaml_project_info)
         if "7. PSO and Simulation" not in data and "3. Conditions" in data:
             self.ui.label_number_conditions.setText(str(len(data["3. Conditions"])))
-        else:
-            self.ui.label_number_conditions.setText(data["7. PSO and Simulation"]["Cutting Conditions"])
-            self.ui.lineEdit_number_iteration.setText(str(data["7. PSO and Simulation"]["Iterations"]))
-            self.ui.lineEdit_number_particles.setText(str(data["7. PSO and Simulation"]["Particles"]))
-            self.ui.lineEdit_var1.setText(str(data["7. PSO and Simulation"]["fig"]))
-            self.ui.lineEdit_var2.setText(str(data["7. PSO and Simulation"]["w"]))
-            self.ui.lineEdit_var3.setText(str(data["7. PSO and Simulation"]["fip"]))
-            self.ui.combobox_core_by_simulation.setCurrentText(data["7. PSO and Simulation"]["Cores by Simulation"])
-            self.ui.combobox_number_computer.setCurrentText(data["7. PSO and Simulation"]["Computers"])
-            self.ui.combobox_main_computer.setCurrentText(data["7. PSO and Simulation"]["Main Computer"])
 
+            threshold = 8
+            cpu_percentages = psutil.cpu_percent(percpu=True)
+            num_physical_cores = psutil.cpu_count(logical=False)
+            self.availableCores = sum(1 for i, usage in enumerate(cpu_percentages) if usage < threshold and i < num_physical_cores)
+            self.ui.label_cores.setText(str(self.availableCores))
+        self.ui.pages.setCurrentIndex(10)
 
-    def show_available_cores(self):
-        threshold = 8
-        cpu_percentages = psutil.cpu_percent(percpu=True)
-        num_physical_cores = psutil.cpu_count(logical=False)
-        self.availableCores = sum(1 for i, usage in enumerate(cpu_percentages) if usage < threshold and i < num_physical_cores)
-        self.ui.label_cores.setText(str(self.availableCores))
-
-
-    def save_info(self):
+    def save_info(self) -> None:
+        """
+        Coordinates the saving of user input from the UI into the YAML file
+        and generates the corresponding Python simulation scripts.
+        """
         GetPsoAndSimulation.generate_yaml_info(self)
         GetPsoAndSimulation.create_python_files(self)
 
 
-    def generate_yaml_info(self):
-        with open(self.project_infos_path, "r", encoding="utf-8") as file:
-            data = yaml.safe_load(file) or {}
+    def generate_yaml_info(self) -> None:
+        """
+        Extracts PSO and simulation parameters from the UI, validates inputs,
+        and saves them into the YAML configuration file.
 
-        if "7. PSO and Simulation" not in data:
-            data["7. PSO and Simulation"] = {}
+        If any invalid input is detected, an error flag is set and a 
+        warning label is shown in the UI.
+        """
+        data = YamlManager.load_yaml(self, self.yaml_project_info)
+        data.setdefault("7. PSO and Simulation", {})
 
         core_by_simulation = self.ui.combobox_core_by_simulation.currentText()
         number_computer = self.ui.combobox_number_computer.currentText()
@@ -84,27 +77,30 @@ class GetPsoAndSimulation:
                 "Computers": number_computer,
                 "Main Computer": main_computer}
 
-            YamlClass.save_yaml_info(self, self.project_infos_path, "7. PSO and Simulation", data["7. PSO and Simulation"])
-            self.ui.pages.setCurrentIndex(10)
+            YamlManager.save_yaml_info(self, self.yaml_project_info, "7. PSO and Simulation", data["7. PSO and Simulation"])
+            self.ui.pages.setCurrentIndex(11)
         else:
-            self.ui.label_pso_result_warning.show()
-            QTimer.singleShot(3000, lambda: self.ui.label_pso_result_warning.hide())
+            QMessageBox.warning(self, "Error", "There are one or more parameters with invalid values.")
 
 
-    def create_python_files(self):
+    def create_python_files(self) -> None:
+        """
+        Generates and writes the required Python simulation files for each
+        computer based on the YAML configuration. This includes dynamic code
+        generation for simulation execution and parallel management.
+        """
         if getattr(sys, 'frozen', False):  
             base_path = sys._MEIPASS
         else:
             base_path = os.getcwd() 
     
-        pararel_simulation_source = os.path.join(base_path, r"backend\pso_scripts\parallel_simulation.py")
-        status_manager_source = os.path.join(base_path, r"backend\pso_scripts\status_manager.py")
+        pararel_simulation_source = os.path.join(base_path, "backend", "abaqus_simulation_manager", "aux_scripts", "parallel_simulation.py")
+        status_manager_source = os.path.join(base_path, "backend", "abaqus_simulation_manager", "aux_scripts", "status_manager.py")
 
         if not self.error_tracking:
-            with open(self.project_infos_path, "r", encoding="utf-8") as file:
-                data = yaml.safe_load(file) or {}
+            data = YamlManager.load_yaml(self, self.yaml_project_info)
 
-            defaut_file = os.path.join(base_path, r"backend\aux_files\aux_simulation\code_to_run_simulation.py")
+            defaut_file = os.path.join(base_path, "backend", "abaqus_simulation_manager", "aux_files", "aux_simulation", "code_to_run_simulation.py")
             computers = data["7. PSO and Simulation"]["Computers"]
             cores_by_simulation = data["7. PSO and Simulation"]["Cores by Simulation"]
             main_activated = data["7. PSO and Simulation"]["Main Computer"]
@@ -120,17 +116,11 @@ class GetPsoAndSimulation:
                 with open(computer_file, 'w') as file:
                     file.write(conteudo_modificado_code_to_run_simulation)
 
-
                 with open(pararel_simulation_source, 'r') as file:
                     conteudo = file.read()
-                conteudo_modificado_parallel = conteudo.replace("from backend.pso_scripts.status_manager import StatusManager", "from status_manager import StatusManager")
+                conteudo_modificado_parallel = conteudo.replace("from backend.abaqus_simulation_manager.aux_scripts.status_manager import StatusManager", "from status_manager import StatusManager")
                 with open(os.path.join(self.python_files, "parallel_simulation.py"), 'w') as file:
                     file.write(conteudo_modificado_parallel)
 
-            # shutil.copy(pararel_simulation_source, os.path.join(self.python_files, "parallel_simulation.py"))
             shutil.copy(status_manager_source, os.path.join(self.python_files, "status_manager.py"))
 
-
-if __name__ == "__main__":
-    cp = GetPsoAndSimulation()
-    cp.create_python_files()

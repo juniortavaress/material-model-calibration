@@ -26,6 +26,7 @@ class PsoManager():
         # Setting variables
         self.reload = False
         self.process_finished = False
+        self.iteration_in_progress = False
         self.target_values = {}
         self.parameters_boundry = {}
         self.count_iteration = 1
@@ -36,8 +37,7 @@ class PsoManager():
 
         # Verify project status
         velocities, positions, personal_best_positions, personal_best_scores, global_best_position, global_best_score, global_best_scores_history = PsoManager.verify_stage(self)
-        PsoManager.verify_iteration_progress(self)
-
+        
         if not self.process_finished:
             # Define the objective function to be minimized
             objective_function_pso = lambda params: PsoManager.objective_function(self, params)
@@ -47,6 +47,7 @@ class PsoManager():
                 velocities, positions, personal_best_positions, personal_best_scores, global_best_position, global_best_score, global_best_scores_history = PsoManager.initial_parameters_pso(self, objective_function_pso, lb, ub, num_dimensions)
 
             # Perform the PSO iterations
+            PsoManager.verify_iteration_progress(self)
             PsoManager.pso_iterations(self, objective_function_pso, lb, ub, velocities, positions, personal_best_positions, personal_best_scores, global_best_position, global_best_score, global_best_scores_history)
             
             # Showing datas
@@ -89,7 +90,7 @@ class PsoManager():
             self.main_computer = data["7. PSO and Simulation"]["Main Computer"]
 
     def verify_iteration_progress(self):
-        self.iteration_in_progress = False
+        
         drive_folder = self.user_result_folder
         yaml_path = os.path.join(drive_folder, "auxiliary_files", "python_files_to_computers", "computers_list.yaml")
        
@@ -245,8 +246,17 @@ class PsoManager():
 
                 PsoManager.show_datas(self)
                 
-                velocities = [v.tolist() for v in velocities]  
-                positions = [p.tolist() for p in positions] 
+                try: 
+                    velocities = [v.tolist() for v in velocities]  
+                except:
+                    print("NAO E POSSIVEL CONVERTER VELOCIDADE")
+
+                try: 
+                    positions = [p.tolist() for p in positions] 
+                except:
+                    print("NAO E POSSIVEL CONVERTER POSICAO")
+
+                
 
 
 
@@ -445,7 +455,7 @@ class PsoManager():
         self.error_tracking = True
         StatusMessage.set_text(self, "message-error")
         traceback.print_exc()
-        input("precione enter para seguir")
+        # input("precione enter para seguir")
 
 
 

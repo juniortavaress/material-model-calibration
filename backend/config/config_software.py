@@ -2,243 +2,175 @@
 import os 
 import sys
 import yaml
-import shutil
-import pandas as pd
 from datetime import datetime
 
 from PySide6.QtCore import QTimer
-from PySide6.QtWidgets import QFileDialog
+from PySide6.QtWidgets import QFileDialog, QMessageBox
 
-from backend.config.yaml_generator_backend import YamlClassBackEnd
-from backend.pso_scripts.start_otimization import OtimizationManager
+from backend.config.get_status import GetStatus
+from backend.config.yaml_manager import YamlManager
 
 
 class SoftwareConfig():
     """
-    Class to manage the configuration of the software, including setting up paths, loading configurations, 
-    and saving data for project management.
+    Manages the configuration and initialization of the software environment,
+    including folder structure setup, credential management, and project-specific data.
     """
+
+    def software_setup(self) -> None:
+        """
+        Creates the root software directory and loads existing Abaqus configuration if available.
+        """
+        self.software_folder = os.path.join(os.getenv("SystemDrive", "C:") , "\MaterialOtimization")
+        self.software_config_file = os.path.join(self.software_folder, "config", "config.yaml")
         
-    def software_setup(self):
+        if not os.path.exists(self.software_folder):
+            os.makedirs(self.software_folder)
+
+        base_path = getattr(sys, '_MEIPASS', os.getcwd())
+        self.subrotine_dir = os.path.join(base_path, "backend", "abaqus_simulation_manager", "aux_files", "subrotine")
+
+        if os.path.exists(self.software_config_file):
+            data_abq = YamlManager.load_yaml(self, self.software_config_file)
+            self.abaqus_path = data_abq["abaqus_path"]
+            self.ui.label_abaqus.setText(self.abaqus_path)
+
+
+    def project_setup(self) -> None:
         """
-        Set up the software by creating necessary folders and copying required files.
+        Initializes the project by creating the project folder and validating user credentials.
         """
-        # Defining paths
-        self.software_path = os.path.join(os.getenv("SystemDrive", "C:") , "\MaterialOtimization")
+        self.showMaximized()
 
-        if getattr(sys, 'frozen', False):  
-            base_path = sys._MEIPASS
-        else:
-            base_path = os.getcwd() 
-
-        # AQUI
-        source_results_dir = os.path.join(base_path, r"backend\aux_files\results")
-        self.destination_results_dir = os.path.join(self.software_path, "extract_results")
-        source_subrotine_dir = os.path.join(base_path, r"backend\aux_files\subrotine")
-        destination_subrotine_dir = os.path.join(self.software_path, "compiled")
-        folder_to_create = [self.software_path, self.destination_results_dir, destination_subrotine_dir]
-
-        # Creating Server Folders
-        for folder in folder_to_create:
-            if not os.path.exists(folder):
-                os.makedirs(folder)
-
-        # Moving Auxiliar Results Python Files
-        for file in os.listdir(source_results_dir):
-            source_path = os.path.join(source_results_dir, file)
-            destination_path = os.path.join(self.destination_results_dir, file)
-            shutil.copy(source_path, destination_path)
-
-        # Moving Subrotine files
-        for file in os.listdir(source_subrotine_dir):
-            source_path = os.path.join(source_subrotine_dir, file)
-            destination_path = os.path.join(destination_subrotine_dir, file)
-            shutil.copy(source_path, destination_path)
-        
-        # Loading Software Information
-        SoftwareConfig.set_software_config_path(self, "start")
-
-
-    def set_software_config_path(self, call=None):
-        """
-        Set the path for the software configuration file. If called with "start", it loads the existing configuration.
-        Otherwise, it allows the user to select the Abaqus path.
-        """
-        self.software_config_path = os.path.join(os.getenv("SystemDrive", "C:") , "\MaterialOtimization", "config.yaml")
-
-        if call == "start":
-            if os.path.exists(self.software_config_path):
-                with open(self.software_config_path, "r", encoding="utf-8") as file:
-                    data_abq = yaml.safe_load(file)
-
-                self.abaqus_path = data_abq["abaqus_path"]
-                self.ui.label_abaqus.setText(self.abaqus_path)
-        else:
-            self.abaqus_path, _ = QFileDialog.getOpenFileName(self)
-
-            if self.abaqus_path:
-                self.ui.label_abaqus.setText(self.abaqus_path)
-                YamlClassBackEnd.save_yaml_info(self, self.software_config_path, "abaqus_path", self.abaqus_path)
-                self.ui.button_result.setEnabled(True)
-            else:
-                self.ui.label_abaqus.setText(" ")
-                self.ui.label_path_warning.show()
-                QTimer.singleShot(3000, lambda: self.ui.label_path_warning.hide())
-
-
-    def verify_gui_stage(self):
-        """
-        Verify the current stage in the GUI and proceed accordingly (e.g., load optimization data or start optimization).
-        """
-        if not self.error_tracking and hasattr(self, 'project_infos_path'):
-            load_datas = True
-
-            with open(self.project_infos_path, "r", encoding="utf-8") as file:
-                data = yaml.safe_load(file) or {}
-
-            if "8. Otimization Datas" in data:
-                # Loading results to show in the interface
-                if data["8. Otimization Datas"]["Status"] == "Done":
-                    path = os.path.join(self.graph_folder, "forces_result.xlsx")
-                    datas = pd.ExcelFile(path)
-                    sheet_names = datas.sheet_names
-                    [self.ui.combobox_file.addItems([f"sim_{name}"]) for name in sheet_names]
-                    self.ui.combobox_file.setCurrentIndex(1)
-                    self.ui.button_result_back.hide()
-                    self.ui.pages.setCurrentIndex(11)
-
-                elif data["8. Otimization Datas"]["Status"] == "pending":
-                    for _, info in data["8. Otimization Datas"]["Last Iteration Values"].items():
-                        if info == None:
-                            load_datas = None
-
-                    # Starting otimization from previous point
-                    if load_datas:
-                        self.ui.pages.setCurrentIndex(10)
-                        OtimizationManager.main(self)
-
-
-    def project_setup(self):
-        """
-        Set up the project by creating necessary folders and checking login information.
-        """
-        if os.path.exists(self.software_path) and self.ui.lineEdit_project_name.text():
+        if os.path.exists(self.software_folder) and self.ui.lineEdit_project_name.text():
             self.project_name = self.ui.lineEdit_project_name.text()
-
-            # Paths
-            self.project_path = os.path.join(self.software_path, self.project_name)
-            self.simulation_folder = os.path.join(self.project_path, "simulation_folder")
-            self.graph_folder = os.path.join(self.project_path, "graph_results")
-            folders_to_create = [self.project_path, self.simulation_folder, self.graph_folder]
-
-            # Creating Server Folders
-            for folder in folders_to_create:
-                if not os.path.exists(folder):
-                    os.makedirs(folder)
-
-            # Checking login infos
+            self.project_folder = os.path.join(self.software_folder, self.project_name)
+            self.yaml_project_info = os.path.join(self.project_folder, "info.yaml")
+            
+            if not os.path.exists(self.project_folder):
+                os.makedirs(self.project_folder)
             SoftwareConfig.check_credentials(self)
-    
-
-    def check_credentials(self):
-        """
-        Check if the credentials exist and if they are correct. If not, create new ones.
-        """
-        self.project_infos_path = os.path.join(self.project_path, "info.yaml")
         
+        GetStatus.verify_gui_stage(self)
+
+        
+    def check_credentials(self) -> None:
+        """
+        Verifies if user credentials exist and are correct. 
+        If not, creates new credentials and proceeds to the next interface page.
+        """
         # If credentials alreary exist load them, else create the credentials
-        if "info.yaml" in os.listdir(self.project_path):
-            with open(self.project_infos_path, "r", encoding="utf-8") as file:
-                project_data = yaml.safe_load(file)
+        if "info.yaml" in os.listdir(self.project_folder):
+            project_data = YamlManager.load_yaml(self, self.yaml_project_info)
 
             if self.ui.lineEdit_password.text() == project_data["1. Info"]["Password"]:
                 SoftwareConfig.load_saved_datas(self, project_data)
+                GetStatus.load_info_to_ui(self)
                 self.ui.pages.setCurrentIndex(1)
             else:
-                self.ui.label_login_warning.show()
-                QTimer.singleShot(3000, lambda: self.ui.label_login_warning.hide())
+                QMessageBox.warning(self, "Error", "The project already exists and the password is wrong.")
         else:
             if self.ui.lineEdit_project_name.text() and self.ui.lineEdit_password.text():
-                SoftwareConfig.create_datas(self)
+                data = {"Date": datetime.today().strftime('%d-%m-%Y'), "Project Name": self.ui.lineEdit_project_name.text(), "Password": self.ui.lineEdit_password.text()}
+                YamlManager.save_yaml_info(self, self.yaml_project_info, "1. Info", data)
+                self.ui.pages.setCurrentIndex(1)
 
 
-    def load_saved_datas(self, project_data):
+    def load_saved_datas(self, project_data: dict) -> None:
         """
-        Load saved data from the project file if it exists.
+        Loads previously saved data from the project configuration file.
+
+        Args:
+            project_data (dict): The dictionary loaded from the YAML configuration file.
         """
-        if "Result_path" in project_data.get("2. Result Path", {}):
+        if 'Result_path' in project_data.get("2. Result Path", {}):
             self.user_result_folder = project_data["2. Result Path"]["Result_path"]
             self.ui.label_result.setText(self.user_result_folder)
             self.ui.button_settings_next_page.setEnabled(True)
             SoftwareConfig.set_user_config_path(self)
-    
+            
 
-    def create_datas(self):
+    def get_results_and_abaqus_folders(self, type: str) -> None:
         """
-        Create a new project and save the initial data in a YAML file.
+        Opens a dialog for the user to select the Abaqus executable or result directory.
+
+        Args:
+            type (str): Determines the type of dialog. Use "abq" for Abaqus path selection.
         """
-        data = {"Date": datetime.today().strftime('%d-%m-%Y'), "Project Name": self.ui.lineEdit_project_name.text(), "Password": self.ui.lineEdit_password.text()}
-        YamlClassBackEnd.save_yaml_info(self, self.project_infos_path, "1. Info", data)
-        self.ui.pages.setCurrentIndex(1)
+        if type == "abq":
+            self.abaqus_path, _ = QFileDialog.getOpenFileName(self)
+
+            if self.abaqus_path:
+                self.ui.label_abaqus.setText(self.abaqus_path)
+                YamlManager.save_yaml_info(self, self.software_config_file, "abaqus_path", self.abaqus_path)
+                self.ui.button_result.setEnabled(True)
+            else:
+                self.ui.label_abaqus.setText(" ")
+                QMessageBox.warning(self, "Error", "Select a valid path.")
+
+        else:
+            result_path = QFileDialog.getExistingDirectory()
+
+            if not result_path:
+                self.ui.label_result.setText(" ")
+                QMessageBox.warning(self, "Error", "Select a valid path.")
+                return
+            
+            self.user_result_folder = os.path.join(result_path, self.project_name)
+            self.ui.label_result.setText(self.user_result_folder)
+
+            if os.path.exists(self.yaml_project_info):
+                data = {"Result_path": self.user_result_folder}
+                YamlManager.save_yaml_info(self, self.yaml_project_info, "2. Result Path", data)        
+            SoftwareConfig.set_user_config_path(self)
 
 
-    def get_results_folders(self):
+    def set_user_config_path(self) -> None:
         """
-        Open a file dialog to allow the user to select a results folder.
-        """
-        self.result_path = QFileDialog.getExistingDirectory()
-
-        if not self.result_path:
-            self.ui.label_result.setText(" ")
-            self.ui.label_path_warning.show()
-            QTimer.singleShot(3000, lambda: self.ui.label_path_warning.hide())
-            return
-        
-        self.user_result_folder = os.path.join(self.result_path, self.project_name)
-        self.ui.label_result.setText(self.user_result_folder)
-
-        # Add result folder to the info.yaml
-        if os.path.exists(self.project_infos_path):
-            data = {"Result_path": self.user_result_folder}
-            YamlClassBackEnd.save_yaml_info(self, self.project_infos_path, "2. Result Path", data)
-
-
-    def set_user_config_path(self):
-        """
-        Set the user result folder path. If it does not exist, ask the user for a directory.
-        Creates required subdirectories and saves paths in a YAML file.
+        Creates all necessary subfolders in the project and result directories.
+        Also defines the paths used throughout the project and saves them if needed.
         """
         if not os.path.exists(self.user_result_folder):
             os.makedirs(self.user_result_folder)
 
+        # Folders inside result folder
         self.excel_files = os.path.join(self.user_result_folder, "excel_files")
         self.chip_images = os.path.join(self.user_result_folder, "chip_images")
-        self.simulation_inp_files = os.path.join(self.user_result_folder, "auxiliary_files/simulation_inp_files")
-        self.odb_processing = os.path.join(self.user_result_folder, "auxiliary_files/odb_processing")
-        self.python_files = os.path.join(self.user_result_folder, "auxiliary_files/python_files_to_computers")
+        self.odb_processing = os.path.join(self.user_result_folder, "auxiliary_files", "odb_processing")
+        self.python_files = os.path.join(self.user_result_folder, "auxiliary_files", "python_files_to_computers")
+        self.simulation_inp_files = os.path.join(self.user_result_folder, "auxiliary_files", "simulation_inp_files")
 
-        # Auxiliary Folders 
-        self.user_config = os.path.join(self.project_path, "config")
-        self.cae_path = os.path.join(self.project_path, "defaut/CAE")
-        self.defaut_geometry = os.path.join(self.project_path, "defaut/geometry_datas")
-        self.inp_path = os.path.join(self.project_path, "defaut/INPFiles")
-        self.json_defaut_path = os.path.join(self.project_path, "json_and_obj_files/jsonFiles")
-        self.obj_path = os.path.join(self.project_path, "json_and_obj_files/objFiles")
-
-        if os.path.exists(self.project_infos_path):
-            with open(self.project_infos_path, "r", encoding="utf-8") as file:
-                existing_data = yaml.safe_load(file) or {}
-
-        if "8. Otimization Datas" not in existing_data:
-            # Creating folders setup
-            folders = [self.excel_files, self.chip_images, self.simulation_inp_files, self.odb_processing, self.python_files, self.user_config, self.cae_path, self.inp_path, self.defaut_geometry, self.json_defaut_path, self.obj_path]
-            for folder in folders:
-                if os.path.exists(folder):
-                    shutil.rmtree(folder)     
+        folders_result = [self.excel_files, self.chip_images, self.simulation_inp_files, self.odb_processing, self.python_files]
+        for folder in folders_result:
+            if not os.path.exists(folder):
                 os.makedirs(folder)
 
-        # Allowing go to next page
+        # Folders inside project folder
+        self.log_files = os.path.join(self.project_folder, "logs")
+        self.user_config = os.path.join(self.project_folder, "config")
+        self.graph_folder = os.path.join(self.project_folder, "graph_results")
+        self.simulation_folder = os.path.join(self.project_folder, "simulation_folder")
+        self.cae_path = os.path.join(self.project_folder, "defaut", "CAE")
+        self.inp_path = os.path.join(self.project_folder, "defaut", "INPFiles")
+        self.defaut_geometry = os.path.join(self.project_folder, "defaut", "geometry_datas")
+        self.obj_path = os.path.join(self.project_folder, "json_and_obj_files", "objFiles")
+        self.json_default_path = os.path.join(self.project_folder, "json_and_obj_files", "jsonFiles")
+        
+        folders_project = [self.log_files, self.user_config, self.graph_folder, self.simulation_folder, self.cae_path, self.inp_path, self.defaut_geometry, self.obj_path, self.json_default_path]
+        for folder in folders_project:
+            if not os.path.exists(folder):
+                os.makedirs(folder)
+
+        self.yaml_parameters = os.path.join(self.user_config, "parameters.yaml")
+        self.yaml_materials_properties = os.path.join(self.user_config, "material_properties.yaml")
+        self.yaml_computer_files = os.path.join(self.python_files, "computers_list.yaml")
+
+        # Enable next step in UI
         self.ui.button_settings_next_page.setEnabled(True)
+
+
+
+
 
 
 

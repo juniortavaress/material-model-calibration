@@ -20,14 +20,8 @@ class GetGeometry():
         PAGE_MAPPINGS = {0: 'Eulerian', 1: 'ChipPlate', 2: 'Tool', 3: 'Assembly'}
         geometry = PAGE_MAPPINGS[self.ui.tabWidget.currentIndex()]
         all_Infos = GetGeometry.check_general_infos(self, self.ui.tabWidget.currentIndex())
-        # except:
-        #     all_Infos = False
-        #     print("except set_info")
-
-        # print('all_Infos', all_Infos)
 
         if all_Infos != False:
-            print("NOTES\n", all_Infos)
             GraphManager.plot_3d_graph(self, geometry)
             self.ui.button_create_geometry_next.setEnabled(True)
             self.ui.button_create_geometry_next.clicked.connect(lambda: self.ui.pages.setCurrentIndex(5))
@@ -95,8 +89,10 @@ class GetGeometry():
 
         data = {"generalInformation": {"modelName": "PythonModel"}}
         data = GetDictionary.datas_from_ui(self, data)
-        AuxFunctions.save_dict(os.path.join(self.defaut_geometry, "geometry_datas.json"), data)
-
+        with open(os.path.join(self.defaut_geometry, "geometry_datas.json"), 'w') as json_file:
+            data.dump(data, json_file, indent=4)
+        
+ 
         # print(os.path.join(self.defaut_geometry, "geometry_datas.json"))
         # ICON_CHECKMARK = QIcon(':/new_Icons/Icons/checkmark.png')
         # [self.ui.tabWidget.setTabIcon(value, ICON_CHECKMARK) for value in [0, 1, 2, 3]] if self.ui.defautValues.isChecked() else self.ui.tabWidget.setTabIcon(self.ui.tabWidget.currentIndex(), ICON_CHECKMARK)

@@ -1,11 +1,9 @@
 import sys
-# Prevent Python from generating .pyc files
 sys.dont_write_bytecode = True
 
 from PySide6.QtWidgets import QApplication, QMainWindow
 from frontend.interface.ui_form import Ui_MainWindow
 from frontend.aux_files.buttons_callback import ButtonsCallback
-from frontend.aux_files.variables_manager import ManagerVariables
 
 
 class MainWindow(QMainWindow):
@@ -15,21 +13,18 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
+        # PRECISO PEGAR ISSO DA UI DEPOIS 
+        # self.weights = [0.5, 0.1, 0.0, 0.2, 0.2]
+        # self.forces, self.temp, self.chip = True, False, True
         
         # Error tracking variable
+        self.reload = False
+        self.process_finished = False
+        self.iteration_in_progress = False
         self.error_tracking = False
 
         # Activate buttons from interface
         ButtonsCallback.activate_buttons(self)
-
-
-    # def __setattr__(self, name, value):
-    #     """Override setattr to track variable assignments."""
-    #     if not hasattr(self, name):  
-    #         ManagerVariables.print_paths(self)
-    #     super().__setattr__(name, value)
-
-
 
 
 if __name__ == "__main__":

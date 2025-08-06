@@ -17,8 +17,8 @@ class ParallelSimulation():
     def run_all_simulations(self, server_folder, drive_folder, num_cores, cp_number):
         yaml_path = os.path.join(drive_folder, "auxiliary_files", "python_files_to_computers", "computers_list.yaml")
 
-        StatusManager.schedule(lambda: StatusManager._refresh_timestamps(yaml_path, cp_number), 10)
-        StatusManager.schedule(lambda: StatusManager._verify_expired(yaml_path, cp_number), 15)
+        StatusManager.schedule(lambda: StatusManager._verify_expired(yaml_path, cp_number), 1800)
+        StatusManager.schedule(lambda: StatusManager._refresh_timestamps(yaml_path, cp_number), 600)
 
         while self._has_pending_simulations(yaml_path):
             self._start_simulations(yaml_path, server_folder, drive_folder, num_cores, cp_number)
@@ -47,8 +47,12 @@ class ParallelSimulation():
             num_physical_cores = psutil.cpu_count(logical=False)
             availableCores = sum(1 for i, usage in enumerate(cpu_percentages) if usage < threshold and i < num_physical_cores)
             number_of_files = int((availableCores - 2) / num_cores)
-        # return number_of_files
-        return 3
+
+        if number_of_files < 3:
+            number_of_files = 3
+
+        return number_of_files
+
     
 
     def _get_pending_commands(self, yaml_path, cp_number, num_files):
@@ -73,13 +77,14 @@ class ParallelSimulation():
     def _collect_inp_files(self, server_folder, path_list, num_cores):
         commands = []
         self.inpFiles = []
-        print("path listy", path_list)
 
         for folder in path_list:
             if os.path.isdir(folder):
 
                 destination_folder = os.path.join(server_folder, os.path.basename(folder))
-                os.makedirs(destination_folder, exist_ok=True)
+                print(destination_folder)
+                if not os.path.exists(destination_folder):
+                    os.makedirs(destination_folder)
 
                 for file in os.listdir(folder):                  
                     source_path = os.path.join(folder, file)                  
@@ -92,15 +97,12 @@ class ParallelSimulation():
                     except Exception:
                         traceback.print_exc()
 
-        print(self.inpFiles)
 
         for inp in self.inpFiles:
             inp_dir = os.path.dirname(inp)
             job_name = os.path.basename(inp).replace(".inp", "")
             command = rf'call C:\SIMULIA\Commands\abq2021.bat job={job_name} cpus={num_cores} interactive'
             commands.append((inp_dir, command))
-
-        print(commands)
         return commands
 
 
@@ -129,20 +131,19 @@ class ParallelSimulation():
 
             for attempt in range(1, retries + 1):
                 try:
+                    # x = input("COLOCA A SIMULACAO:")
+
                     os.chdir(inp_dir)
+                    process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                    stdout, stderr = process.communicate()
+                    print(f"stdout: {stdout.decode()}\n", f"stderr: {stderr.decode()}\n")
+                    process.wait()
 
-                    # process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                    # stdout, stderr = process.communicate()
-                    # print(f"stdout: {stdout.decode()}\n", f"stderr: {stderr.decode()}\n")
-                    # process.wait()
-
-                    # if os.path.exists(output_file):
-                    #     self._move_odb(self, job_name, server_folder, drive_folder)
-                    #     return "Sucess"
-                    # else:
-                    #     print("Output file not found for {}. Retrying...".format(job_name))
-
-                    x = input("COLOCA A SIMULACAO:")
+                    if os.path.exists(output_file):
+                        self._move_odb(job_name, server_folder, drive_folder)
+                        return "Sucess"
+                    else:
+                        print("Output file not found for {}. Retrying...".format(job_name))
 
                 except Exception as e:
                     return f"Failed: {command}. Error: {str(e)}"
@@ -177,6 +178,7 @@ class ParallelSimulation():
                                     shutil.copy2(source_path, destination_path)
                                     os.remove(source_path)
         except:
+            print("except")
             traceback.print_exc()
 
 
@@ -193,13 +195,19 @@ class ParallelSimulation():
             self._read_and_write_yaml(yaml_path, "save", computer_dict)
 
 
-    @staticmethod
-    def _read_and_write_yaml(yaml_path, function, computer_dict=None):
-        if function == "load":
-            with open(yaml_path, 'r') as file:
-                return yaml.safe_load(file)
-        elif function == "save":
-            with open(yaml_path, "w") as file:
-                yaml.dump(computer_dict, file)
+    def _read_and_write_yaml(self, yaml_path, function, computer_dict=None):
+        try:
+            if function == "load":
+                with open(yaml_path, 'r') as file:
+                    data = yaml.safe_load(file)
+                    return data if isinstance(data, dict) else {}
+            elif function == "save":
+                with open(yaml_path, "w") as file:
+                    yaml.dump(computer_dict, file)
+        except Exception as e:
+            print(f"[Erro ao acessar YAML] {e}")
+            import traceback
+            traceback.print_exc()
+            return {}
         
         

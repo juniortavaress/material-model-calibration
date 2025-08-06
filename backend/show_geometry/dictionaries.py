@@ -51,8 +51,6 @@ class GetDictionary():
                                   self.ui.timePeriod: 0.003}
 
 
-
-
     # Collects data from the UI and formats it into a structured dictionary.
     def datas_from_ui(self, data):
         # Collects Eulerian data

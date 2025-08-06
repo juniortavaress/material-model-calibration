@@ -2,72 +2,169 @@ import os
 import json
 import yaml
 import shutil
-from PySide6.QtCore import QTimer
-from PySide6.QtWidgets import QFileDialog
-from frontend.aux_files.yaml_generator import YamlClass
-# from backend.create_geometry.main import Main
-from frontend.aux_files.get_parameters import GetParameters
 import subprocess
+from typing import Optional
+
+from PySide6.QtCore import QTimer
+from PySide6.QtWidgets import QFileDialog, QMessageBox
+from backend.config.yaml_manager import YamlManager
+
+
 class GetCondition:
     """
-    Class that manages simulation conditions and interactions with
-    the graphical user interface.
-    """
+    Manages simulation conditions and their interaction with the GUI.
+    """ 
+
+    def _check_values(self, value) -> Optional[str]:
+        """
+        Validates if a value is a valid float string.
+
+        Args:
+            value (str): Value to check.
+
+        Returns:
+            Optional[str]: Same value if valid, otherwise None.
+        """
+        try:
+            float(value)
+            return value
+        except:
+            return None
+
+
+    def change_combobox_info(self) -> None:
+        """
+        Updates GUI fields based on the selected condition from the combobox.
+        """
+        data = YamlManager.load_yaml(self, self.yaml_project_info)
+        conditions = data.get("3. Conditions", {})
+
+        selected = self.ui.comboBox_condition.currentText()
+        props = conditions.get(selected, {}).get("Cutting Properties", {})
+        exp = conditions.get(selected, {}).get("Experimental Datas", {})
+
+        self.ui.lineEdit_velocity.setText(props.get("velocity", ""))
+        self.ui.lineEdit_deepCuth.setText(props.get("deepCuth", ""))
+        self.ui.lineEdit_rakeAngle.setText(props.get("rakeAngle", ""))
+        self.ui.lineEdit_tempPath.setText(props.get("tempPath", ""))
+        self.ui.label_input.setText(props.get("inputFile", ""))
+        self.ui.lineEdit_cutting_force.setText(exp.get("cutting_force", ""))
+        self.ui.lineEdit_normal_force.setText(exp.get("normal_force", ""))
+        self.ui.lineEdit_CCR.setText(exp.get("chip_compression", ""))
+        self.ui.lineEdit_CSR.setText(exp.get("chip_segmentation", ""))
+
+
+    def get_input_path(self) -> None:
+        """
+        Opens a file dialog for the user to select an input file.
+        """
+        input_file, _ = QFileDialog.getOpenFileName(self)
+        self.ui.label_input.setText(input_file)
+
+
+    def get_user_conditions(self, call: Optional[str] = None) -> None:
+        """
+        Captures user-entered simulation data from GUI and stores it in YAML.
+
+        Args:
+            call (str, optional): If "new", adds a new condition to the combo box.
+        """
+        velocity = GetCondition._check_values(self, self.ui.lineEdit_velocity.text().replace(',', '.'))
+        deep_cuth = GetCondition._check_values(self, self.ui.lineEdit_deepCuth.text().replace(',', '.'))
+        rake_angle = GetCondition._check_values(self, self.ui.lineEdit_rakeAngle.text().replace(',', '.').replace('+', ''))
+        temp_path = self.ui.lineEdit_tempPath.text() if self.ui.lineEdit_tempPath.text() else "None"
+        inputFile = self.ui.label_input.text() if self.ui.label_input.text() else "None"
+
+        cutting_force = GetCondition._check_values(self, self.ui.lineEdit_cutting_force.text().replace(',', '.'))
+        normal_force = GetCondition._check_values(self, self.ui.lineEdit_normal_force.text().replace(',', '.'))
+        chip_compression = GetCondition._check_values(self, self.ui.lineEdit_CCR.text().replace(',', '.'))
+        chip_segmentation = GetCondition._check_values(self, self.ui.lineEdit_CSR.text().replace(',', '.'))
+
+        if all([velocity, deep_cuth, rake_angle, inputFile]): 
+            data = YamlManager.load_yaml(self, self.yaml_project_info)
+
+            if "3. Conditions" not in data:
+                data["3. Conditions"] = {}
+            condition = self.ui.comboBox_condition.currentText()
+
+            data["3. Conditions"][condition] = {
+                "Cutting Properties": {
+                    "name": f"cond{condition[-2:]}",
+                    "velocity": velocity, 
+                    "deepCuth": deep_cuth, 
+                    "rakeAngle": rake_angle, 
+                    "tempPath": temp_path, 
+                    "inputFile": inputFile
+                }, 
+                "Experimental Datas": {
+                    "cutting_force": cutting_force, 
+                    "normal_force": normal_force, 
+                    "chip_compression": chip_compression, 
+                    "chip_segmentation": chip_segmentation
+                }}
+            
+            YamlManager.save_yaml_info(self, self.yaml_project_info, "3. Conditions", data["3. Conditions"])
+            
+            if call == "new":
+                new_condition = f"Condition 0{self.ui.comboBox_condition.count() + 1}"
+                self.ui.comboBox_condition.addItem(new_condition)
+                self.ui.comboBox_condition.setCurrentIndex(self.ui.comboBox_condition.findText(new_condition))
+        else:
+            self.error_tracking = True
+
+    
+    def manage_inp_files(self) -> bool:
+        """
+        Saves simulation conditions and determines if geometry will be imported or created.
         
-    def set_conditions(self):
+        Returns:
+            bool: True if geometry is imported, False otherwise.
         """
-        Sets simulation conditions from the project information file,
-        populating the combobox with conditions.
+        data = YamlManager.load_yaml(self, self.yaml_project_info)
+        conditions = data.get("3. Conditions", {})
+        import_geometry = conditions.get("Import Geometry (.inp)") 
+
+        if import_geometry is True:
+            GetCondition._handle_imported_geometry(self, data)
+        elif import_geometry is False:
+            GetCondition._handle_created_geometry(self, conditions)
+        else:
+            print("[Warning] 'Import Geometry (.inp)' is not defined.")
+            GetCondition.error_tracking = True
+        return import_geometry
+        
+
+    def _handle_imported_geometry(self, data) -> None:
         """
-
-        with open(self.project_infos_path, "r", encoding="utf-8") as file:
-            data = yaml.safe_load(file)
-
-        self.ui.comboBox_condition.clear()
-        for key, info in data.items():
-            for condition, value in info.items():
-                if condition[:9] == "Condition":
-                    self.ui.comboBox_condition.addItem(condition)
-                    GetCondition.change_combobox_info(self)
-
-        if self.ui.comboBox_condition.findText("Condition 01") == -1:
-            self.ui.comboBox_condition.addItem("Condition 01")
-        self.ui.comboBox_condition.setCurrentIndex(self.ui.comboBox_condition.findText("Condition 01"))
-
-
-    def get_input_path(self):
+        Handles logic for when geometry is imported (.inp files).
+        Copies each condition's input file to the appropriate directory.
         """
-        Opens a file dialog for the user to choose the input file path
-        and updates the label in the graphical user interface.
+        if os.path.exists(self.yaml_project_info) and not self.error_tracking:
+            self.ui.pages.setCurrentIndex(7)
+
+            for _, value in data.items():
+                for key, condition_data in value.items():
+                    if key.startswith("Condition"):
+                        cond = condition_data["Cutting Properties"]["name"]
+                        input_file_path = condition_data["Cutting Properties"]["inputFile"]
+
+                        if os.path.exists(input_file_path):
+                            new_input_file_path = os.path.join(self.inp_path, f"sim_{cond}.inp")
+                            shutil.copy(input_file_path, new_input_file_path)
+        else:
+            QMessageBox.warning(self, "Error", "There are one or more conditions with invalid values.")
+
+    def _handle_created_geometry(self, conditions) -> None:
         """
-        inputFile, _ = QFileDialog.getOpenFileName(self)
-        self.ui.label_input.setText(inputFile)
+        Handles logic for when geometry is created from user-defined parameters.
 
-
-    def save_conditions(self):
+        Args:
+            conditions (dict): The full "3. Conditions" section from the YAML.
         """
-        Saves the current simulation conditions to the project information
-        file and moves the input files to the appropriate location.
-        """
-        GetCondition.get_defaut_user_conditions(self)
+        self.ui.pages.setCurrentIndex(7)
 
-        with open(self.project_infos_path, "r", encoding="utf-8") as file:
-            data = yaml.safe_load(file)
-
-        setup_infos = data.get("3. Setup Infos", {})
-        import_geometry = setup_infos.get("Import Geometry (.inp)")
-        print(import_geometry)
-
-        if import_geometry:
-            GetCondition.move_inp_files(self)
-
-
-
-        elif not import_geometry:
-            self.ui.pages.setCurrentIndex(6)
-            geometry_infos = data.get("3. Conditions")
-
-            for condition, data_types in geometry_infos.items():
+        for condition, data_types in conditions.items():
+            if condition.startswith("Condition"):
                 cutting_props = data_types.get("Cutting Properties")
                 if cutting_props:
                     cond = cutting_props["name"]
@@ -87,157 +184,13 @@ class GetCondition:
                     with open(new_input_file_path, "w") as file:
                         json.dump(geo_data, file, indent=4)
 
-
-            abaqus_command = r'C:\SIMULIA\Commands\abq2021.bat cae noGUI="backend/create_geometry/main.py"'
-            
+            abaqus_command = r'C:\SIMULIA\Commands\abq2021.bat cae noGUI="backend/create_geometry/main.py"'            
             try:
                 result = subprocess.run(abaqus_command, shell=True, check=True, capture_output=True, text=True)
-                print('=== STDOUT ===')
-                print(result.stdout)
-                print('=== STDERR ===')
-                print(result.stderr)
+                print('=== STDOUT ===\n', result.stdout, '\n=== STDERR ===\n', result.stderr)
             except subprocess.CalledProcessError as e:
                 print("=== ERRO NA EXECUÇÃO DO ABAQUS ===")
-                print("Código de retorno:", e.returncode)
-                print("=== STDOUT ===")
-                print(e.stdout)
-                print("=== STDERR ===")
-                print(e.stderr)
-
-
-
-
-            # EDITAR OS DADOS, GERAR UM JSON PARA CADA CONDICAO (check)
-            # COM OS JSON GERAR OS INPUTS FILE E SALVAR JUNTO (check)
-            # CHAMAR O MOVE INP FILES COM OS CAMINHOS - DA PARA CONTINUAR MOSTRANDO NA INTERFACE (check)
-            print("kmk")
-            GetParameters.parameter_and_interface_manager(self)
-            pass
-
-        else:
-            print("import_geometry is not defined.")
-
-
-    def check_values(self, value):
-        try:
-            float(value)
-            return value
-        except:
-            return None
-
-
-    def get_defaut_user_conditions(self, call=None):
-        """
-        Gets the default user conditions from the graphical interface and
-        saves them to the project information file.
-        """
-        self.error_tracking = False
-        velocity = GetCondition.check_values(self, self.ui.lineEdit_velocity.text().replace(',', '.'))
-        deep_cuth = GetCondition.check_values(self, self.ui.lineEdit_deepCuth.text().replace(',', '.'))
-        rake_angle = GetCondition.check_values(self, self.ui.lineEdit_rakeAngle.text().replace(',', '.').replace('+', ''))
-        temp_path = self.ui.lineEdit_tempPath.text() if self.ui.lineEdit_tempPath.text() else "None"
-        inputFile = self.ui.label_input.text() if self.ui.label_input.text() else "None"
-
-        cutting_force = GetCondition.check_values(self, self.ui.lineEdit_cutting_force.text().replace(',', '.'))
-        normal_force = GetCondition.check_values(self, self.ui.lineEdit_normal_force.text().replace(',', '.'))
-        chip_compression = GetCondition.check_values(self, self.ui.lineEdit_CCR.text().replace(',', '.'))
-        chip_segmentation = GetCondition.check_values(self, self.ui.lineEdit_CSR.text().replace(',', '.'))
-
-        if velocity and deep_cuth and rake_angle and inputFile:
-            with open(self.project_infos_path, "r", encoding="utf-8") as file:
-                data = yaml.safe_load(file) or {}
-
-            if "3. Conditions" not in data:
-                data["3. Conditions"] = {}
-
-            condition = self.ui.comboBox_condition.currentText()
-
-            # print(f"cond_{condition[-2:]}")
-            data["3. Conditions"][condition] = {
-                "Cutting Properties": {
-                    "name": f"cond{condition[-2:]}",
-                    "velocity": velocity, 
-                    "deepCuth": deep_cuth, 
-                    "rakeAngle": rake_angle, 
-                    "tempPath": temp_path, 
-                    "inputFile": inputFile
-                }, 
-                "Experimental Datas": {
-                    "cutting_force": cutting_force, 
-                    "normal_force": normal_force, 
-                    "chip_compression": chip_compression, 
-                    "chip_segmentation": chip_segmentation
-                }}
-            
-            YamlClass.save_yaml_info(self, self.project_infos_path, "3. Conditions", data["3. Conditions"])
-            
-            if call == "new":
-                new_condition = f"Condition 0{self.ui.comboBox_condition.count() + 1}"
-                self.ui.comboBox_condition.addItem(new_condition)
-                self.ui.comboBox_condition.setCurrentIndex(self.ui.comboBox_condition.findText(new_condition))
-        else:
-            print("EEROR AQUI")
-            self.error_tracking = True
-
-
-    def change_combobox_info(self):
-        """
-        Updates the values in the input fields based on the selected condition
-        from the combobox.
-        """
-
-        if os.path.exists(self.project_infos_path):
-            with open(self.project_infos_path, "r", encoding="utf-8") as file:
-                data = yaml.safe_load(file) or {}
-
-            if "3. Conditions" in data:
-                if self.ui.comboBox_condition.currentText() in data["3. Conditions"]:
-                    # Set values from the selected condition to the corresponding input fields
-                    self.ui.lineEdit_velocity.setText(data["3. Conditions"][self.ui.comboBox_condition.currentText()]["Cutting Properties"]["velocity"])
-                    self.ui.lineEdit_deepCuth.setText(data["3. Conditions"][self.ui.comboBox_condition.currentText()]["Cutting Properties"]["deepCuth"])
-                    self.ui.lineEdit_rakeAngle.setText(data["3. Conditions"][self.ui.comboBox_condition.currentText()]["Cutting Properties"]["rakeAngle"])
-                    self.ui.lineEdit_tempPath.setText(data["3. Conditions"][self.ui.comboBox_condition.currentText()]["Cutting Properties"]["tempPath"])
-                    self.ui.label_input.setText(data["3. Conditions"][self.ui.comboBox_condition.currentText()]["Cutting Properties"]["inputFile"])
-                    self.ui.lineEdit_cutting_force.setText(data["3. Conditions"][self.ui.comboBox_condition.currentText()]["Experimental Datas"]["cutting_force"])
-                    self.ui.lineEdit_normal_force.setText(data["3. Conditions"][self.ui.comboBox_condition.currentText()]["Experimental Datas"]["normal_force"])
-                    self.ui.lineEdit_CCR.setText(data["3. Conditions"][self.ui.comboBox_condition.currentText()]["Experimental Datas"]["chip_compression"])
-                    self.ui.lineEdit_CSR.setText(data["3. Conditions"][self.ui.comboBox_condition.currentText()]["Experimental Datas"]["chip_segmentation"])
-                else:
-                    # Clear the fields if the selected condition does not exist
-                    self.ui.lineEdit_velocity.setText("")
-                    self.ui.lineEdit_deepCuth.setText("")
-                    self.ui.lineEdit_rakeAngle.setText("")
-                    self.ui.lineEdit_tempPath.setText("")
-                    self.ui.label_input.setText("")
-                    self.ui.lineEdit_cutting_force.setText("")
-                    self.ui.lineEdit_normal_force.setText("")
-                    self.ui.lineEdit_CCR.setText("")
-                    self.ui.lineEdit_CSR.setText("")
-
-
-    def move_inp_files(self):
-        """ Moves the input files to the appropriate directory if no errors are found in the conditions. """
-        if os.path.exists(self.project_infos_path) and not self.error_tracking:
-            self.ui.pages.setCurrentIndex(6)
-            GetCondition.move_files(self)
-        else:
-            self.ui.label_condition_warning.show()
-            QTimer.singleShot(3000, lambda: self.ui.label_condition_warning.hide())
-
-
-    def move_files(self):
-        """ Moves the input files to the target directory, renaming them based on their conditions. """
-        with open(self.project_infos_path, "r", encoding="utf-8") as file:
-            data = yaml.safe_load(file) or {}
-
-        for info, value in data.items():
-            for key, condition_data in value.items():
-                if key[:9] == "Condition":
-                    cond = condition_data["Cutting Properties"]["name"]
-                    input_file_path = condition_data["Cutting Properties"]["inputFile"]
-
-                    if os.path.exists(input_file_path):
-                        new_input_file_path = os.path.join(self.inp_path, f"sim_{cond}.inp")
-                        shutil.copy(input_file_path, new_input_file_path)
+                print("Código de retorno:", e.returncode)   
+                print('\n=== STDOUT ===\n', e.stdout, '\n=== STDERR ===\n', e.stderr)
 
 

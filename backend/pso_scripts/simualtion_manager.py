@@ -17,6 +17,7 @@ class SimulationManager:
         Manages the simulation workflow: editing input files, running simulations,
         transferring output files, and collecting results.
         """
+        print("fddf")
         if not self.iteration_in_progress:
             # Step 1: Edit the .inp file
             try:    
@@ -34,6 +35,7 @@ class SimulationManager:
 
             # Step 3: Creating list for computers
             if not self.error_tracking:
+                print("ff")
                 try:
                     lines = []
                     for i, file_path in enumerate(lis_dir_inp):
@@ -64,7 +66,7 @@ class SimulationManager:
             for key, value in data.items():
                 if key.lower().startswith("comand"):
                     status_str = str(value).split()[0].lower()  
-                    if status_str in ("true", "pending"):
+                    if status_str in ("True", "Running"):
                         all_finished = False
                         break 
 
