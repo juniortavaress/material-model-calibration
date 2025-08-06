@@ -13,6 +13,7 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
+        print("main")
         # PRECISO PEGAR ISSO DA UI DEPOIS 
         # self.weights = [0.5, 0.1, 0.0, 0.2, 0.2]
         # self.forces, self.temp, self.chip = True, False, True
