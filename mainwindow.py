@@ -17,6 +17,7 @@ class MainWindow(QMainWindow):
         # self.weights = [0.5, 0.1, 0.0, 0.2, 0.2]
         # self.forces, self.temp, self.chip = True, False, True
         
+        print("optimization")
         # Error tracking variable
         self.reload = False
         self.process_finished = False
