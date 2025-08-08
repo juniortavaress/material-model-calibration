@@ -192,7 +192,7 @@ class ParallelSimulation():
 
             for attempt in range(1, retries + 1):
                 try:
-                    # print("COMANDO: ", command)
+                    print("COMANDO: ", command)
                     os.chdir(inp_dir)
                     process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                     stdout, stderr = process.communicate()

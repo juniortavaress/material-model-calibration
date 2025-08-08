@@ -43,7 +43,10 @@ class ComputerXX():
         while True:
             try:
                 sim = ParallelSimulation()  
-                sim.run_all_simulations(server_folder, drive_folder, num_cores=4, cp_number="cpXX")
+                yaml_computer_list = r"path_to_list_yaml"
+                odb_processing = r"path_to_odb_processing"
+                abq_path = r"path_to_abq_bat"
+                sim.run_all_simulations(server_folder, drive_folder, yaml_computer_list, odb_processing, abq_path, num_cores=4, cp_number="cpXX")
 
             except Exception as e:
                 traceback.print_exc()

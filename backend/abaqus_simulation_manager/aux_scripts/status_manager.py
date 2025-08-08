@@ -39,7 +39,7 @@ class StatusManager():
                         updated = True
                         odb_file = os.path.basename(path) + ".odb"
                         odb_path = os.path.join(odb_processing, odb_file)
-                        if not os.path.exists(odb_path):
+                        if os.path.exists(odb_path) and os.path.getsize(odb_path) > 400 * 1024:
                             computer_dict[key] = f"False {path}"
                         else:
                             computer_dict[key] = f"Running ({cp_info} - {now}) {path}"

@@ -108,19 +108,31 @@ class GetPsoAndSimulation:
 
             i = 1 if main_activated == "Yes" else  2
             
+            with open(defaut_file, 'r') as file:
+                template_simulation_code  = file.read()
+
             for computer in range(i, int(computers) + 1):
                 computer_file = os.path.join(self.python_files, f"computer_0{computer}.py")
-                with open(defaut_file, 'r') as file:
-                    conteudo = file.read()
-                conteudo_modificado_code_to_run_simulation = conteudo.replace("XX", f"0{computer}").replace("X", f"{computer}").replace("cores_by_simulation", cores_by_simulation).replace("project_name", project_name)
-                with open(computer_file, 'w') as file:
-                    file.write(conteudo_modificado_code_to_run_simulation)
+                
+                modified_code  = (
+                    template_simulation_code
+                    .replace("XX", f"0{computer}")
+                    .replace("X", f"{computer}")
+                    .replace("cores_by_simulation", cores_by_simulation)
+                    .replace("project_name", project_name)
+                    .replace("path_to_list_yaml", self.yaml_computer_files)
+                    .replace("path_to_odb_processing", self.odb_processing)
+                    .replace("path_to_abq_bat", self.abaqus_path)
+                )
 
-                with open(pararel_simulation_source, 'r') as file:
-                    conteudo = file.read()
-                conteudo_modificado_parallel = conteudo.replace("from backend.abaqus_simulation_manager.aux_scripts.status_manager import StatusManager", "from status_manager import StatusManager")
-                with open(os.path.join(self.python_files, "parallel_simulation.py"), 'w') as file:
-                    file.write(conteudo_modificado_parallel)
+                with open(computer_file, 'w') as file:
+                    file.write(modified_code)
+
+            with open(pararel_simulation_source, 'r') as file:
+                conteudo = file.read()
+            conteudo_modificado_parallel = conteudo.replace("from backend.abaqus_simulation_manager.aux_scripts.status_manager import StatusManager", "from status_manager import StatusManager")
+            with open(os.path.join(self.python_files, "parallel_simulation.py"), 'w') as file:
+                file.write(conteudo_modificado_parallel)
 
             shutil.copy(status_manager_source, os.path.join(self.python_files, "status_manager.py"))
 

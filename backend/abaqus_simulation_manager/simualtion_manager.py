@@ -60,6 +60,8 @@ class SimulationManager:
         4. Executes simulations
         5. Waits for completion
         """
+        print("aqui")
+        print(self.iteration_in_progress)
         if not self.iteration_in_progress:
             # Step 1: Edit the .inp file
             StatusMessage.set_text(self, "message-id_02")
