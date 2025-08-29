@@ -129,6 +129,7 @@ class SimulationManager:
         - Reading the YAML command list
         - Verifying the number of completed .odb files
         """
+        print('_wait_for_all_simulations')
         while True:
             data = YamlManager.load_yaml(self, self.yaml_computer_files)
 

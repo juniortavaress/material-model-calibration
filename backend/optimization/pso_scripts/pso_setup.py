@@ -142,7 +142,10 @@ class PsoSetup:
             # Initialize positions and velocities of the particles
             positions = np.round(np.random.uniform(low=lb, high=ub, size=(self.number_of_particles, num_dimensions)), 4).tolist()
             velocities = np.random.uniform(low=-1, high=1, size=(self.number_of_particles, num_dimensions)).tolist()
-            PostPso.save_parameters(self, self.number_of_particles, positions)
+            
+            PostPso.save_position_velocity(self, self.number_of_particles, positions, velocities)
+            # PostPso.save_initial_data(self, self.number_of_particles, positions, velocities)
+            # PostPso.save_iteration_info(self, velocities, positions)
             
             # Initialize the best positions and scores
             personal_best_positions = [list(pos) for pos in positions]
@@ -153,7 +156,7 @@ class PsoSetup:
 
             # Show datas in the interface and save info
             PostPso.show_datas(self)
-            PostPso.save_iteration_info(self, velocities, positions, personal_best_positions, personal_best_scores, global_best_position, global_best_score, global_best_scores_history)
+            PostPso.save_best_results(self, personal_best_positions, personal_best_scores, global_best_position, global_best_score, global_best_scores_history)
             AuxClass.log(self, "        initial_parameters_pso --> Initial PSO parameters successfully created.")
             return velocities, positions, personal_best_positions, personal_best_scores, global_best_position, global_best_score, global_best_scores_history
         

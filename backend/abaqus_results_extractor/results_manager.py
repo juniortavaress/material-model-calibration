@@ -3,6 +3,7 @@ import os
 import sys
 import ast
 import yaml
+import time
 import shutil
 import subprocess
 import pandas as pd
@@ -77,7 +78,8 @@ class GetResults():
 
             # Yaml and Others Files Paths
             self.yaml_project_info = otimization_manager.yaml_project_info        # C:\MaterialOtimization\TT2207\info.yaml
-            self.scripts_path = os.path.join(os.getcwd(), "backend", "abaqus_results_extractor", "extract_results_from_odb")   
+            # self.scripts_path = os.path.join(os.getcwd(), "backend", "abaqus_results_extractor", "extract_results_from_odb")   
+            self.scripts_path = otimization_manager.scripts_path
             
 
     def result_call(self, otimization_manager, forces: bool, temperature: bool, chip: bool, current_iteration: str) -> Tuple[Optional[dict], Optional[dict], Optional[dict]]:
@@ -93,7 +95,19 @@ class GetResults():
             Tuple containing force, temperature, and chip summaries respectively.
         """
         ExcelManager.create_excel_results(self, forces, temperature, chip)
+
         self._run_abaqus_scripts(forces, temperature, chip)
+
+        while True:
+            # Verifica se o diretório está vazio
+            if not os.listdir(self.obj_path):
+                print("Diretório está vazio. Aguardando...")
+                self._run_abaqus_scripts(forces, temperature, chip)
+                time.sleep(10)  # Espera 1 segundo antes de checar novamente
+            else:
+                print("Diretório não está mais vazio. Encerrando loop.")
+                break
+
         self._clean_directory("end")
         self._convert_json_to_excel(otimization_manager, forces, temperature, chip)
 
@@ -129,7 +143,7 @@ class GetResults():
             script_path = os.path.join(self.scripts_path, "get_forces.py")
             abaqus_command_forces = rf'{self.abaqus_path} python {script_path} {self.odb_processing} {self.json_default_path} {self.count_iteration}'
             commands.append(abaqus_command_forces)
-        
+
         if temperature:
             process_names.append("get_temp")
             script_path = os.path.join(self.scripts_path, "get_temps.py")
@@ -146,6 +160,8 @@ class GetResults():
         queues = []
         processes = []
         
+        print("commands", commands)
+
         for name, command in zip(process_names, commands):
             process_name = f"Process_{name}"
             queue = multiprocessing.Queue()

@@ -56,6 +56,10 @@ class PsoManager:
             Tuple of final best position and score.
         """
         try:
+
+            print('\n\n\n\n', personal_best_positions)
+
+            print("self.number_of_iterations", self.number_of_iterations)
             for iteration in range(self.number_of_iterations):
                 AuxClass.log(self, f"          [Step 3.1.{iteration}] pso_iterations --> Iteration {iteration} started\n")
 
@@ -71,12 +75,16 @@ class PsoManager:
 
                         # Update position with bounds
                         positions[i] = np.round(np.clip(positions[i] + velocities[i], lb, ub), 4)
+
+                        self.count_iteration += 1
                         PostPso.save_parameters(self, self.number_of_particles, positions)
                     
                 else:
                     PostPso.save_parameters(self, self.number_of_particles, positions)
 
                 # Evaluate the objective function for the current positions
+                PostPso.save_iteration_info(self, velocities, positions)
+
                 score = objective_function_pso(positions)
                 self.iteration_in_progress = False
 
@@ -105,7 +113,8 @@ class PsoManager:
                     print("\n\nPositions: ", positions)
 
                 PostPso.show_datas(self)
-                PostPso.save_iteration_info(self, velocities, positions, personal_best_positions, personal_best_scores, global_best_position, global_best_score, global_best_scores_history)
+                self.number_of_iterations -= 1
+                PostPso.save_best_results(self, personal_best_positions, personal_best_scores, global_best_position, global_best_score, global_best_scores_history)
             return global_best_position, global_best_score
         
         except Exception as e:

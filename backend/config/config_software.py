@@ -133,6 +133,10 @@ class SoftwareConfig():
         if not os.path.exists(self.user_result_folder):
             os.makedirs(self.user_result_folder)
 
+        # Paths in the code
+        self.scripts_path = os.path.join(os.getcwd(), "backend", "abaqus_results_extractor", "extract_results_from_odb")   
+        print(self.scripts_path)
+
         # Folders inside result folder
         self.excel_files = os.path.join(self.user_result_folder, "excel_files")
         self.chip_images = os.path.join(self.user_result_folder, "chip_images")

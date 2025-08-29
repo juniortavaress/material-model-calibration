@@ -19,18 +19,25 @@ class ObjectiveFunction():
         """
         
         error_list = []
-        current_iteration = f"Iteration {self.count_iteration:02d}"   
+        current_iteration = f"Iteration {(self.count_iteration):02d}"   
 
         # Format and store parameters in the internal info_set structure.
+        print(self.info_set)
+        
         for index, param in enumerate(parameters):
+            print('parameters', parameters)
             formatted_coords = '[' + ', '.join(map(lambda x: str(np.round(x, 4)), param)) + ']'
-            self.info_set[current_iteration][f"set-0{index+1}"]["Parameters Map"] = formatted_coords       
+            self.info_set.setdefault(current_iteration, {}).setdefault(f"set-0{index+1}", {})["Parameters Map"] = formatted_coords
 
         # Run simulation and extract results
         SimulationManager(self)
         StatusMessage.set_text(self, "message-id_04")         
         result_extractor = GetResults(self, execution_mode="embedded")
+
+        print(self.forces, self.temp, self.chip)
         self.info_set, error_list = result_extractor.result_call(self, forces=self.forces, temperature=self.temp, chip=self.chip, current_iteration=current_iteration)  
+
+
         # createPlots.graphs_manager(self)    
         return error_list
 

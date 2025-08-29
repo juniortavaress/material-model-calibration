@@ -15,7 +15,7 @@ class GetPsoAndSimulation:
     def show_pso_and_results_info(self):
         data = YamlManager.load_yaml(self, self.yaml_project_info)
         if "7. PSO and Simulation" not in data and "3. Conditions" in data:
-            self.ui.label_number_conditions.setText(str(len(data["3. Conditions"])))
+            self.ui.label_number_conditions.setText(str(len(data["3. Conditions"])-1))
 
             threshold = 8
             cpu_percentages = psutil.cpu_percent(percpu=True)
