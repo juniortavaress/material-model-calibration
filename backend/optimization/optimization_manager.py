@@ -104,6 +104,7 @@ class OtimizationManager:
         try:
             AuxClass.log(self, "\n  [Step 02] start_pso --> get_start_info\n")
             lb, ub, num_dimensions, velocities, positions, personal_best_positions, personal_best_scores, global_best_position, global_best_score, global_best_scores_history = PsoSetup.get_start_info(self)
+
             if not self.error_tracking:
                 AuxClass.log(self, "\n\n  [Step 03] start_pso --> run_pso\n")
                 # input("cibfere as coisas")

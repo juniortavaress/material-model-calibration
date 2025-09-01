@@ -80,7 +80,7 @@ class GetTemps():
             data = yaml.safe_load(file)
         
         node_map  = {}
-        for _, info_condition in data["3. Conditions"].items():
+        for _, info_condition in data["05. Conditions"].items():
             if isinstance(info_condition, dict):
                 h = "h" + info_condition["Cutting Properties"]["deepCuth"]
                 path = info_condition["Cutting Properties"]["tempPath"]
@@ -130,7 +130,7 @@ class GetTemps():
 
                 # Itera sobre as condições e verifica se o "name" é o que você deseja
                 
-                for _, condition  in data_cond["3. Conditions"].items():
+                for _, condition  in data_cond["05. Conditions"].items():
                     if condition ["Cutting Properties"]["name"] == cond:
                         h_value_key = "h{}".format(condition ["Cutting Properties"]["deepCuth"])
 

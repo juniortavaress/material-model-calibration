@@ -29,7 +29,7 @@ class ExcelManager():
             yaml_info_data = YamlManager.load_yaml(self, self.yaml_project_info)
 
             # Define columns for the main data sheet
-            param_selection = yaml_info_data.get("5. Parameters to Iterate", {})
+            param_selection = yaml_info_data.get("07. Parameters to Iterate", {})
             parameters_list = [key for key, value in param_selection.items() if value]
             fixed_cols = ["Iteration Number", "Parameter Set", "Best Set of Iteration", "Condition"]
             error = ["Error"]
@@ -42,7 +42,7 @@ class ExcelManager():
 
             # Prepare condition information for the "Info" sheet
             data_rows = []
-            for value in yaml_info_data.get("3. Conditions", {}).values():
+            for value in yaml_info_data.get("05. Conditions", {}).values():
                 if isinstance(value, dict):
                     cond = value["Cutting Properties"]["name"]
                     v = value["Cutting Properties"]["velocity"]
@@ -268,8 +268,8 @@ class ExcelManager():
         data = YamlManager.load_yaml(self, self.yaml_project_info)
 
         # Process cutting conditions and experimental data
-        if "3. Conditions" in data:
-            conditions_info = data["3. Conditions"]
+        if "05. Conditions" in data:
+            conditions_info = data["05. Conditions"]
             for _, value in conditions_info.items():
                 if isinstance(value, dict):
                     for info, info_value in value.items():

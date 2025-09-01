@@ -1,0 +1,108 @@
+03. Outputs:
+  Chip: false
+  Forces: true
+  Temperature: false
+  Weights:
+  - '0.5'
+  - '0.1'
+  - '0'
+  - '0.2'
+  - '0.2'
+04. Geometry:
+  Import Geometry (.inp): true
+05. Conditions:
+  Condition 01:
+    Cutting Properties:
+      deepCuth: '100'
+      inputFile: S:/Junior/severin-folder/input_files_for_algorithm/PA04_vc10_h0100_gam+6.inp
+      name: cond01
+      rakeAngle: '6'
+      tempPath: 741, 20759:20731:-1, 1145, 24806:24793:-1, 1489, 83963:83955:-1, 5513
+      velocity: '166.67'
+    Experimental Datas:
+      chip_compression: '2.56'
+      chip_segmentation: '1.23'
+      cutting_force: '1565.50'
+      normal_force: '1065.04'
+  Condition 02:
+    Cutting Properties:
+      deepCuth: '100'
+      inputFile: S:/Junior/severin-folder/input_files_for_algorithm/PA12_vc60_h0100_gam+6.inp
+      name: cond02
+      rakeAngle: '6'
+      tempPath: 741, 20759:20731:-1, 1145, 24806:24793:-1, 1489, 83963:83955:-1, 5513
+      velocity: '1000'
+    Experimental Datas:
+      chip_compression: '1.73'
+      chip_segmentation: '1.33'
+      cutting_force: '1279.46'
+      normal_force: '616.53'
+  Condition 03:
+    Cutting Properties:
+      deepCuth: '100'
+      inputFile: S:/Junior/severin-folder/input_files_for_algorithm/PA16_vc10_h0100_gam-6.inp
+      name: cond03
+      rakeAngle: '-6'
+      tempPath: 741, 20759:20731:-1, 1145, 24806:24793:-1, 1489, 83963:83955:-1, 5513
+      velocity: '166.67'
+    Experimental Datas:
+      chip_compression: '3.12'
+      chip_segmentation: '1.19'
+      cutting_force: '1906.20'
+      normal_force: '1753.38'
+  Condition 04:
+    Cutting Properties:
+      deepCuth: '100'
+      inputFile: S:/Junior/severin-folder/input_files_for_algorithm/PA24_vc60_h0100_gam-6.inp
+      name: cond04
+      rakeAngle: '-6'
+      tempPath: 741, 20759:20731:-1, 1145, 24806:24793:-1, 1489, 83963:83955:-1, 5513
+      velocity: '1000'
+    Experimental Datas:
+      chip_compression: '1.81'
+      chip_segmentation: '1.43'
+      cutting_force: '1427.34'
+      normal_force: '944.00'
+06. Material Properties:
+  Inconel718:
+    Damage Evolution: true
+    Damage Initiation: true
+    Plastic: true
+07. Parameters to Iterate:
+  A: true
+  B: false
+  C1: true
+  C2: false
+  C3: false
+  D1: false
+  D2: true
+  D3: true
+  D4: false
+  D5: false
+  Tm: false
+  Ts: true
+  Tt: false
+  e: false
+  e_damage: false
+  k: false
+  n: false
+  p: true
+08. Parameters Limits:
+  A:
+    max: '1500'
+    min: '1000'
+  C1:
+    max: '0.2'
+    min: '0.0001'
+  D2:
+    max: '2'
+    min: '0.0001'
+  D3:
+    max: '-0.0001'
+    min: '-2'
+  Ts:
+    max: '750'
+    min: '550'
+  p:
+    max: '1'
+    min: '0.0001'

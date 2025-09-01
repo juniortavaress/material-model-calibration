@@ -17,15 +17,13 @@ class ObjectiveFunction():
         Returns:
             List[float]: List of error values corresponding to each parameter set.
         """
-        
         error_list = []
         current_iteration = f"Iteration {(self.count_iteration):02d}"   
-
-        # Format and store parameters in the internal info_set structure.
-        print(self.info_set)
         
+
+        # Format and store parameters in the internal info_set structure.        
         for index, param in enumerate(parameters):
-            print('parameters', parameters)
+            # print('parameters', parameters)
             formatted_coords = '[' + ', '.join(map(lambda x: str(np.round(x, 4)), param)) + ']'
             self.info_set.setdefault(current_iteration, {}).setdefault(f"set-0{index+1}", {})["Parameters Map"] = formatted_coords
 
@@ -34,10 +32,9 @@ class ObjectiveFunction():
         StatusMessage.set_text(self, "message-id_04")         
         result_extractor = GetResults(self, execution_mode="embedded")
 
-        print(self.forces, self.temp, self.chip)
         self.info_set, error_list = result_extractor.result_call(self, forces=self.forces, temperature=self.temp, chip=self.chip, current_iteration=current_iteration)  
 
-
+        self.number_of_iterations -= 1
         # createPlots.graphs_manager(self)    
         return error_list
 

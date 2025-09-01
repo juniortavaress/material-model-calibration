@@ -58,6 +58,7 @@ class ButtonsCallback():
         # Page 07 - Selection of Parameters to Calibrate
         self.ui.button_parameter_selection_back.clicked.connect(lambda: self.ui.pages.setCurrentIndex(6))
         self.ui.button_parameter_selection_next_page.clicked.connect(lambda: GetParameters.save_parameters(self))
+        # self.ui.button_parameter_selection_next_page.clicked.connect(lambda: ())
 
         # Page 08 - Parameters Boundary Definition
         self.ui.button_parameter_limits_back.clicked.connect(lambda: self.ui.pages.setCurrentIndex(7))

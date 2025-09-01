@@ -80,7 +80,7 @@ class GetResults():
             self.yaml_project_info = otimization_manager.yaml_project_info        # C:\MaterialOtimization\TT2207\info.yaml
             # self.scripts_path = os.path.join(os.getcwd(), "backend", "abaqus_results_extractor", "extract_results_from_odb")   
             self.scripts_path = otimization_manager.scripts_path
-            
+
 
     def result_call(self, otimization_manager, forces: bool, temperature: bool, chip: bool, current_iteration: str) -> Tuple[Optional[dict], Optional[dict], Optional[dict]]:
         """
@@ -100,7 +100,7 @@ class GetResults():
 
         while True:
             # Verifica se o diretório está vazio
-            if not os.listdir(self.obj_path):
+            if not os.listdir(self.obj_path) and chip:
                 print("Diretório está vazio. Aguardando...")
                 self._run_abaqus_scripts(forces, temperature, chip)
                 time.sleep(10)  # Espera 1 segundo antes de checar novamente

@@ -65,5 +65,5 @@ class GetOutputs:
                 QMessageBox.warning(self, "Error", f"Invalid weight: '{w}'. Please enter only numbers greater than zero.")
                 return
 
-        YamlManager.save_yaml_info(self, self.yaml_project_info, "3. Outputs", data)
+        YamlManager.save_yaml_info(self, self.yaml_project_info, "03. Outputs", data)
         self.ui.pages.setCurrentIndex(4)

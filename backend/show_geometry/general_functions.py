@@ -7,8 +7,8 @@ from backend.config.yaml_manager import YamlManager
 class AuxFunctions():
     def save_create_setup_option(self, geometry):        
         data = YamlManager.load_yaml(self, self.yaml_project_info)
-        data.setdefault("3. Conditions", {})
-        data["3. Conditions"]["Import Geometry (.inp)"] = geometry == "import"
+        data.setdefault("04. Geometry", {})
+        data["04. Geometry"]["Import Geometry (.inp)"] = geometry == "import"
 
         if geometry == "import":
             self.ui.pages.setCurrentIndex(6)
@@ -21,7 +21,7 @@ class AuxFunctions():
             self.ui.frame_15.hide()
             self.ui.frame_20.hide()
 
-        YamlManager.save_yaml_info(self, self.yaml_project_info, "3. Conditions", data["3. Conditions"])
+        YamlManager.save_yaml_info(self, self.yaml_project_info, "04. Geometry", data["04. Geometry"])
 
 
 

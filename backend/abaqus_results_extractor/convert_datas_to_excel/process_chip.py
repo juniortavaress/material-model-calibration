@@ -475,7 +475,7 @@ class ChipProcessor():
         for base_name, group_results in self.file_groups.items():
             cond = base_name.split("_")[1]
 
-            for condition in data.get("3. Conditions", {}).values():
+            for condition in data.get("05. Conditions", {}).values():
                 if condition["Cutting Properties"]["name"] == cond:
                     h = int(condition["Cutting Properties"]["deepCuth"])
                     break  

@@ -7,6 +7,15 @@ from frontend.aux_files.show_status_message import StatusMessage
 from backend.config.yaml_manager import YamlManager
 
 class PostPso:
+    @staticmethod
+    def to_list_if_numpy(obj):
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        # Caso seja lista de arrays ou misturado
+        if isinstance(obj, list) and any(isinstance(i, np.ndarray) for i in obj):
+            return [i.tolist() if isinstance(i, np.ndarray) else i for i in obj]
+        return obj
+
     def save_position_velocity(self, num_particles, positions, velocities):
         if os.path.exists(self.yaml_parameters):
             self.info_set = YamlManager.load_yaml(self, self.yaml_parameters)
@@ -29,104 +38,32 @@ class PostPso:
         with open(self.yaml_parameters, "w") as file:
             yaml.dump(self.info_set, file)
         
+        PostPso.save_current_iteration(self, velocities, positions)
 
-
-        data = YamlManager.load_yaml(self, self.yaml_project_info)
-        def to_list_if_numpy(obj):
-            if isinstance(obj, np.ndarray):
-                return obj.tolist()
-            # Caso seja lista de arrays ou misturado
-            if isinstance(obj, list) and any(isinstance(i, np.ndarray) for i in obj):
-                return [i.tolist() if isinstance(i, np.ndarray) else i for i in obj]
-            return obj
         
-        optimization_section = data.setdefault("8. Otimization Datas", {})
-        last_it_values = optimization_section.setdefault("Last Iteration Values", {})
-        last_it_values.update({"velocities": {"value": str(to_list_if_numpy(velocities))}, "positions": {"value": str(to_list_if_numpy(positions))}})
-
-        self.number_of_iterations -= 1
-        optimization_section["Remaining Iterations"] = self.number_of_iterations
-
+    def save_current_iteration(self, velocities, positions):
+        data = YamlManager.load_yaml(self, self.yaml_project_info)
+        current_optimization_section = data.setdefault("10. Current Optimization", {})
+        current_optimization_section.update({
+            "velocities": str(PostPso.to_list_if_numpy(velocities)), 
+            "positions": str(PostPso.to_list_if_numpy(positions)), 
+            "Iteration": self.count_iteration})
         with open(self.yaml_project_info, "w", encoding="utf-8") as file:
             yaml.safe_dump(data, file, allow_unicode=True, default_flow_style=False)
 
 
 
-        print(self.number_of_iterations)
-        print(self.count_iteration)
 
 
 
-
-    def save_parameters(self, num_particles, positions) -> None:
-        """
-        Saves the current parameters to a JSON file.
-
-        Args:
-            num_particles (int): The number of particles.
-            positions (array): The current positions of the particles.
-        """
-        if os.path.exists(self.yaml_parameters):
-            self.info_set = YamlManager.load_yaml(self, self.yaml_parameters)
-        else:
-            self.info_set = {}
-
-        iteration_key = f"Iteration {self.count_iteration:02}"
-        self.info_set[iteration_key] = {}
-
-        for i in range(num_particles):
-            set_key = f"set-0{i+1}"
-            self.info_set[iteration_key][set_key] = {}
-            self.info_set[iteration_key][set_key]["Parameters"] = {}
-
-            for j, (param_name, _) in enumerate(self.parameters_boundry.items()):
-                param_value = positions[i][j]
-                param_value = param_value.item() if isinstance(param_value, np.generic) else param_value
-                self.info_set[iteration_key][set_key]["Parameters"][param_name] = param_value
-
-        with open(self.yaml_parameters, "w") as file:
-            yaml.dump(self.info_set, file)
-
-    def save_iteration_info(self, velocities, positions) -> None:
-        """
-        Saves current iteration information in the YAML project file.
-
-        Args:
-            velocities: Current velocities.
-            positions: Current positions.
-            personal_best_positions: Personal best positions.
-            personal_best_scores: Personal best scores.
-            global_best_position: Global best position.
-            global_best_score (float): Global best score.
-            global_best_scores_history (List[float]): History of best scores.
-        """
-
-       
+    def last_iteration_info(self, velocities, positions) -> None:
         data = YamlManager.load_yaml(self, self.yaml_project_info)
-
-        # Converter arrays para listas simples para evitar problemas com array(...) no YAML
-        def to_list_if_numpy(obj):
-            if isinstance(obj, np.ndarray):
-                return obj.tolist()
-            # Caso seja lista de arrays ou misturado
-            if isinstance(obj, list) and any(isinstance(i, np.ndarray) for i in obj):
-                return [i.tolist() if isinstance(i, np.ndarray) else i for i in obj]
-            return obj
-
-        last_it_values = {
-            "velocities": {"value": str(to_list_if_numpy(velocities))},
-            "positions": {"value": str(to_list_if_numpy(positions))}
-            }
-        
-        optimization_section = data.setdefault("8. Otimization Datas", {})
-        last_it_values = optimization_section.setdefault("Last Iteration Values", {})
-        last_it_values.update({
-            "velocities": {"value": str(to_list_if_numpy(velocities))},
-            "positions": {"value": str(to_list_if_numpy(positions))}
+        last_optimization_section = data.setdefault("12. Last Otimization Datas", {})
+        last_optimization_section.update({
+            "velocities": str(PostPso.to_list_if_numpy(velocities)),
+            "positions": str(PostPso.to_list_if_numpy(positions)),
+            "Remaining Iterations": self.number_of_iterations
         })
-
-
-
         with open(self.yaml_project_info, "w", encoding="utf-8") as file:
             yaml.safe_dump(data, file, allow_unicode=True, default_flow_style=False)
 
@@ -134,34 +71,25 @@ class PostPso:
     
     def save_best_results(self, personal_best_positions, personal_best_scores, global_best_position, global_best_score, global_best_scores_history):
         data = YamlManager.load_yaml(self, self.yaml_project_info)
-
-        # Converter arrays para listas simples para evitar problemas com array(...) no YAML
-        def to_list_if_numpy(obj):
-            if isinstance(obj, np.ndarray):
-                return obj.tolist()
-            # Caso seja lista de arrays ou misturado
-            if isinstance(obj, list) and any(isinstance(i, np.ndarray) for i in obj):
-                return [i.tolist() if isinstance(i, np.ndarray) else i for i in obj]
-            return obj
-        
-        optimization_section = data.setdefault("8. Otimization Datas", {})
-        last_it_values = optimization_section.setdefault("Last Iteration Values", {})
-        last_it_values.update({
-            "personal_best_position": {"value": str(to_list_if_numpy(personal_best_positions))},
-            "personal_best_score": {"value": str(personal_best_scores)},
-            "global_best_position": {"value": str(to_list_if_numpy(global_best_position))},
-            "global_best_score": {"value": str(global_best_score)},
-            "global_best_score_history": {"value": str(global_best_scores_history)},
+        best_optimization_section = data.setdefault("11. Best Otimization Datas", {})
+        best_optimization_section.update({
+            "personal_best_position": str(PostPso.to_list_if_numpy(personal_best_positions)),
+            "personal_best_score": str(personal_best_scores),
+            "global_best_position": str(PostPso.to_list_if_numpy(global_best_position)),
+            "global_best_score": str(global_best_score),
+            "global_best_score_history": str(global_best_scores_history),
         })
-
-        # optimization_section["Last Iteration Values"] = last_it_values
-        optimization_section["Remaining Iterations"] = self.number_of_iterations
-
-        if self.number_of_iterations == 0:
-            optimization_section["Status"] = "Done"
-            
         with open(self.yaml_project_info, "w", encoding="utf-8") as file:
             yaml.safe_dump(data, file, allow_unicode=True, default_flow_style=False)
+
+
+
+
+
+
+
+
+
 
 
     def show_datas(self, call=None) -> None:
@@ -212,3 +140,35 @@ class PostPso:
                 self.error_temp = filtered_mean["Error Temperature"]
             StatusMessage.set_text(self, message)
         
+
+
+
+
+    def save_parameters(self, num_particles, positions) -> None:
+        """
+        Saves the current parameters to a JSON file.
+
+        Args:
+            num_particles (int): The number of particles.
+            positions (array): The current positions of the particles.
+        """
+        if os.path.exists(self.yaml_parameters):
+            self.info_set = YamlManager.load_yaml(self, self.yaml_parameters)
+        else:
+            self.info_set = {}
+
+        iteration_key = f"Iteration {self.count_iteration:02}"
+        self.info_set[iteration_key] = {}
+
+        for i in range(num_particles):
+            set_key = f"set-0{i+1}"
+            self.info_set[iteration_key][set_key] = {}
+            self.info_set[iteration_key][set_key]["Parameters"] = {}
+
+            for j, (param_name, _) in enumerate(self.parameters_boundry.items()):
+                param_value = positions[i][j]
+                param_value = param_value.item() if isinstance(param_value, np.generic) else param_value
+                self.info_set[iteration_key][set_key]["Parameters"][param_name] = param_value
+
+        with open(self.yaml_parameters, "w") as file:
+            yaml.dump(self.info_set, file)

@@ -11,14 +11,24 @@ class GetStatus():
         """
         Verify the current stage in the GUI and proceed accordingly (e.g., load optimization data or start optimization).
         """
+        if not self.error_tracking and hasattr(self, 'yaml_computer_files') and os.path.isfile(self.yaml_computer_files):
+            data = YamlManager.load_yaml(self, self.yaml_computer_files)
+
+            for _, value in data.items():
+                if isinstance(value, str) and (value.strip().startswith("True") or value.strip().startswith("Running")):
+                    self.iteration_in_progress = True
+        
+
         if not self.error_tracking and hasattr(self, 'yaml_project_info'):
             data = YamlManager.load_yaml(self, self.yaml_project_info)
 
-            opt_data = data.get("8. Otimization Datas", None)
-            if opt_data:
+            last_opt_data = data.get("12. Last Otimization Datas", None)
+            it_datas = data.get("09. PSO and Simulation", None) 
+            
+            if last_opt_data:
                 self.reload = True
 
-                if opt_data.get("Remaining Iterations") == 0:
+                if last_opt_data.get("Remaining Iterations") == 0:
                     self.process_finished = True
 
                     ####################
@@ -34,9 +44,24 @@ class GetStatus():
                     self.ui.pages.setCurrentIndex(12)
                     ####################
 
-                elif opt_data.get("Remaining Iterations") >= 0:
-                    for _, info in data["8. Otimization Datas"]["Last Iteration Values"].items():
-                        if info == None:
+                elif last_opt_data.get("Remaining Iterations") == it_datas.get("Iterations"):
+                    file_paths = [self.yaml_computer_files, self.yaml_materials_properties, self.yaml_parameters, os.path.join(self.excel_files, "datas.xlsx")]
+                    for file in file_paths:
+                        if os.path.exists(file):
+                            os.remove(file)
+                            print(f"File {file} removed.")
+
+                    if "10. Current Optimization" in data:
+                        del data["10. Current Optimization"]
+
+                    with open(self.yaml_project_info, "w", encoding="utf-8") as f:
+                        yaml.safe_dump(data, f, allow_unicode=True)
+
+                    self.reload = False
+                        
+                elif last_opt_data.get("Remaining Iterations") >= 0:
+                    for key, info in data["11. Best Otimization Datas"].items():
+                        if info in (None, "", "null"):
                             self.reload = None
 
                     # Starting otimization from previous point
@@ -51,21 +76,15 @@ class GetStatus():
                         self.ui.pages.setCurrentIndex(11)
                         
 
-        if not self.error_tracking and hasattr(self, 'yaml_computer_files') and os.path.isfile(self.yaml_computer_files):
-            data = YamlManager.load_yaml(self, self.yaml_computer_files)
-            
-            for _, value in data.items():
-                if value.startswith("True") or value.startswith("Running"):
-                    self.iteration_in_progress = True
-        
+
 
     def load_info_to_ui(self):
         data_ui = YamlManager.load_yaml(self, self.yaml_project_info)
-        output_data = data_ui.get("3. Outputs", None)
-        cond_data = data_ui.get("3. Conditions", None)
-        param_data = data_ui.get("5. Parameters to Iterate", None)
-        param_limits_data = data_ui.get("6. Parameters Limits", None)
-        pso_simulation_data = data_ui.get("7. PSO and Simulation", None)
+        output_data = data_ui.get("03. Outputs", None)
+        cond_data = data_ui.get("05. Conditions", None)
+        param_data = data_ui.get("07. Parameters to Iterate", None)
+        param_limits_data = data_ui.get("08. Parameters Limits", None)
+        pso_simulation_data = data_ui.get("09. PSO and Simulation", None)
 
         if output_data:
             GetStatus.set_output_analysis(self, output_data)
@@ -131,7 +150,6 @@ class GetStatus():
                 checkbox.setChecked(True)
             else:
                 frame.hide()
-
 
             if parameters_limits:
                 if param in parameters_limits:

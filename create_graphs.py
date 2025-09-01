@@ -15,41 +15,40 @@ class createPlots():
     def canvas(self, figure=None):
         """
         Creates and displays a Matplotlib canvas in the Qt interface.
-
-        Args:
-            figure (matplotlib.figure.Figure, optional): A Matplotlib figure to be displayed. Defaults to None, which creates a blank canvas.
         """
-        if figure:
-            self.canvas = FigureCanvas(figure)
+        # Criar figure se não foi passada
+        if figure is None:
+            figure = Figure(figsize=(12, 8))
 
-            self.canvas.setStyleSheet("background: transparent;")
-            self.canvas.figure.patch.set_facecolor('none')
-            ax = self.canvas.figure.get_axes()[0]
-            ax.set_facecolor('none')
+        # Criar canvas novo
+        canvas = FigureCanvas(figure)
+        canvas.setStyleSheet("background: transparent;")
+        figure.patch.set_facecolor('none')
 
-            layout = self.ui.frame_results_graph.layout()
-            if layout is not None:
-                # Limpando o layout antes de adicionar o novo gráfico
-                for i in reversed(range(layout.count())):
-                    widget = layout.itemAt(i).widget()
-                    if widget is not None:
-                        widget.deleteLater()
-
-            layout.addWidget(self.canvas)
-            self.canvas.figure.tight_layout(pad=1)
-
+        # Garantir que haja pelo menos um eixo
+        if len(figure.get_axes()) == 0:
+            ax = figure.add_subplot(111)
         else:
-            if not hasattr(self, 'canvas'):
-                self.canvas = FigureCanvas(Figure(figsize=(12, 8)))  
+            ax = figure.get_axes()[0]
+        ax.set_facecolor('none')
 
-            # Clear Layout
-            layout = self.ui.frame_results_graph.layout()
-            if layout is not None:
-                for i in reversed(range(layout.count())):
-                    widget = layout.itemAt(i).widget()
-                    if widget is not None:
-                        widget.deleteLater()
-        self.canvas.draw()
+        # Limpar layout antigo
+        layout = self.ui.frame_results_graph.layout()
+        if layout is not None:
+            for i in reversed(range(layout.count())):
+                widget = layout.itemAt(i).widget()
+                if widget is not None:
+                    widget.deleteLater()
+
+            # Adicionar novo canvas ao layout
+            layout.addWidget(canvas)
+
+        # Atualizar atributo
+        self.canvas = canvas
+
+        # Ajuste de layout e desenhar
+        figure.tight_layout(pad=1)
+        canvas.draw()
 
 
     def graphs_manager(self):
@@ -61,31 +60,27 @@ class createPlots():
 
         try:
             if type == "Convergence Analysis":
-                # self.ui.combobox_file.setCurrentIndex(0)
                 self.ui.combobox_file.setEnabled(False)
                 createPlots.plot_convergence_analysis(self)
             else:
-                # self.ui.combobox_file.setCurrentIndex(1)
                 self.ui.combobox_file.setEnabled(True)
 
-            if filename != "None":
-                sheet_name = filename[4:]
+            sheet_name = filename[4:]
+            if len(sheet_name) > 31:
+                sheet_name = sheet_name[:31]
 
-                if len(sheet_name) > 31:
-                    sheet_name = sheet_name[:31]
+            if type == "Forces":
+                createPlots.plot_force_graphs(self, sheet_name)
+            elif type == "Temperature vs. Time":
+                createPlots.plot_temp_time_graph(self, sheet_name)
+            elif type == "Temperature vs. Penetration Depth":
+                createPlots.plot_temp_penetration_graph(self, sheet_name)
+            elif type == "Chip Format":
+                createPlots.plot_chip(self, sheet_name)
 
-                if type == "Forces":
-                    createPlots.plot_force_graphs(self, sheet_name)
-                elif type == "Temperature vs. Time":
-                    createPlots.plot_temp_time_graph(self, sheet_name)
-                elif type == "Temperature vs. Penetration Depth":
-                    createPlots.plot_temp_penetration_graph(self, sheet_name)
-                elif type == "Chip Format":
-                    createPlots.plot_chip(self, sheet_name)
-            else:
-                createPlots.canvas(self)
         except:
-            createPlots.canvas(self)
+            figure = Figure(figsize=(12, 8))
+            createPlots.canvas(self, figure)
 
 
 
@@ -255,7 +250,6 @@ class createPlots():
 
         n_points = len(next(iter(lines['error'].values())))
         ax.set_xticks(range(1, n_points + 1))
-        ax.set_ylim(bottom=0, top=100)
         ax.set_xlabel("Iteration Number")
         ax.set_ylabel("Average Error (%)")
 
@@ -273,6 +267,8 @@ class createPlots():
                     coef = np.polyfit(x, y, 1)
                     trendline = np.polyval(coef, x)
                     ax.plot(x, trendline, linestyle='--', color=color, label=f"Set-{set_num:02d} (trendline)")
+        
+        ax.set_ylim(bottom=0, top=max(y)*1.05)
         ax.legend()
         createPlots.canvas(self, figure)
 

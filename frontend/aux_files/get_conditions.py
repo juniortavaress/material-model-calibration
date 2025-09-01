@@ -37,7 +37,7 @@ class GetCondition:
         Updates GUI fields based on the selected condition from the combobox.
         """
         data = YamlManager.load_yaml(self, self.yaml_project_info)
-        conditions = data.get("3. Conditions", {})
+        conditions = data.get("05. Conditions", {})
 
         selected = self.ui.comboBox_condition.currentText()
         props = conditions.get(selected, {}).get("Cutting Properties", {})
@@ -83,11 +83,21 @@ class GetCondition:
         if all([velocity, deep_cuth, rake_angle, inputFile]): 
             data = YamlManager.load_yaml(self, self.yaml_project_info)
 
-            if "3. Conditions" not in data:
-                data["3. Conditions"] = {}
+            if "05. Conditions" not in data:
+                data["05. Conditions"] = {}
             condition = self.ui.comboBox_condition.currentText()
 
-            data["3. Conditions"][condition] = {
+            experimental_datas = {}
+            if cutting_force is not None:
+                experimental_datas["cutting_force"] = cutting_force
+            if normal_force is not None:
+                experimental_datas["normal_force"] = normal_force
+            if chip_compression is not None:
+                experimental_datas["chip_compression"] = chip_compression
+            if chip_segmentation is not None:
+                experimental_datas["chip_segmentation"] = chip_segmentation
+                
+            data["05. Conditions"][condition] = {
                 "Cutting Properties": {
                     "name": f"cond{condition[-2:]}",
                     "velocity": velocity, 
@@ -95,15 +105,12 @@ class GetCondition:
                     "rakeAngle": rake_angle, 
                     "tempPath": temp_path, 
                     "inputFile": inputFile
-                }, 
-                "Experimental Datas": {
-                    "cutting_force": cutting_force, 
-                    "normal_force": normal_force, 
-                    "chip_compression": chip_compression, 
-                    "chip_segmentation": chip_segmentation
                 }}
             
-            YamlManager.save_yaml_info(self, self.yaml_project_info, "3. Conditions", data["3. Conditions"])
+            if experimental_datas:
+                data["05. Conditions"][condition]["Experimental Datas"] = experimental_datas
+                
+            YamlManager.save_yaml_info(self, self.yaml_project_info, "05. Conditions", data["05. Conditions"])
             
             if call == "new":
                 new_condition = f"Condition 0{self.ui.comboBox_condition.count() + 1}"
@@ -121,7 +128,7 @@ class GetCondition:
             bool: True if geometry is imported, False otherwise.
         """
         data = YamlManager.load_yaml(self, self.yaml_project_info)
-        conditions = data.get("3. Conditions", {})
+        conditions = data.get("04. Geometry", {})
         import_geometry = conditions.get("Import Geometry (.inp)") 
 
         if import_geometry is True:
@@ -159,7 +166,7 @@ class GetCondition:
         Handles logic for when geometry is created from user-defined parameters.
 
         Args:
-            conditions (dict): The full "3. Conditions" section from the YAML.
+            conditions (dict): The full "05. Conditions" section from the YAML.
         """
         self.ui.pages.setCurrentIndex(7)
 

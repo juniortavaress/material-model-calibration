@@ -3,6 +3,7 @@ import re
 import yaml
 from PySide6.QtCore import QTimer
 from backend.config.yaml_manager import YamlManager
+from PySide6.QtWidgets import QMessageBox
 
 class GetParameters:
     """
@@ -153,7 +154,7 @@ class GetParameters:
                 material_props["Damage Evolution"] = "Damage Evolution" in material_data
                 material_props["Plastic"] = "Plastic" in material_data
                 self.materials_properties[material_name] = material_props
-            YamlManager.save_yaml_info(self, self.yaml_project_info, "4. Material Properties", self.materials_properties)
+            YamlManager.save_yaml_info(self, self.yaml_project_info, "06. Material Properties", self.materials_properties)
 
 
     def show_paramters_values(self) -> None:
@@ -226,7 +227,19 @@ class GetParameters:
         checkbox_status = {}
         for param, checkbox in param_checkboxes.items():
             checkbox_status[param] = checkbox.isChecked()
-        YamlManager.save_yaml_info(self, self.yaml_project_info, "5. Parameters to Iterate", checkbox_status)
+        YamlManager.save_yaml_info(self, self.yaml_project_info, "07. Parameters to Iterate", checkbox_status)
+
+        self.ui.frame_105.show()
+        for param in param_checkboxes:
+            checkbox = getattr(self.ui, f"checkBox_param_{param}", None)
+            frame = getattr(self.ui, f"frame_limits_param_{param}", None)
+            frame.hide()
+
+            # print(frame)s
+            
+            if checkbox and checkbox.isChecked():
+                # print(checkbox)
+                frame.show()
 
 
     def save_parameters_limits(self) -> None:
@@ -236,15 +249,15 @@ class GetParameters:
         next_page = True
         data = YamlManager.load_yaml(self, self.yaml_project_info)
 
-        data["6. Parameters Limits"] = {}
-        for param, value in data["5. Parameters to Iterate"].items():
+        data["08. Parameters Limits"] = {}
+        for param, value in data["07. Parameters to Iterate"].items():
             min_field = getattr(self.ui, f"lineEdit_min_param_{param}")
             max_field = getattr(self.ui, f"lineEdit_max_param_{param}")
 
             if value == True:
                 try:
                     if float(min_field.text()) != "" and float(max_field.text()) != "" and float(max_field.text()) > float(min_field.text()):
-                        data["6. Parameters Limits"][param] = {"max": max_field.text(), "min": min_field.text()}
+                        data["08. Parameters Limits"][param] = {"max": max_field.text(), "min": min_field.text()}
                         with open(self.yaml_project_info, "w", encoding="utf-8") as file:
                             yaml.dump(data, file, default_flow_style=False, allow_unicode=True, width=float("inf"))
                     else:

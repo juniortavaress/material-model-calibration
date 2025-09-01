@@ -75,7 +75,7 @@ padding: 5px;}
     <item>
      <widget class="QStackedWidget" name="pages">
       <property name="currentIndex">
-       <number>12</number>
+       <number>8</number>
       </property>
       <widget class="QWidget" name="page_login">
        <property name="styleSheet">
@@ -11264,6 +11264,11 @@ background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5
                       <property name="placeholderText">
                        <string>Select the Condition</string>
                       </property>
+                      <item>
+                       <property name="text">
+                        <string>Condition 01</string>
+                       </property>
+                      </item>
                      </widget>
                     </item>
                    </layout>
@@ -18337,8 +18342,8 @@ background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5
                         <rect>
                          <x>0</x>
                          <y>0</y>
-                         <width>819</width>
-                         <height>925</height>
+                         <width>51</width>
+                         <height>34</height>
                         </rect>
                        </property>
                        <layout class="QVBoxLayout" name="verticalLayout_60">

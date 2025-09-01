@@ -1,3 +1,4 @@
+import ast
 import yaml
 import numpy as np
 from backend.optimization.aux_files.aux_functions import AuxClass
@@ -42,8 +43,8 @@ class PsoSetup:
         data = YamlManager.load_yaml(self, self.yaml_project_info)
 
         # Extract cutting conditions and experimental data
-        if "3. Conditions" in data:
-            for _, value in data["3. Conditions"].items():
+        if "05. Conditions" in data:
+            for _, value in data["05. Conditions"].items():
                 if not isinstance(value, dict):
                     continue
 
@@ -51,13 +52,18 @@ class PsoSetup:
                     if key == "Cutting Properties":
                         name = val['name']
                     elif key == "Experimental Datas":
-                        self.target_values[name] = {"fc": float(val["cutting_force"]), "fn": float(val["normal_force"]), "ccr": float(val["chip_compression"]), "csr": float(val["chip_segmentation"])}
+                        self.target_values[name] = {
+                            "fc": float(val.get("cutting_force", 0) or 0), 
+                            "fn": float(val.get("normal_force", 0) or 0),
+                            "ccr": float(val.get("chip_compression", 0) or 0),
+                            "csr": float(val.get("chip_segmentation", 0) or 0)
+                        }
 
         # Extract parameter boundaries
-        self.parameters_boundry = data.get("6. Parameters Limits", {})
+        self.parameters_boundry = data.get("08. Parameters Limits", {})
 
         # Extract PSO and simulation settings
-        pso_info = data.get("7. PSO and Simulation", {})
+        pso_info = data.get("09. PSO and Simulation", {})
         self.number_of_cp = int(pso_info.get("Computers", 1))
         self.cores_by_simulation = int(pso_info.get("Cores by Simulation", 4))
         self.number_of_iterations = int(pso_info.get("Iterations", 20))
@@ -97,21 +103,18 @@ class PsoSetup:
         """
         try:
             data = YamlManager.load_yaml(self, self.yaml_project_info)
-            opt_data = data.get("8. Otimization Datas", None)
+            cur_opt_data = data.get("10. Current Optimization", None)
+            best_opt_data = data.get("11. Best Otimization Datas", None)
 
-            import ast
-            self.number_of_remain_iterations = int(opt_data.get("Remaining Iterations", 0))
-            self.count_iteration = self.number_of_iterations - self.number_of_remain_iterations + 1
-            last_it = opt_data.get("Last Iteration Values", {})
-
-            # Usar ast.literal_eval para converter string em estrutura Python
-            positions = np.array(ast.literal_eval(last_it["positions"]["value"]))
-            velocities = np.array(ast.literal_eval(last_it["velocities"]["value"]))
-            personal_best_positions = np.array(ast.literal_eval(last_it["personal_best_position"]["value"]))
-            personal_best_scores = ast.literal_eval(last_it["personal_best_score"]["value"])
-            global_best_position = np.array(ast.literal_eval(last_it["global_best_position"]["value"]))
-            global_best_score = float(last_it["global_best_score"]["value"])
-            global_best_scores_history = ast.literal_eval(last_it["global_best_score_history"]["value"])
+            self.count_iteration = int(cur_opt_data.get("Iteration", 1))
+            self.number_of_iterations = self.number_of_iterations - self.count_iteration + 1
+            positions = np.array(ast.literal_eval(cur_opt_data["positions"]))
+            velocities = np.array(ast.literal_eval(cur_opt_data["velocities"]))
+            personal_best_positions = np.array(ast.literal_eval(best_opt_data["personal_best_position"]))
+            personal_best_scores = ast.literal_eval(best_opt_data["personal_best_score"])
+            global_best_position = np.array(ast.literal_eval(best_opt_data["global_best_position"]))
+            global_best_score = float(best_opt_data["global_best_score"])
+            global_best_scores_history = ast.literal_eval(best_opt_data["global_best_score_history"])
    
             AuxClass.log(self, f"       verify_stage --> Reloaded previous iteration data (Iteration {self.count_iteration})")
             return velocities, positions, personal_best_positions, personal_best_scores, global_best_position, global_best_score, global_best_scores_history
@@ -144,6 +147,7 @@ class PsoSetup:
             velocities = np.random.uniform(low=-1, high=1, size=(self.number_of_particles, num_dimensions)).tolist()
             
             PostPso.save_position_velocity(self, self.number_of_particles, positions, velocities)
+            # PostPso.save_position_velocity(self, self.number_of_particles, positions, velocities)
             # PostPso.save_initial_data(self, self.number_of_particles, positions, velocities)
             # PostPso.save_iteration_info(self, velocities, positions)
             
@@ -157,6 +161,7 @@ class PsoSetup:
             # Show datas in the interface and save info
             PostPso.show_datas(self)
             PostPso.save_best_results(self, personal_best_positions, personal_best_scores, global_best_position, global_best_score, global_best_scores_history)
+            PostPso.last_iteration_info(self, velocities, positions) 
             AuxClass.log(self, "        initial_parameters_pso --> Initial PSO parameters successfully created.")
             return velocities, positions, personal_best_positions, personal_best_scores, global_best_position, global_best_score, global_best_scores_history
         

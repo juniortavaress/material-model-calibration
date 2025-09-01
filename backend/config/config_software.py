@@ -63,7 +63,7 @@ class SoftwareConfig():
         if "info.yaml" in os.listdir(self.project_folder):
             project_data = YamlManager.load_yaml(self, self.yaml_project_info)
 
-            if self.ui.lineEdit_password.text() == project_data["1. Info"]["Password"]:
+            if self.ui.lineEdit_password.text() == project_data["01. Info"]["Password"]:
                 SoftwareConfig.load_saved_datas(self, project_data)
                 GetStatus.load_info_to_ui(self)
                 self.ui.pages.setCurrentIndex(1)
@@ -72,7 +72,7 @@ class SoftwareConfig():
         else:
             if self.ui.lineEdit_project_name.text() and self.ui.lineEdit_password.text():
                 data = {"Date": datetime.today().strftime('%d-%m-%Y'), "Project Name": self.ui.lineEdit_project_name.text(), "Password": self.ui.lineEdit_password.text()}
-                YamlManager.save_yaml_info(self, self.yaml_project_info, "1. Info", data)
+                YamlManager.save_yaml_info(self, self.yaml_project_info, "01. Info", data)
                 self.ui.pages.setCurrentIndex(1)
 
 
@@ -83,8 +83,8 @@ class SoftwareConfig():
         Args:
             project_data (dict): The dictionary loaded from the YAML configuration file.
         """
-        if 'Result_path' in project_data.get("2. Result Path", {}):
-            self.user_result_folder = project_data["2. Result Path"]["Result_path"]
+        if 'Result_path' in project_data.get("02. Result Path", {}):
+            self.user_result_folder = project_data["02. Result Path"]["Result_path"]
             self.ui.label_result.setText(self.user_result_folder)
             self.ui.button_settings_next_page.setEnabled(True)
             SoftwareConfig.set_user_config_path(self)
@@ -121,7 +121,7 @@ class SoftwareConfig():
 
             if os.path.exists(self.yaml_project_info):
                 data = {"Result_path": self.user_result_folder}
-                YamlManager.save_yaml_info(self, self.yaml_project_info, "2. Result Path", data)        
+                YamlManager.save_yaml_info(self, self.yaml_project_info, "02. Result Path", data)        
             SoftwareConfig.set_user_config_path(self)
 
 
@@ -135,7 +135,7 @@ class SoftwareConfig():
 
         # Paths in the code
         self.scripts_path = os.path.join(os.getcwd(), "backend", "abaqus_results_extractor", "extract_results_from_odb")   
-        print(self.scripts_path)
+        # print(self.scripts_path)
 
         # Folders inside result folder
         self.excel_files = os.path.join(self.user_result_folder, "excel_files")

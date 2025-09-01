@@ -4517,6 +4517,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_11.setObjectName(u"verticalLayout_11")
         self.verticalLayout_11.setContentsMargins(0, 0, 0, 0)
         self.comboBox_condition = QComboBox(self.frame_19)
+        self.comboBox_condition.addItem("")
         self.comboBox_condition.setObjectName(u"comboBox_condition")
         self.comboBox_condition.setMinimumSize(QSize(0, 20))
         self.comboBox_condition.setMaximumSize(QSize(150, 16777215))
@@ -7386,7 +7387,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 819, 925))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 51, 34))
         self.verticalLayout_60 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_60.setObjectName(u"verticalLayout_60")
         self.label_code_status = QLabel(self.scrollAreaWidgetContents)
@@ -7942,7 +7943,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.pages.setCurrentIndex(12)
+        self.pages.setCurrentIndex(8)
         self.tabWidget.setCurrentIndex(3)
 
 
@@ -8203,6 +8204,8 @@ class Ui_MainWindow(object):
         self.label_83.setText(QCoreApplication.translate("MainWindow", u"Developed by Junior Tavares, Severin Groh and Pascal Behrens", None))
         self.icon_interface_2.setText("")
         self.interface_name_2.setText(QCoreApplication.translate("MainWindow", u"CONDITIONS", None))
+        self.comboBox_condition.setItemText(0, QCoreApplication.translate("MainWindow", u"Condition 01", None))
+
         self.comboBox_condition.setCurrentText("")
         self.comboBox_condition.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Select the Condition", None))
         self.label_8.setText(QCoreApplication.translate("MainWindow", u"Velocity", None))

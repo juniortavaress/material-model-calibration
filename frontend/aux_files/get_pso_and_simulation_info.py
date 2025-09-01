@@ -14,8 +14,8 @@ class GetPsoAndSimulation:
     """
     def show_pso_and_results_info(self):
         data = YamlManager.load_yaml(self, self.yaml_project_info)
-        if "7. PSO and Simulation" not in data and "3. Conditions" in data:
-            self.ui.label_number_conditions.setText(str(len(data["3. Conditions"])-1))
+        if "09. PSO and Simulation" not in data and "05. Conditions" in data:
+            self.ui.label_number_conditions.setText(str(len(data["05. Conditions"])))
 
             threshold = 8
             cpu_percentages = psutil.cpu_percent(percpu=True)
@@ -42,7 +42,7 @@ class GetPsoAndSimulation:
         warning label is shown in the UI.
         """
         data = YamlManager.load_yaml(self, self.yaml_project_info)
-        data.setdefault("7. PSO and Simulation", {})
+        data.setdefault("09. PSO and Simulation", {})
 
         core_by_simulation = self.ui.combobox_core_by_simulation.currentText()
         number_computer = self.ui.combobox_number_computer.currentText()
@@ -66,7 +66,7 @@ class GetPsoAndSimulation:
             self.error_tracking = True
 
         if not self.error_tracking:
-            data["7. PSO and Simulation"] = {
+            data["09. PSO and Simulation"] = {
                 "Cutting Conditions": number_conditions,
                 "Iterations": iterations,
                 "Particles": particles,
@@ -77,7 +77,7 @@ class GetPsoAndSimulation:
                 "Computers": number_computer,
                 "Main Computer": main_computer}
 
-            YamlManager.save_yaml_info(self, self.yaml_project_info, "7. PSO and Simulation", data["7. PSO and Simulation"])
+            YamlManager.save_yaml_info(self, self.yaml_project_info, "09. PSO and Simulation", data["09. PSO and Simulation"])
             self.ui.pages.setCurrentIndex(11)
         else:
             QMessageBox.warning(self, "Error", "There are one or more parameters with invalid values.")
@@ -101,10 +101,10 @@ class GetPsoAndSimulation:
             data = YamlManager.load_yaml(self, self.yaml_project_info)
 
             defaut_file = os.path.join(base_path, "backend", "abaqus_simulation_manager", "aux_files", "aux_simulation", "code_to_run_simulation.py")
-            computers = data["7. PSO and Simulation"]["Computers"]
-            cores_by_simulation = data["7. PSO and Simulation"]["Cores by Simulation"]
-            main_activated = data["7. PSO and Simulation"]["Main Computer"]
-            project_name = data["1. Info"]["Project Name"]
+            computers = data["09. PSO and Simulation"]["Computers"]
+            cores_by_simulation = data["09. PSO and Simulation"]["Cores by Simulation"]
+            main_activated = data["09. PSO and Simulation"]["Main Computer"]
+            project_name = data["01. Info"]["Project Name"]
 
             i = 1 if main_activated == "Yes" else  2
             
