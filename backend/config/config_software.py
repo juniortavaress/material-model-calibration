@@ -1,15 +1,10 @@
 # -*- coding: utf-8 -*-
 import os 
 import sys
-import yaml
 from datetime import datetime
-
-from PySide6.QtCore import QTimer
 from PySide6.QtWidgets import QFileDialog, QMessageBox
-
 from backend.config.get_status import GetStatus
 from backend.config.yaml_manager import YamlManager
-
 
 class SoftwareConfig():
     """
@@ -97,6 +92,7 @@ class SoftwareConfig():
         Args:
             type (str): Determines the type of dialog. Use "abq" for Abaqus path selection.
         """
+
         if type == "abq":
             self.abaqus_path, _ = QFileDialog.getOpenFileName(self)
 
@@ -108,9 +104,8 @@ class SoftwareConfig():
                 self.ui.label_abaqus.setText(" ")
                 QMessageBox.warning(self, "Error", "Select a valid path.")
 
-        else:
+        elif type == "result":
             result_path = QFileDialog.getExistingDirectory()
-
             if not result_path:
                 self.ui.label_result.setText(" ")
                 QMessageBox.warning(self, "Error", "Select a valid path.")
@@ -124,6 +119,12 @@ class SoftwareConfig():
                 YamlManager.save_yaml_info(self, self.yaml_project_info, "02. Result Path", data)        
             SoftwareConfig.set_user_config_path(self)
 
+        if type != "abq" and type != "result":
+            if not self.ui.label_result.text().strip() or not self.ui.label_abaqus.text().strip():
+                QMessageBox.warning(self, "Error", "Select a valid path.")
+            else:
+                self.ui.pages.setCurrentIndex(2)
+
 
     def set_user_config_path(self) -> None:
         """
@@ -135,7 +136,6 @@ class SoftwareConfig():
 
         # Paths in the code
         self.scripts_path = os.path.join(os.getcwd(), "backend", "abaqus_results_extractor", "extract_results_from_odb")   
-        # print(self.scripts_path)
 
         # Folders inside result folder
         self.excel_files = os.path.join(self.user_result_folder, "excel_files")

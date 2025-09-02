@@ -1,12 +1,11 @@
+from frontend.aux_files.create_graphs import createPlots
 from frontend.aux_files.get_conditions import GetCondition
 from frontend.aux_files.get_parameters import GetParameters
-from frontend.aux_files.get_pso_and_simulation_info import GetPsoAndSimulation
 from frontend.aux_files.get_outputs_to_analyse import GetOutputs
-from create_graphs import createPlots
+from frontend.aux_files.get_pso_and_simulation_info import GetPsoAndSimulation
 
 from backend.config.config_software import SoftwareConfig
 from backend.show_geometry.graph_setup import GraphManager
-from backend.show_geometry.get_geometry import GetGeometry
 from backend.show_geometry.general_functions import AuxFunctions
 from backend.optimization.optimization_manager import OtimizationManager
 
@@ -25,7 +24,7 @@ class ButtonsCallback():
         self.ui.button_login_next_page.clicked.connect(lambda: SoftwareConfig.project_setup(self))
         
         # Page 02 - Abaqus and Results Path
-        self.ui.button_settings_next_page.clicked.connect(lambda: self.ui.pages.setCurrentIndex(2)) 
+        self.ui.button_settings_next_page.clicked.connect(lambda: SoftwareConfig.get_results_and_abaqus_folders(self, None)) 
         self.ui.button_abaqus.clicked.connect(lambda: SoftwareConfig.get_results_and_abaqus_folders(self, "abq"))
         self.ui.button_result.clicked.connect(lambda: SoftwareConfig.get_results_and_abaqus_folders(self, "result"))      
             
@@ -74,34 +73,27 @@ class ButtonsCallback():
 
         # Page 11 - Tracking Page
         self.ui.button_code_tracking_next_page.clicked.connect(lambda: self.ui.pages.setCurrentIndex(12))
-        # self.ui.button_code_tracking_back.clicked.connect(lambda: self.ui.pages.setCurrentIndex(9))
 
         # Page 12 - Results Visualization
         self.ui.button_result_back.clicked.connect(lambda: self.ui.pages.setCurrentIndex(11))
         self.ui.combobox_file.currentIndexChanged.connect(lambda: createPlots.graphs_manager(self))
         self.ui.combobox_analysis_type.currentIndexChanged.connect(lambda: createPlots.graphs_manager(self))
 
-        # self.ui.pages.setCurrentIndex(-1)
-
     def _initial_conditions(self):
         # Initial Interface Conditions
-
         self.ui.frame_95.hide()
-        self.ui.frame_105.hide()
-
+        # self.ui.frame_105.hide()
+        self.ui.frame_plastic.hide()
+        self.ui.frame_damage.hide()
+        self.ui.button_create_geometry.hide()
         self.ui.button_create_geometry.setEnabled(False)
-
-        # Defining start pahe
+        # Defining start page
         self.ui.pages.setCurrentIndex(0)
-
-
-
 
     def _procedures_on_the_create_conditions_page(self):
         GetCondition.get_user_conditions(self)
         import_geometry = GetCondition.manage_inp_files(self)
         GetParameters.parameter_and_interface_manager(self, import_geometry)
-
 
     def _save_info_and_start_otimization(self):
         GetPsoAndSimulation.save_info(self)

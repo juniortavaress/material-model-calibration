@@ -229,17 +229,16 @@ class GetParameters:
             checkbox_status[param] = checkbox.isChecked()
         YamlManager.save_yaml_info(self, self.yaml_project_info, "07. Parameters to Iterate", checkbox_status)
 
-        self.ui.frame_105.show()
         for param in param_checkboxes:
             checkbox = getattr(self.ui, f"checkBox_param_{param}", None)
             frame = getattr(self.ui, f"frame_limits_param_{param}", None)
             frame.hide()
+            parent = frame.parentWidget().parentWidget()
 
-            # print(frame)s
-            
             if checkbox and checkbox.isChecked():
-                # print(checkbox)
                 frame.show()
+                if parent and not parent.isVisible():
+                    parent.show()
 
 
     def save_parameters_limits(self) -> None:

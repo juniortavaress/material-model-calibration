@@ -76,11 +76,10 @@ class GetStatus():
                         self.ui.pages.setCurrentIndex(11)
                         
 
-
-
     def load_info_to_ui(self):
         data_ui = YamlManager.load_yaml(self, self.yaml_project_info)
         output_data = data_ui.get("03. Outputs", None)
+        model_datas = data_ui.get("06. Material Properties", None)
         cond_data = data_ui.get("05. Conditions", None)
         param_data = data_ui.get("07. Parameters to Iterate", None)
         param_limits_data = data_ui.get("08. Parameters Limits", None)
@@ -93,7 +92,7 @@ class GetStatus():
             GetStatus.set_condition_to_ui(self, cond_data)
 
         if param_data:
-            GetStatus.set_param_to_ui(self, param_data, param_limits_data)
+            GetStatus.set_param_to_ui(self, model_datas, param_data, param_limits_data)
         
         if pso_simulation_data:
             GetStatus.set_pso_simulation_to_ui(self, pso_simulation_data)
@@ -136,17 +135,17 @@ class GetStatus():
         self.ui.comboBox_condition.setCurrentIndex(self.ui.comboBox_condition.findText("Condition 01"))
 
         
-    def set_param_to_ui(self, parameters, parameters_limits):
-        self.ui.frame_105.show()
-
+    def set_param_to_ui(self, model_datas, parameters, parameters_limits):
         for param, value in parameters.items():
             checkbox = getattr(self.ui, f"checkBox_param_{param}", None)
             frame = getattr(self.ui, f"frame_limits_param_{param}", None)
+            parent = frame.parentWidget().parentWidget()
             min = getattr(self.ui, f"lineEdit_min_param_{param}", None)
             max = getattr(self.ui, f"lineEdit_max_param_{param}", None)
 
-            frame.show()
             if checkbox and value:
+                frame.show()
+                parent.show()
                 checkbox.setChecked(True)
             else:
                 frame.hide()
@@ -158,6 +157,7 @@ class GetStatus():
             else:
                 min.setText("")
                 max.setText("")
+
 
     def set_pso_simulation_to_ui(self, pso_simulation_data):
         self.number_of_particles = int(pso_simulation_data["Particles"])
@@ -171,7 +171,6 @@ class GetStatus():
         self.ui.combobox_number_computer.setCurrentText(pso_simulation_data["Computers"])
         self.ui.combobox_main_computer.setCurrentText(pso_simulation_data["Main Computer"])
 
-        # Calculando os cores disponiveis
         threshold = 8
         cpu_percentages = psutil.cpu_percent(percpu=True)
         num_physical_cores = psutil.cpu_count(logical=False)

@@ -369,7 +369,7 @@ background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5
                  <enum>QFrame::Shape::NoFrame</enum>
                 </property>
                 <property name="frameShadow">
-                 <enum>QFrame::Shadow::Raised</enum>
+                 <enum>QFrame::Shadow::Plain</enum>
                 </property>
                 <layout class="QHBoxLayout" name="horizontalLayout_14">
                  <item>
@@ -14336,7 +14336,7 @@ background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5
                      <number>0</number>
                     </property>
                     <item>
-                     <widget class="QFrame" name="frame_91">
+                     <widget class="QFrame" name="frame_plastic">
                       <property name="enabled">
                        <bool>true</bool>
                       </property>
@@ -15304,7 +15304,7 @@ background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5
                      </widget>
                     </item>
                     <item>
-                     <widget class="QFrame" name="frame_77">
+                     <widget class="QFrame" name="frame_damage">
                       <property name="enabled">
                        <bool>true</bool>
                       </property>
@@ -18342,8 +18342,8 @@ background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5
                         <rect>
                          <x>0</x>
                          <y>0</y>
-                         <width>51</width>
-                         <height>34</height>
+                         <width>819</width>
+                         <height>925</height>
                         </rect>
                        </property>
                        <layout class="QVBoxLayout" name="verticalLayout_60">

@@ -25,19 +25,29 @@ class MainWindow(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+
+    app.setStyleSheet("""
+        QPushButton:focus { outline: none; }
+        QCheckBox:focus { outline: none; }
+        QRadioButton:focus { outline: none; }
+        QComboBox:focus { outline: none; }
+        QLineEdit:focus { outline: none; }
+        QRadioButton::indicator:focus { outline: none; }
+        QCheckBox::indicator:focus { outline: none; }
+    """)
+
     widget = MainWindow()
+    widget.resize(700, 300)
+    widget.showMaximized()  
     widget.show()
-
-    widget.resize(700, 300)  # define tamanho antes do show
-    widget.show()
-
+     
     # Centralizar após mostrar
-    screen = app.primaryScreen()
-    screen_geometry = screen.geometry()
-    window_geometry = widget.frameGeometry()
-    center_point = screen_geometry.center()
-    window_geometry.moveCenter(center_point)
-    widget.move(window_geometry.topLeft())
+    # screen = app.primaryScreen()
+    # screen_geometry = screen.geometry()
+    # window_geometry = widget.frameGeometry()
+    # center_point = screen_geometry.center()
+    # window_geometry.moveCenter(center_point)
+    # widget.move(window_geometry.topLeft())
 
     sys.exit(app.exec())
     
