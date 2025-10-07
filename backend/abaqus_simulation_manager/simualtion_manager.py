@@ -119,7 +119,7 @@ class SimulationManager:
             if last_update_raw is not None:
                 last_update = isoparse(last_update_raw)
                 print("time", (now - last_update))
-                is_active = (now - last_update) <= timedelta(minutes=10)
+                is_active = (now - last_update) <= timedelta(minutes=45)
 
             if not is_active:
                 if comp["status"]:
