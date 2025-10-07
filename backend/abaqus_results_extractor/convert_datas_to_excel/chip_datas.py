@@ -15,17 +15,43 @@ class ManagerChipDatasAndImage():
 
     def save_chip_datas(self, base_name, points):
         df_points = pd.DataFrame(points, columns=["X", "Y"])
-        output_excel_path = os.path.join(self.output_excel_dir, "chip_shape.xlsx")
 
-        sheet_name = base_name[4:]
-        if len(sheet_name) > 31:
-            sheet_name = sheet_name[:31]
+        filename = base_name[4:]
+        if len(filename) > 31:
+            filename = filename[:31]
 
-        if os.path.exists(output_excel_path):
-            with pd.ExcelWriter(output_excel_path, mode='a', engine='openpyxl', if_sheet_exists='replace') as writer:
-                df_points.to_excel(writer, sheet_name=sheet_name, index=False)
+        df_points = df_points.rename(columns={
+            "X": "x",
+            "Y": "y"
+        })
+
+        x_list = df_points["x"].tolist()
+        y_list = df_points["y"].tolist()
+
+        record = {
+            "project_id": self.main.project_id,
+            "filename": filename,
+            "x": x_list,
+            "y": y_list
+        }
+
+        existing = self.main.supabase.table("simulation_chip_results")\
+            .select("id")\
+            .eq("project_id", self.main.project_id)\
+            .eq("filename", filename)\
+            .execute()
+
+        if existing.data and len(existing.data) > 0:
+            record_id = existing.data[0]["id"]
+            self.main.supabase.table("simulation_chip_results")\
+                .update(record)\
+                .eq("id", record_id)\
+                .execute()
         else:
-            df_points.to_excel(output_excel_path, sheet_name=sheet_name, index=False, engine="openpyxl")
+            self.main.supabase.table("simulation_chip_results")\
+                .insert(record)\
+                .execute()
+
 
 
     def create_chip_img(self, file_path, min_distances, peaks, valleys, sides, points):
@@ -42,7 +68,7 @@ class ManagerChipDatasAndImage():
         """
 
         matplotlib.use('Agg') 
-        folder = os.path.join(self.chip_images, os.path.basename(file_path)[:-12])
+        folder = os.path.join(self.main.chip_images, os.path.basename(file_path)[:-12])
         if not os.path.isdir(folder):
             os.makedirs(folder)
 

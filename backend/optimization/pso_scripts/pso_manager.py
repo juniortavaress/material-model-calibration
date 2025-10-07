@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 from typing import List, Tuple
-from backend.optimization.aux_files.aux_functions import AuxClass
+from backend.config.aux_functions import AuxClass
 from backend.optimization.pso_scripts.objective_function import ObjectiveFunction
 from backend.optimization.pso_scripts.pso_post_process import PostPso
 
@@ -27,13 +27,8 @@ class PsoManager:
             num_dimensions (int): Dimensionality of the problem space.
         """
         objective_function_pso = lambda params: ObjectiveFunction.objective_function(self, params)
-        
-        AuxClass.log(self, "      [Step 3.1] run_pso --> Starting PSO iterations...\n")
         PsoManager.pso_iterations(self, objective_function_pso, lb, ub, velocities, positions, personal_best_positions, personal_best_scores, global_best_position, global_best_score, global_best_scores_history)
         
-        AuxClass.log(self,"      [Step 3.2] run_pso --> Finalizing PSO and displaying results...\n")
-        PostPso.show_datas(self, call="finished")
-             
 
     def pso_iterations(self, objective_function_pso, lb, ub, velocities, positions, personal_best_positions, personal_best_scores, global_best_position, global_best_score, global_best_scores_history, minfunc=1e-3) -> Tuple[List[float], float]:
         """
@@ -57,9 +52,7 @@ class PsoManager:
         """
         try:
             for iteration in range(self.number_of_iterations):
-                AuxClass.log(self, f"          [Step 3.1.{iteration}] pso_iterations --> Iteration {iteration} started\n")
-
-                if not self.iteration_in_progress:
+                if not self.main.iteration_in_progress:
                     for i in range(self.number_of_particles):
                         r1, r2 = np.random.rand(), np.random.rand()
 
@@ -72,15 +65,15 @@ class PsoManager:
                         # Update position with bounds
                         positions[i] = np.round(np.clip(positions[i] + velocities[i], lb, ub), 4)
 
-                    self.count_iteration += 1
                     PostPso.save_current_iteration(self, velocities, positions)
                     PostPso.save_parameters(self, self.number_of_particles, positions)
                 else:
-                    PostPso.save_parameters(self, self.number_of_particles, positions)
+                    # PostPso.save_parameters(self, self.number_of_particles, positions)
+                    pass
 
                 # Evaluate the objective function for the current positions
                 score = objective_function_pso(positions)
-                self.iteration_in_progress = False
+                self.main.iteration_in_progress = False
 
                 # Update personal best positions and scores
                 for i in range(self.number_of_particles):
@@ -103,15 +96,14 @@ class PsoManager:
                     positions = [p.tolist() for p in positions]
                 except Exception as e:
                     print(f"[Conversion Error] Failed to convert velocities or positions to list: {e}")
-                    # print("\n\nVelocities: ", velocities)
-                    # print("\n\nPositions: ", positions)
 
-                PostPso.show_datas(self)
                 PostPso.save_best_results(self, personal_best_positions, personal_best_scores, global_best_position, global_best_score, global_best_scores_history)
                 PostPso.last_iteration_info(self, velocities, positions)
+
             return global_best_position, global_best_score
         
         except Exception as e:
             self.e = e
-            AuxClass.handle_error(self, e, "Error at def pso_iterations")
+            self.main.error_tracking = True
+            AuxClass._handle_exception(self, e, "Error at def pso_iterations")
    

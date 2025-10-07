@@ -3,7 +3,7 @@ import json
 import pandas as pd 
 
 class ForceProcessor():
-    def __init__(self, json_input_dir: str, output_excel_dir: str):
+    def __init__(self, main):
         """
         Initialize ForceProcessor.
 
@@ -11,8 +11,7 @@ class ForceProcessor():
             json_input_dir (str): Path to the directory containing simulation JSON folders.
             output_excel_dir (str): Path where the Excel results will be stored.
         """
-        self.json_input_dir = json_input_dir
-        self.output_excel_dir = output_excel_dir
+        self.main = main
         self.results_summary = {}
         
         
@@ -27,18 +26,24 @@ class ForceProcessor():
             start_pct (float): Start percentage for statistics calculation.
             end_pct (float): End percentage for statistics calculation.
         """
-        json_folder = os.path.join(self.json_input_dir, filename)
-        if not os.path.isdir(json_folder):
-            return
+        try:
+            json_folder = os.path.join(self.main.json_default_path, filename)
+            if not os.path.isdir(json_folder):
+                return
 
-        json_file = os.path.join(json_folder, "reaction_forces.json")
-        if not os.path.isfile(json_file):
-            return
+            json_file = os.path.join(json_folder, "reaction_forces.json")
+            if not os.path.isfile(json_file):
+                return
 
-        df = self._load_and_prepare_data(json_file, exp_width, sim_width)
-        self._export_to_excel(df, filename)
-        self._compute_statistics(df, filename, start_pct, end_pct)
-        return self.results_summary
+            df = self._load_and_prepare_data(json_file, exp_width, sim_width)
+            self._export_to_excel(df, filename)
+            self._compute_statistics(df, filename, start_pct, end_pct)
+            return self.results_summary
+        except Exception as e:
+            import traceback
+            print("❌ Erro ao gerar gráfico:")
+            print(traceback.format_exc())  # imprime a stack completa
+
 
     def _load_and_prepare_data(self, json_path: str, exp_width: float, sim_width: float) -> pd.DataFrame:
         """
@@ -62,6 +67,7 @@ class ForceProcessor():
 
         combined_df = pd.merge(rf1_df, rf2_df, on="Time [ms]", how="outer")
         combined_df["Dummy"] = range(1, len(combined_df) + 1)
+        combined_df = combined_df.drop(columns=["Dummy"])
         return combined_df
 
 
@@ -73,19 +79,41 @@ class ForceProcessor():
             df (pd.DataFrame): Processed DataFrame to be saved.
             case_name (str): Sheet name prefix for this case.
         """
-        force_file = os.path.join(self.output_excel_dir, "forces_result.xlsx")
-        # mode = 'a' if os.path.exists(force_file) else 'w'
-        # with pd.ExcelWriter(force_file, mode=mode, engine='openpyxl', if_sheet_exists='replace') as writer:
-        #     df.to_excel(writer, sheet_name=filename[4:][:31], index=False)
+        filename = filename[4:][:31]
+        df = df.rename(columns={
+            "Time [ms]": "time",
+            "Cutting Force [N]": "cutting_force",
+            "Normal Force [N]": "normal_force"
+        })
 
-        if os.path.exists(force_file):
-            # Append new sheet to the existing Excel file
-            with pd.ExcelWriter(force_file, mode='a', engine='openpyxl', if_sheet_exists='replace') as writer:
-                df.to_excel(writer, sheet_name=filename[4:][:31], index=False)
+        time_list = df["time"].tolist()
+        cutting_list = df["cutting_force"].tolist()
+        normal_list = df["normal_force"].tolist()
+
+        record = {
+            "project_id": self.main.project_id,
+            "filename": filename,
+            "time": time_list,
+            "cutting_force": cutting_list,
+            "normal_force": normal_list
+        }
+
+        existing = self.main.supabase.table("simulation_forces_results")\
+            .select("id")\
+            .eq("project_id", self.main.project_id)\
+            .eq("filename", filename)\
+            .execute()
+
+        if existing.data and len(existing.data) > 0:
+            record_id = existing.data[0]["id"]
+            self.main.supabase.table("simulation_forces_results")\
+                .update(record)\
+                .eq("id", record_id)\
+                .execute()
         else:
-            # Create a new Excel file
-            with pd.ExcelWriter(force_file, engine='openpyxl') as writer:
-                df.to_excel(writer, sheet_name=filename[4:][:31], index=False)
+            self.main.supabase.table("simulation_forces_results")\
+                .insert(record)\
+                .execute()
 
 
     def _compute_statistics(self, df: pd.DataFrame, filename: str, start_pct: float, end_pct: float):
@@ -107,12 +135,3 @@ class ForceProcessor():
             "Cutting Force [N].mean": round(stats ["Cutting Force Fc [N]"]["mean"], 2)}
 
 
-if __name__ == "__main__":
-    json_default_path = r"output_files/json"
-    graph_folder = r"output_files/img"
-    odb_processing = r"output_files/odb"
-
-    processor = ForceProcessor(json_default_path, graph_folder)
-    for file in os.listdir(odb_processing):
-        filename = file[:-4]
-        processor.process_file(filename)

@@ -35,7 +35,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="S:\Junior\abaqus-with-python\otimization-scripts\new-version\material-model-calibration\.qtcreator\Python_3_11_7venv"
+VIRTUAL_ENV="S:\Junior\abaqus-with-python\otimization-scripts\workbranch\material-model-calibration\.qtcreator\Python_3_11_7venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
