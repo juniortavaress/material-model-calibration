@@ -1,10 +1,8 @@
 import os
-import yaml
 import numpy as np
 import pandas as pd
-from frontend.aux_files.show_status_message import StatusMessage
+from frontend.aux_files.tracking_message_manager import ProcessStatusLogger
 
-from backend.config.yaml_manager import YamlManager
 
 class PostPso:
     @staticmethod
@@ -16,133 +14,122 @@ class PostPso:
             return [i.tolist() if isinstance(i, np.ndarray) else i for i in obj]
         return obj
 
-    def save_position_velocity(self, num_particles, positions, velocities):
-        if os.path.exists(self.yaml_parameters):
-            self.info_set = YamlManager.load_yaml(self, self.yaml_parameters)
-        else:
-            self.info_set = {}
 
-        iteration_key = f"Iteration {self.count_iteration:02}"
-        self.info_set[iteration_key] = {}
+    def save_position_velocity(self, num_particles, positions, velocities):
 
         for i in range(num_particles):
-            set_key = f"set-0{i+1}"
-            self.info_set[iteration_key][set_key] = {}
-            self.info_set[iteration_key][set_key]["Parameters"] = {}
+            set_number = i + 1
 
+            # Monta os valores para salvar
+            param_values = {}
             for j, (param_name, _) in enumerate(self.parameters_boundry.items()):
                 param_value = positions[i][j]
                 param_value = param_value.item() if isinstance(param_value, np.generic) else param_value
-                self.info_set[iteration_key][set_key]["Parameters"][param_name] = param_value
+                db_field = f"parameter_{param_name}"  # Ex: 'A' -> 'parameter_a'
+                # print('db_field', db_field)
+                param_values[db_field] = param_value
 
-        with open(self.yaml_parameters, "w") as file:
-            yaml.dump(self.info_set, file)
-        
-        PostPso.save_current_iteration(self, velocities, positions)
+            response = self.main.supabase.table("conditions").select("*").eq("project_id", self.main.project_id).execute()
+            db_conditions = response.data if response.data else []
+            for cond in db_conditions:
+                cond_name = cond["name"]
+
+                # Verifica se já existe um registro no banco
+                response = (
+                    self.main.supabase
+                    .from_('results')
+                    .select('id')
+                    .eq('project_id', self.main.project_id)
+                    .eq('condition_name', cond_name)
+                    .eq('iteration_number', self.main.current_opt)
+                    .eq('parameter_set', set_number)
+                    .limit(1)
+                    .execute()
+                )
+
+                data = response.data
+                if data:
+                    # Atualiza registro existente
+                    result_id = data[0]['id']
+                    self.main.supabase.from_('results').update(param_values).eq('id', result_id).execute()
+                else:
+                    # Insere novo registro
+                    new_row = {
+                        'project_id': self.main.project_id,
+                        'condition_name': cond_name,
+                        'iteration_number': self.main.current_opt,
+                        'parameter_set': set_number,
+                        **param_values
+                    }
+                    self.main.supabase.from_('results').insert(new_row).execute()
+            
+            PostPso.save_current_iteration(self, velocities, positions)
 
         
     def save_current_iteration(self, velocities, positions):
-        data = YamlManager.load_yaml(self, self.yaml_project_info)
-        current_optimization_section = data.setdefault("10. Current Optimization", {})
-        current_optimization_section.update({
-            "velocities": str(PostPso.to_list_if_numpy(velocities)), 
-            "positions": str(PostPso.to_list_if_numpy(positions)), 
-            "Iteration": self.count_iteration})
-        with open(self.yaml_project_info, "w", encoding="utf-8") as file:
-            yaml.safe_dump(data, file, allow_unicode=True, default_flow_style=False)
+        record = self.main.supabase.table("current_optimization_data").select("*").eq("project_id", self.main.project_id).execute().data
 
+        data_to_save = {
+            "project_id": self.main.project_id,
+            "iteration": self.main.current_opt,
+            "velocities": str(PostPso.to_list_if_numpy(velocities)),
+            "positions": str(PostPso.to_list_if_numpy(positions)),
+        }
 
-
-
+        if record:
+            # Atualiza a linha existente
+            self.main.supabase.table("current_optimization_data") \
+                .update(data_to_save).eq("project_id", self.main.project_id).execute()
+        else:
+            # Insere uma nova linha
+            self.main.supabase.table("current_optimization_data") \
+                .insert(data_to_save).execute()
 
 
     def last_iteration_info(self, velocities, positions) -> None:
-        data = YamlManager.load_yaml(self, self.yaml_project_info)
-        last_optimization_section = data.setdefault("12. Last Otimization Datas", {})
-        last_optimization_section.update({
-            "velocities": str(PostPso.to_list_if_numpy(velocities)),
-            "positions": str(PostPso.to_list_if_numpy(positions)),
-            "Remaining Iterations": self.number_of_iterations
-        })
-        with open(self.yaml_project_info, "w", encoding="utf-8") as file:
-            yaml.safe_dump(data, file, allow_unicode=True, default_flow_style=False)
+        """
+        Save the last optimization information to the database.
+        """
+        record = self.main.supabase.table("last_optimization_data").select("*").eq("project_id", self.main.project_id).execute().data
+        velocities_str = str(PostPso.to_list_if_numpy(velocities))
+        positions_str = str(PostPso.to_list_if_numpy(positions))
+        
+        data_to_save = {
+            "project_id": self.main.project_id,
+            "remaining_iterations": self.number_of_iterations,
+            "velocities": velocities_str,
+            "positions": positions_str,
+        }
 
+        if record:
+            # Atualiza a linha existente
+            self.main.supabase.table("last_optimization_data").update(data_to_save).eq("project_id", self.main.project_id).execute()
+        else:
+            # Insere uma nova linha
+            self.main.supabase.table("last_optimization_data").insert(data_to_save).execute()
 
     
     def save_best_results(self, personal_best_positions, personal_best_scores, global_best_position, global_best_score, global_best_scores_history):
-        data = YamlManager.load_yaml(self, self.yaml_project_info)
-        best_optimization_section = data.setdefault("11. Best Otimization Datas", {})
-        best_optimization_section.update({
-            "personal_best_position": str(PostPso.to_list_if_numpy(personal_best_positions)),
-            "personal_best_score": str(personal_best_scores),
+        record = self.main.supabase.table("best_optimization_data").select("*").eq("project_id", self.main.project_id).execute().data
+
+        data_to_save = {
+            "project_id": self.main.project_id,
+            "personal_best_positions": str(PostPso.to_list_if_numpy(personal_best_positions)),
+            "personal_best_scores": str(personal_best_scores),
             "global_best_position": str(PostPso.to_list_if_numpy(global_best_position)),
-            "global_best_score": str(global_best_score),
-            "global_best_score_history": str(global_best_scores_history),
-        })
-        with open(self.yaml_project_info, "w", encoding="utf-8") as file:
-            yaml.safe_dump(data, file, allow_unicode=True, default_flow_style=False)
+            "global_best_score": float(global_best_score),
+            "global_best_scores_history": str(global_best_scores_history)
+        }
 
-
-
-
-
-
-
-
-
-
-
-    def show_datas(self, call=None) -> None:
-        """
-        Updates the interface with results from the best performing particle set.
-
-        Args:
-            call (str, optional): If set to "finished", retrieves final best set. Otherwise, uses current iteration.
-        """
-        best_set = None
-        min_error = float("inf")
-        iteration_number = self.count_iteration 
-        current_iteration = f"Iteration {int(iteration_number):02d}"   
-
-        if call == "finished":
-            message = "message-id_06"
-            for iteration, data_int in self.info_set.items():
-                    for set, data_set in data_int.items():
-                        if float(data_set["Error"]) < min_error:
-                            min_error = float(data_set["Error"])
-                            best_set = int(set.split("t-")[1])
+        if record:
+            # Atualiza a linha existente
+            self.main.supabase.table("best_optimization_data") \
+                .update(data_to_save).eq("project_id", self.main.project_id).execute()
         else:
-            message = "message-id_05"
-            for iteration, data_int in self.info_set.items():
-                if iteration == current_iteration:
-                    for set, data_set in data_int.items():
-                        if float(data_set["Error"]) < min_error:
-                            min_error = float(data_set["Error"])
-                            best_set = int(set.split("t-")[1])
-
-        if best_set is not None:
-            data_path = os.path.join(self.excel_files, "datas.xlsx")
-            df_info = pd.read_excel(data_path, engine="openpyxl")
-            filtered_mean = df_info[(df_info["Iteration Number"] == iteration_number) & (df_info["Parameter Set"] == int(best_set))].mean(numeric_only=True)            
-            set = f"set-0{best_set}" if best_set < 10 else f"set-{best_set}"
-            self.best_parameters = self.info_set[current_iteration][set]["Parameters"]
-            self.error = filtered_mean["Error"]
-
-            if self.forces:
-                self.error_cutting_force = filtered_mean["Error Fc"]
-                self.error_normal_force = filtered_mean["Error Fn"]
-
-            if self.chip:
-                self.error_CCR = filtered_mean["Error CCR"]
-                self.error_CSR = filtered_mean["Error CSR"]
-
-            if self.temp:
-                self.error_temp = filtered_mean["Error Temperature"]
-            StatusMessage.set_text(self, message)
-        
-
-
-
+            # Insere uma nova linha
+            self.main.supabase.table("best_optimization_data") \
+                .insert(data_to_save).execute()    
+            
 
     def save_parameters(self, num_particles, positions) -> None:
         """
@@ -152,23 +139,48 @@ class PostPso:
             num_particles (int): The number of particles.
             positions (array): The current positions of the particles.
         """
-        if os.path.exists(self.yaml_parameters):
-            self.info_set = YamlManager.load_yaml(self, self.yaml_parameters)
-        else:
-            self.info_set = {}
-
-        iteration_key = f"Iteration {self.count_iteration:02}"
-        self.info_set[iteration_key] = {}
-
+        response = self.main.supabase.table("conditions").select("*").eq("project_id", self.main.project_id).execute()
+        db_conditions = response.data if response.data else []
+        parameter_names = list(self.parameters_boundry.keys())  # ['A','B','C1',...]
+    
         for i in range(num_particles):
-            set_key = f"set-0{i+1}"
-            self.info_set[iteration_key][set_key] = {}
-            self.info_set[iteration_key][set_key]["Parameters"] = {}
+            set_number = i + 1
+            iteration_number = self.main.current_opt
 
-            for j, (param_name, _) in enumerate(self.parameters_boundry.items()):
-                param_value = positions[i][j]
-                param_value = param_value.item() if isinstance(param_value, np.generic) else param_value
-                self.info_set[iteration_key][set_key]["Parameters"][param_name] = param_value
+            # Prepare parameters dictionary
+            params_dict = {}
+            for j, param_name in enumerate(parameter_names):
+                value = positions[i][j]
+                value = value.item() if isinstance(value, np.generic) else value
+                params_dict[f"parameter_{param_name}"] = value
 
-        with open(self.yaml_parameters, "w") as file:
-            yaml.dump(self.info_set, file)
+
+            # Define the unique key for upsert
+            for cond in db_conditions:
+                cond_name = cond["name"]
+
+                base_filter = (
+                    self.main.supabase.table("results")
+                    .select("id")
+                    .eq("project_id", self.main.project_id)
+                    .eq("iteration_number", iteration_number)
+                    .eq("parameter_set", set_number)
+                    .eq("condition_name", cond_name)
+                    .execute()
+                )
+                    
+                upsert_data = {
+                    "project_id": self.main.project_id,
+                    "condition_name": cond_name,
+                    "iteration_number": iteration_number,
+                    "parameter_set": set_number,
+                    **params_dict
+                }
+
+                if base_filter.data:  
+                    # se já existe → update
+                    record_id = base_filter.data[0]["id"]
+                    self.main.supabase.table("results").update(upsert_data).eq("id", record_id).execute()
+                else:
+                    # se não existe → insert
+                    self.main.supabase.table("results").insert(upsert_data).execute()

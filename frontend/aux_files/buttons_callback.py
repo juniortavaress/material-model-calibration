@@ -1,108 +1,140 @@
-from frontend.aux_files.get_conditions import GetCondition
-from frontend.aux_files.get_parameters import GetParameters
-from frontend.aux_files.get_pso_and_simulation_info import GetPsoAndSimulation
-from frontend.aux_files.get_outputs_to_analyse import GetOutputs
-from create_graphs import createPlots
+import httpx
+from supabase import create_client, ClientOptions
+
+from frontend.aux_files.results_plot_manager import ResultsPlotManager
+from frontend.aux_files.conditions_configuration_manager import ConditionManager
+from frontend.aux_files.material_configuration_manager import MaterialParameterManager
+from frontend.aux_files.output_configuration_manager import OutputConfigurationManager
+from frontend.aux_files.simulation_configuration_manager import SimulationConfiguratorManager
 
 from backend.config.config_software import SoftwareConfig
-from backend.show_geometry.graph_setup import GraphManager
-from backend.show_geometry.get_geometry import GetGeometry
-from backend.show_geometry.general_functions import AuxFunctions
 from backend.optimization.optimization_manager import OtimizationManager
 
 
-class ButtonsCallback():
-    """Handles the callback functions for buttons in the user interface."""
+class ButtonsCallback:
+    """
+    Handles all button callbacks and UI navigation logic for the application.
+    """
         
-    def activate_buttons(self):
-        """Activate the buttons and configure initial interface conditions."""
-        # Page 00 - Starting the Code
-        ButtonsCallback._initial_conditions(self)
+    def activate_buttons(self) -> None:
+        """
+        Connects UI buttons to their respective callback functions and initializes the interface.
+        """
+        self.main_cp = False
+        ButtonsCallback._initialize_state(self)
         SoftwareConfig.software_setup(self)
-        GraphManager.canvas(self)
 
-        # Page 01 - Project Name
-        self.ui.button_login_next_page.clicked.connect(lambda: SoftwareConfig.project_setup(self))
-        
-        # Page 02 - Abaqus and Results Path
-        self.ui.button_settings_next_page.clicked.connect(lambda: self.ui.pages.setCurrentIndex(2)) 
+        # Page 01 - Project Setup
+        self.ui.button_login_next_page.clicked.connect(lambda: ButtonsCallback._handle_project_setup(self))
+
+        # Page 02 - Abaqus Path
         self.ui.button_abaqus.clicked.connect(lambda: SoftwareConfig.get_results_and_abaqus_folders(self, "abq"))
-        self.ui.button_result.clicked.connect(lambda: SoftwareConfig.get_results_and_abaqus_folders(self, "result"))      
+
+        # Page 10 - Results Visualizaer
+        self.ui.pushButton_extract_graph.clicked.connect(lambda: ResultsPlotManager.extract_otimization_info(self, 'graph'))
+        self.ui.pushButton_extract_data.clicked.connect(lambda: ResultsPlotManager.extract_otimization_info(self, 'data'))
+        self.ui.combobox_file.currentIndexChanged.connect(lambda: ResultsPlotManager.graphs_manager(self))
+        self.ui.combobox_analysis_type.currentIndexChanged.connect(lambda: ResultsPlotManager.graphs_manager(self))
+        self.ui.combobox_tracking_graph.currentIndexChanged.connect(lambda: ResultsPlotManager._update_tracking_view(self))
+        self.ui.combobox_analysis_type.currentIndexChanged.connect(lambda: ResultsPlotManager._update_tracking_view(self))
+
+
+    def _handle_project_setup(self) -> None:
+        """
+        Handles project setup and activates the appropriate button set.
+        """
+        SoftwareConfig.project_setup(self)
+        ResultsPlotManager._update_tracking_view(self)
+        ButtonsCallback._activate_main_buttons(self) if self.main_cp else ButtonsCallback._activate_aux_buttons(self)
             
+            
+    def _activate_main_buttons(self) -> None:
+        """
+        Connects buttons for the main workflow.
+        """
+        print('main')
+        # Page 02 - Abaqus Path
+        self.ui.button_settings_next_page.clicked.connect(lambda: SoftwareConfig.get_results_and_abaqus_folders(self, None))
+
         # Page 03 - Explanation for creating the conditions
         self.ui.button_conditions_limitation_next_page.clicked.connect(lambda: self.ui.pages.setCurrentIndex(3))
         self.ui.button_conditions_limitation_back.clicked.connect(lambda: self.ui.pages.setCurrentIndex(1))
 
         # Page 04 - Select outputs to analyse
-        self.ui.button_output_analysis_next.clicked.connect(lambda: GetOutputs.get_outputs_manager(self))
+        self.ui.button_output_analysis_next.clicked.connect(lambda: OutputConfigurationManager.configure_outputs(self))
         self.ui.button_output_analysis_back.clicked.connect(lambda: self.ui.pages.setCurrentIndex(2))
 
-        # Page 05 - Create setup or import setup
-        self.ui.button_import_inp.clicked.connect(lambda: AuxFunctions.save_create_setup_option(self, "import"))
-        self.ui.button_create_geometry.clicked.connect(lambda: AuxFunctions.save_create_setup_option(self, "create"))
+        # Page 05 - Create Conditions
+        self.ui.button_conditions_back.clicked.connect(lambda: self.ui.pages.setCurrentIndex(3))
+        self.ui.comboBox_condition.currentIndexChanged.connect(lambda: ConditionManager.update_ui_from_selected_condition(self))
+        self.ui.button_input_file.clicked.connect(lambda: ConditionManager.select_input_file(self))
+        self.ui.button_newCondition.clicked.connect(lambda: ConditionManager.save_condition(self, "new"))
+        self.ui.button_conditions_next_page.clicked.connect(lambda: ButtonsCallback._handle_condition_creation(self))
 
-        # Page 06.1 - Define geometry values (only in the case of create geometry with the software)
-        # self.ui.tabWidget.currentChanged.connect(lambda: GetGeometry.set_info(self))
-        # self.ui.defautValues.stateChanged.connect(lambda: GetGeometry.get_defaut_datas(self))
-        # self.ui.button_create_geometry_back.clicked.connect(lambda: self.ui.pages.setCurrentIndex(4))
-        # self.ui.button_create_geometry_apply.clicked.connect(lambda: GetGeometry.set_info(self))
-        # self.ui.button_create_geometry_next.clicked.connect(lambda: GetGeometry.set_info(self))
+        # Page 06 - Selection of Parameters to Calibrate
+        self.ui.button_parameter_selection_back.clicked.connect(lambda: self.ui.pages.setCurrentIndex(5))
+        self.ui.button_parameter_selection_next_page.clicked.connect(lambda: MaterialParameterManager.save_parameters_from_material(self))
 
-        # Page 06.2 - Create Conditions
-        self.ui.button_conditions_back.clicked.connect(lambda: self.ui.pages.setCurrentIndex(4))
-        self.ui.comboBox_condition.currentIndexChanged.connect(lambda: GetCondition.change_combobox_info(self))
-        self.ui.button_input_file.clicked.connect(lambda: GetCondition.get_input_path(self))
-        self.ui.button_newCondition.clicked.connect(lambda: GetCondition.get_user_conditions(self, "new"))
-        self.ui.button_conditions_next_page.clicked.connect(lambda: ButtonsCallback._procedures_on_the_create_conditions_page(self))
+        # Page 07 - Parameters Boundary Definition
+        self.ui.button_parameter_limits_back.clicked.connect(lambda: self.ui.pages.setCurrentIndex(6))
+        self.ui.button_parameter_limits_next_page.clicked.connect(lambda: MaterialParameterManager.save_parameters_limits(self))
 
-        # Page 07 - Selection of Parameters to Calibrate
-        self.ui.button_parameter_selection_back.clicked.connect(lambda: self.ui.pages.setCurrentIndex(6))
-        self.ui.button_parameter_selection_next_page.clicked.connect(lambda: GetParameters.save_parameters(self))
-        # self.ui.button_parameter_selection_next_page.clicked.connect(lambda: ())
+        # Page 08 - PSO Explanation
+        self.ui.button_pso_explanation_next_page.clicked.connect(lambda: SimulationConfiguratorManager.update_simulation_info(self))
+        self.ui.button_pso_explanation_back.clicked.connect(lambda: self.ui.pages.setCurrentIndex(7))
 
-        # Page 08 - Parameters Boundary Definition
-        self.ui.button_parameter_limits_back.clicked.connect(lambda: self.ui.pages.setCurrentIndex(7))
-        self.ui.button_parameter_limits_next_page.clicked.connect(lambda: GetParameters.save_parameters_limits(self))
+        # Page 09 - PSO Parameters Definition
+        self.ui.button_pso_back.clicked.connect(lambda: self.ui.pages.setCurrentIndex(8))
+        self.ui.button_pso_next_page.clicked.connect(lambda: ButtonsCallback._start_optimization(self))
 
-        # Page 09 - PSO Explanation
-        self.ui.button_pso_explanation_next_page.clicked.connect(lambda: GetPsoAndSimulation.show_pso_and_results_info(self))
-        self.ui.button_pso_explanation_back.clicked.connect(lambda: self.ui.pages.setCurrentIndex(8))
+        # Page 10 - Results Visualization
+        self.ui.button_result_back.clicked.connect(lambda: self.ui.pages.setCurrentIndex(10))
 
-        # Page 10 - PSO Parameters Definition
-        self.ui.button_pso_back.clicked.connect(lambda: self.ui.pages.setCurrentIndex(9))
-        self.ui.button_pso_next_page.clicked.connect(lambda: ButtonsCallback._save_info_and_start_otimization(self))
 
-        # Page 11 - Tracking Page
-        self.ui.button_code_tracking_next_page.clicked.connect(lambda: self.ui.pages.setCurrentIndex(12))
-        # self.ui.button_code_tracking_back.clicked.connect(lambda: self.ui.pages.setCurrentIndex(9))
+    def _activate_aux_buttons(self) -> None:
+        """
+        Connects buttons for auxiliary workflows.
+        """
+        self.ui.button_settings_next_page.clicked.connect(lambda: SoftwareConfig.start_aux_optimization(self))
+        
 
-        # Page 12 - Results Visualization
-        self.ui.button_result_back.clicked.connect(lambda: self.ui.pages.setCurrentIndex(11))
-        self.ui.combobox_file.currentIndexChanged.connect(lambda: createPlots.graphs_manager(self))
-        self.ui.combobox_analysis_type.currentIndexChanged.connect(lambda: createPlots.graphs_manager(self))
+    def _initialize_state(self) -> None:
+        """
+        Initializes internal state and Supabase clients.
+        """
+        self.reload = False
+        self.process_finished = False
+        self.iteration_in_progress = False
+        self.error_tracking = False
+        self.current_opt = 1
 
-        # self.ui.pages.setCurrentIndex(-1)
+        self.ui.lineEdit_password.setText('1006')
+        self.ui.lineEdit_project_name.setText('Optimization1006')
 
-    def _initial_conditions(self):
-        # Initial Interface Conditions
-
-        self.ui.frame_95.hide()
-        self.ui.frame_105.hide()
-
-        self.ui.button_create_geometry.setEnabled(False)
-
-        # Defining start pahe
+        self.ui.frame_plastic.hide()
+        self.ui.frame_damage.hide()
         self.ui.pages.setCurrentIndex(0)
 
+        supabase_url = 'https://dbbvsfnxsyvkjrcoeakh.supabase.co'
+        supabase_key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRiYnZzZm54c3l2a2pyY29lYWtoIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1ODUyMzIzNywiZXhwIjoyMDc0MDk5MjM3fQ.eggQomAbqZUbXwldB3ICj0DB6qp76bb6Opgi_p6UIC8'
+        options = ClientOptions(httpx_client=httpx.Client(timeout=60.0))
+        options_storage = ClientOptions(httpx_client=httpx.Client(timeout=60.0))
+        self.supabase = create_client(supabase_url, supabase_key, options=options)
+        self.supabase_storage = create_client(supabase_url, supabase_key, options=options_storage)
+        
+
+    def _handle_condition_creation(self) -> None:
+        """
+        Saves condition and material parameters, then navigates to the next page.
+        """
+        ConditionManager.save_condition(self)
+        MaterialParameterManager.manage_parameters_and_interface(self)
+        self.ui.pages.setCurrentIndex(6)
 
 
-
-    def _procedures_on_the_create_conditions_page(self):
-        GetCondition.get_user_conditions(self)
-        import_geometry = GetCondition.manage_inp_files(self)
-        GetParameters.parameter_and_interface_manager(self, import_geometry)
-
-
-    def _save_info_and_start_otimization(self):
-        GetPsoAndSimulation.save_info(self)
+    def _start_optimization(self) -> None:
+        """
+        Validates simulation configuration and starts the optimization process.
+        """
+        SimulationConfiguratorManager.validate_and_save_config(self)
         OtimizationManager(self)

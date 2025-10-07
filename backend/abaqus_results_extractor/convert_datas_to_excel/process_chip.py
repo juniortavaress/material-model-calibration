@@ -1,45 +1,18 @@
 import os
 import logging
-import traceback
-import yaml
-import numpy as np
-import pandas as pd
-from scipy.signal import find_peaks
 import alphashape
+import numpy as np
+from scipy.signal import find_peaks
+
 from shapely.geometry import Polygon, MultiPolygon
 from backend.abaqus_results_extractor.convert_datas_to_excel.chip_datas import ManagerChipDatasAndImage
 
 class ChipProcessor():
-    """
-    Class to process chip geometry data from OBJ files,
-    compute chip thickness statistics, and save results to Excel.
-
-    Attributes:
-        obj_input_dir (str): Directory containing OBJ files organized by simulation folders.
-        output_excel_dir (str): Directory where Excel outputs will be saved.
-        yaml_project_info (str): Path to a YAML file containing project metadata.
-        file_groups (dict): Stores grouped file data during processing.
-        results_summary (dict): Stores computed summary statistics.
-    """
-        
-    def __init__(self, obj_input_dir: str, output_excel_dir: str, yaml_project_info: str, chip_images: str, current_iteration: int):
-        """
-        Initialize ChipProcessor with input/output directories and project info file.
-
-        Args:
-            obj_input_dir (str): Path to the directory containing simulation OBJ folders.
-            output_excel_dir (str): Path where the Excel results will be stored.
-            yaml_project_info (str): Path to the YAML file with project information.
-        """
-
-        self.obj_input_dir = obj_input_dir
-        self.chip_images = chip_images
-        self.output_excel_dir = output_excel_dir
-        self.current_iteration = current_iteration
-        self.yaml_project_info = yaml_project_info
+    def __init__(self, main):
+        self.main = main
         self.file_groups = {}
         self.results_summary = {}
-        
+
         
     def process_file(self, filename: str) -> dict:
         """
@@ -55,26 +28,20 @@ class ChipProcessor():
             dict: A dictionary grouping processed file results.
         """
         create_image_and_datas = True
-        obj_folder = os.path.join(self.obj_input_dir, filename)
+        obj_folder = os.path.join(self.main.obj_path, filename)
  
         for file in os.listdir(obj_folder):
             file_path = os.path.join(obj_folder, file)
-            try:
-                # Get chip parameters
-                base_name = '_'.join(file.split('_')[:-1])    
-                chip_info = self._process_obj_file(file_path, base_name)
-                    
-                self._calculate_results_and_save()
-                
-                # Create and save chip figure and datas
-                if create_image_and_datas and len(chip_info["min_distances"]) > 0 and len(chip_info["peaks"]) > 0 and len(chip_info["valleys"]) > 0 and len(chip_info["sides"]) > 0:
-                    create_image_and_datas = ManagerChipDatasAndImage.get_datas_and_figures(self, base_name, file, chip_info["min_distances"], chip_info["peaks"], chip_info["valleys"], chip_info["sides"], chip_info["points"])
+            base_name = '_'.join(file.split('_')[:-1])    
+            chip_info = self._process_obj_file(file_path, base_name)
 
-                return self.results_summary
+            self._calculate_results_and_save()
             
-            except Exception as e:
-                pass
-            
+            # Create and save chip figure and datas
+            if create_image_and_datas and len(chip_info["min_distances"]) > 0 and len(chip_info["peaks"]) > 0 and len(chip_info["valleys"]) > 0 and len(chip_info["sides"]) > 0:
+                create_image_and_datas = ManagerChipDatasAndImage.get_datas_and_figures(self, base_name, file, chip_info["min_distances"], chip_info["peaks"], chip_info["valleys"], chip_info["sides"], chip_info["points"])
+            return self.results_summary
+
 
     def _process_obj_file(self, file_path: str, base_name: str) -> dict:
         """
@@ -468,46 +435,31 @@ class ChipProcessor():
             Dict[str, Dict[str, Optional[float]]]: Dictionary where keys are base file names 
             and values are dictionaries containing CCR and CSR metrics (which can be None).
         """
-
-        with open(self.yaml_project_info, "r", encoding="utf-8") as file:
-            data = yaml.safe_load(file)
+        response = self.main.supabase.table("conditions").select("*").eq("project_id", self.main.project_id).execute()
+        db_conditions = {}
+        if response.data:
+            for cond in response.data:
+                db_conditions[cond["name"]] = cond
         
         for base_name, group_results in self.file_groups.items():
             cond = base_name.split("_")[1]
 
-            for condition in data.get("05. Conditions", {}).values():
-                if condition["Cutting Properties"]["name"] == cond:
-                    h = int(condition["Cutting Properties"]["deepCuth"])
-                    break  
+            if cond in db_conditions:
+                h = float(db_conditions[cond].get("deepcuth", 0))
 
-            # h = float(f"{base_name.split('h')[1].split('_g')[0]}")
-            means_min = [frame_info[1] for frame_info in group_results]
-            means_max = [frame_info[2] for frame_info in group_results]
+            means_min = [frame_info[1] for frame_info in group_results if frame_info[1] is not None]
+            means_max = [frame_info[2] for frame_info in group_results if frame_info[2] is not None]
 
-        # If no value is found, set the averages to 0 to avoid generating an error.
-        if means_max and means_min and np.mean(means_min) != 0:
-            CCR = np.mean(means_max)/h
-            CSR = np.mean(means_max)/np.mean(means_min)
-        elif means_max and (not means_min or np.mean(means_min)) != 0:
-            CCR = np.mean(means_max)/h
-            CSR = None
-        else:
-            CCR = None
-            CSR = None
+            # If no value is found, set the averages to 0 to avoid generating an error.
+            if means_max and means_min and np.mean(means_min) != 0:
+                CCR = np.mean(means_max)/h
+                CSR = np.mean(means_max)/np.mean(means_min)
+            elif means_max and (not means_min or np.mean(means_min)) != 0:
+                CCR = np.mean(means_max)/h
+                CSR = 1
+            else:
+                CCR = 1
+                CSR = 1
 
-        self.results_summary[base_name] = {"Chip Compression Ratio (CCR)": CCR, "Chip Segmentatio Ratio (CSR)": CSR}
-
-
-if __name__ == "__main__":
-    obj_default_path = r"output_files/obj"
-    graph_folder = r"output_files/img"
-    odb_processing = r"output_files/odb"
-    yaml_project_info = r"input_files\info.yaml"
-    chip_images = r"output_files\img"
-
-    processor = ChipProcessor(obj_default_path, graph_folder, yaml_project_info, chip_images)
-    for file in os.listdir(odb_processing):
-        filename = file[:-4]
-        result_summary = processor.process_file(filename)
-       
+            self.results_summary[base_name] = {"Chip Compression Ratio (CCR)": CCR, "Chip Segmentatio Ratio (CSR)": CSR}
 

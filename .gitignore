@@ -4,3 +4,6 @@
 *.cid
 *.lck
 *.stt
+*.autosave
+*.TMP
+*~RF*
