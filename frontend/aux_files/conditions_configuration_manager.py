@@ -1,4 +1,5 @@
 import os 
+import logging
 from typing import Optional
 from PySide6.QtWidgets import QFileDialog
 
@@ -60,7 +61,7 @@ class ConditionManager:
         if inp_path:
             try:
                 if not os.path.isfile(inp_path):
-                    print(f"❌ File not found: {inp_path}")
+                    logging.error(f"File not found: {inp_path}")
                     return None
 
                 with open(inp_path, "rb") as file:
@@ -71,14 +72,14 @@ class ConditionManager:
 
                 upload_response = self.supabase_storage.storage.from_(bucket_name).update(storage_path, file_data)
                 if hasattr(upload_response, "error") and upload_response.error:
-                    print(f"❌ Upload error: {upload_response.error.message}")
+                    logging.error(f"Upload error: {upload_response.error.message}")
                     return None
 
                 public_url = self.supabase_storage.storage.from_(bucket_name).get_public_url(storage_path)
                 return public_url
 
-            except Exception as error:
-                print(f"❌ Unexpected error: {error}")
+            except Exception as e:
+                logging.exception(f"Unexpected error during file upload: {e}")
                 return None
 
 

@@ -1,0 +1,88 @@
+
+
+
+--- STEP 01 ---
+
+
+
+--- STEP 02 ---
+
+
+
+--- STEP 03 ---
+--- Starting _process_simulation_outputs ---
+ODB: C:/MaterialOtimization\Optimization1007\simulation_folder\sim_cond02_it_09_set_03\sim_cond02_it_09_set_03.odb
+Iteration tag: it_09
+Processing forces...
+Processing chip geometry...
+Calling ResultsManager.store_simulation_results...
+
+
+
+--- STEP FINAL ---
+
+
+
+--- STEP 01 ---
+
+
+
+--- STEP 02 ---
+
+
+
+--- STEP 03 ---
+--- Starting _process_simulation_outputs ---
+ODB: C:/MaterialOtimization\Optimization1007\simulation_folder\sim_cond02_it_09_set_03\sim_cond02_it_09_set_03.odb
+Iteration tag: it_09
+Processing forces...
+Processing chip geometry...
+Calling ResultsManager.store_simulation_results...
+
+
+
+--- STEP FINAL ---
+
+
+
+--- STEP 01 ---
+
+
+
+--- STEP 02 ---
+
+
+
+--- STEP 03 ---
+--- Starting _process_simulation_outputs ---
+ODB: C:/MaterialOtimization\Optimization1007\simulation_folder\sim_cond01_it_09_set_03\sim_cond01_it_09_set_03.odb
+Iteration tag: it_09
+Processing forces...
+Processing chip geometry...
+Calling ResultsManager.store_simulation_results...
+
+
+
+--- STEP FINAL ---
+
+
+
+--- STEP 01 ---
+
+
+
+--- STEP 02 ---
+
+
+
+--- STEP 03 ---
+--- Starting _process_simulation_outputs ---
+ODB: C:/MaterialOtimization\Optimization1007\simulation_folder\sim_cond01_it_09_set_03\sim_cond01_it_09_set_03.odb
+Iteration tag: it_09
+Processing forces...
+Processing chip geometry...
+Calling ResultsManager.store_simulation_results...
+
+
+
+--- STEP FINAL ---

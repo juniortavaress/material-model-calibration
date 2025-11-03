@@ -1,4 +1,4 @@
-import sys
+import sys 
 sys.dont_write_bytecode = True
 from PySide6.QtWidgets import QApplication, QMainWindow
 from frontend.interface.ui_form import Ui_MainWindow

@@ -1,4 +1,6 @@
 import os 
+import logging
+import traceback
 import matplotlib
 import numpy as np
 import pandas as pd 
@@ -93,9 +95,9 @@ class ManagerChipDatasAndImage():
                 save_path = os.path.join(folder, os.path.basename(file_path)[-11:].replace('.obj', graph_name))
                 plt.savefig(save_path)
                 plt.close()  
-            except:
-                pass
-                # print("Nao foi possivel criar o grafico")
+            except Exception as e:
+                logging.error(f"❌ Falha ao criar gráfico '{graph_name}' para o arquivo '{file_path}': {e}")
+                logging.error("🔍 Traceback:\n%s", traceback.format_exc())
 
 
     def plot_trickness_profile(self, min_distances, peaks, valleys):

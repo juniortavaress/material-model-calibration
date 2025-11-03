@@ -16,6 +16,7 @@ class PsoSetup:
                     global_best_position, global_best_score, global_best_scores_history).
         """
         PsoSetup.get_initial_values(self)
+
         lb, ub, num_dimensions = PsoSetup.get_boundry(self)
     
         if self.main.reload:
@@ -50,11 +51,15 @@ class PsoSetup:
         if param_response.data:
             for param in param_response.data:
                 name = param["name"]
-                self.parameters_boundry[name] = {
-                    "min_value": param.get("min_value", None),
-                    "max_value": param.get("max_value", None)
-                }
+                min_val = param.get("min_value")
+                max_val = param.get("max_value")
 
+                if min_val is not None and max_val is not None:
+                    self.parameters_boundry[name] = {
+                        "min_value": min_val,
+                        "max_value": max_val
+                    }
+                    
         # Extract PSO and simulation settings
         sim_response = self.main.supabase.table("project_simulation").select("*").eq("project_id", self.main.project_id).execute()
 
@@ -136,23 +141,17 @@ class PsoSetup:
 
         Returns:
             tuple: Initial PSO state
-        """
-        objective_function_pso = lambda params: ObjectiveFunction.objective_function(self, params)
-        
+        """        
         try:
             # Initialize positions and velocities of the particles
             positions = np.round(np.random.uniform(low=lb, high=ub, size=(self.number_of_particles, num_dimensions)), 4).tolist()
             velocities = np.random.uniform(low=-1, high=1, size=(self.number_of_particles, num_dimensions)).tolist()
-            
+
             PostPso.save_position_velocity(self, self.number_of_particles, positions, velocities)
             
             # Initialize the best positions and scores
             personal_best_positions = [list(pos) for pos in positions]
-            personal_best_scores = objective_function_pso(positions)
-
-            print("positions:", len(positions))
-            print("scores:", len(personal_best_scores))
-            print("personal_best_positions:", len(personal_best_positions))
+            personal_best_scores = ObjectiveFunction.objective_function(self)
 
             global_best_position = personal_best_positions[np.argmin(personal_best_scores)]
             global_best_score = min(personal_best_scores)
@@ -164,9 +163,20 @@ class PsoSetup:
             return velocities, positions, personal_best_positions, personal_best_scores, global_best_position, global_best_score, global_best_scores_history
         
         except Exception as e:
+            import traceback
             self.e = e
             self.main.error_tracking = True
+            
+            # Imprime o erro completo
+            print("\n❌ Erro durante 'initial_parameters_pso':")
+            print(f"Tipo: {type(e).__name__}")
+            print(f"Mensagem: {e}")
+            print("Traceback completo:")
+            print(traceback.format_exc())
+            
+            # Mantém o tratamento de erro existente
             AuxClass._handle_exception(self, e, "Error at def initial_parameters_pso")
+            
+            # Retorna valores padrão para não quebrar o fluxo
             return [], [], [], [], None, None, []
-
 

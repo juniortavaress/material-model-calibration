@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import logging 
 import numpy as np
 from typing import List, Tuple
 from backend.config.aux_functions import AuxClass
@@ -26,7 +27,7 @@ class PsoManager:
             ub (list): Upper bounds for each parameter.
             num_dimensions (int): Dimensionality of the problem space.
         """
-        objective_function_pso = lambda params: ObjectiveFunction.objective_function(self, params)
+        objective_function_pso = lambda: ObjectiveFunction.objective_function(self)
         PsoManager.pso_iterations(self, objective_function_pso, lb, ub, velocities, positions, personal_best_positions, personal_best_scores, global_best_position, global_best_score, global_best_scores_history)
         
 
@@ -72,7 +73,7 @@ class PsoManager:
                     pass
 
                 # Evaluate the objective function for the current positions
-                score = objective_function_pso(positions)
+                score = objective_function_pso()
                 self.main.iteration_in_progress = False
 
                 # Update personal best positions and scores
@@ -87,7 +88,7 @@ class PsoManager:
 
                 # Check stopping criteria
                 if global_best_score < minfunc:
-                    print(f"Stopping criterion met at iteration {iteration+1}")
+                    logging.info(f"Stopping criterion met at iteration {iteration + 1}")
                     break              
                 
                 # Attempt conversion for serialization
@@ -95,7 +96,7 @@ class PsoManager:
                     velocities = [v.tolist() for v in velocities]  
                     positions = [p.tolist() for p in positions]
                 except Exception as e:
-                    print(f"[Conversion Error] Failed to convert velocities or positions to list: {e}")
+                    logging.error(f"Failed to convert velocities or positions to list: {e}")
 
                 PostPso.save_best_results(self, personal_best_positions, personal_best_scores, global_best_position, global_best_score, global_best_scores_history)
                 PostPso.last_iteration_info(self, velocities, positions)

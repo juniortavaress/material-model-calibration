@@ -35,10 +35,13 @@ class ChipProcessor():
             base_name = '_'.join(file.split('_')[:-1])    
             chip_info = self._process_obj_file(file_path, base_name)
 
-            self._calculate_results_and_save()
+            if chip_info == {}:
+                self.results_summary[base_name] = {"Chip Compression Ratio (CCR)": 1, "Chip Segmentatio Ratio (CSR)": 1}
+            else:
+                self._calculate_results_and_save()
             
             # Create and save chip figure and datas
-            if create_image_and_datas and len(chip_info["min_distances"]) > 0 and len(chip_info["peaks"]) > 0 and len(chip_info["valleys"]) > 0 and len(chip_info["sides"]) > 0:
+            if create_image_and_datas and len(chip_info.get("min_distances", [])) > 0 and len(chip_info.get("peaks", [])) > 0 and len(chip_info.get("valleys", [])) > 0 and len(chip_info.get("sides", [])) > 0:
                 create_image_and_datas = ManagerChipDatasAndImage.get_datas_and_figures(self, base_name, file, chip_info["min_distances"], chip_info["peaks"], chip_info["valleys"], chip_info["sides"], chip_info["points"])
             return self.results_summary
 
@@ -77,7 +80,8 @@ class ChipProcessor():
         alpha_shape = self._find_valid_alphashape(points)
 
         if alpha_shape is None or alpha_shape.is_empty:
-            raise ValueError("AlphaShape is empty or invalid.")
+            logging.error("Pontos inválidos ou insuficientes no arquivo: %s", file_path)
+            return {} 
     
         # STEP 3 
         contour_points, ymin, ymax = self._sort_contour_points(alpha_shape)

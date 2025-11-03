@@ -1,4 +1,6 @@
 import os 
+import logging 
+import traceback
 import alphashape
 import matplotlib
 import numpy as np
@@ -6,7 +8,7 @@ import pandas as pd
 from PySide6.QtGui import QPixmap
 from shapely.geometry import Polygon
 from matplotlib.figure import Figure
-from PySide6.QtWidgets import QFileDialog
+from PySide6.QtWidgets import QFileDialog, QMessageBox
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 
 
@@ -21,6 +23,8 @@ class ResultsPlotManager():
         Args:
             figure (Figure | None): Optional Matplotlib figure. If None, a new figure is created.
         """
+
+        pass
         if figure is None:
             return
         
@@ -36,6 +40,7 @@ class ResultsPlotManager():
             for i in reversed(range(layout.count())):
                 widget = layout.itemAt(i).widget()
                 if widget is not None:
+                    widget.setParent(None)
                     widget.deleteLater()
             layout.addWidget(canvas)
 
@@ -44,7 +49,19 @@ class ResultsPlotManager():
         canvas.draw()
 
 
-    def graphs_manager(self) -> None:
+    def _clear_canvas(self) -> None:
+        """
+        Clears the Matplotlib canvas from the UI.
+        """
+        layout = self.ui.frame_results_graph.layout()
+        if layout is not None:
+            for i in reversed(range(layout.count())):
+                widget = layout.itemAt(i).widget()
+                if widget is not None:
+                    widget.deleteLater()
+
+
+    def graphs_manager(self, type) -> None:
         """
         Manages the generation of different types of graphs based on the selected file and analysis type.
 
@@ -60,30 +77,26 @@ class ResultsPlotManager():
         filename = self.ui.combobox_file.currentText()
 
         try:
-            if type == "Convergence Analysis" and self.current_opt >= 2:
-                # self.ui.combobox_file.setEnabled(False)
-                # self.ui.combobox_file.setCurrentIndex(0)
-                ResultsPlotManager.plot_convergence_analysis(self)
+            if type == "Convergence Analysis":
+                if self.current_opt > 2:
+                    ResultsPlotManager.plot_convergence_analysis(self)
+                else:
+                    ResultsPlotManager._clear_canvas(self)
+                    QMessageBox.warning(self, "Convergence Analysis", "Not enough iterations to plot a convergence graph.")
+                    return
             else:
-                # self.ui.combobox_file.setEnabled(True)
-                if self.ui.combobox_file.currentIndex() == 0:
-                    self.ui.combobox_file.setCurrentIndex(1)
-
-            filename = self.ui.combobox_file.currentText()
-            ResultsPlotManager.get_interface_value(self, filename)
-                   
-            if type == "Forces" and filename != "":
-                print(" \n\n Forces")
-                ResultsPlotManager.plot_force_graphs(self, filename)
-            elif type == "Chip Format" and filename != "":
-                ResultsPlotManager.plot_chip(self, filename)
+                filename = self.ui.combobox_file.currentText()
+                ResultsPlotManager.get_interface_value(self, filename)
+                    
+                if type == "Forces" and filename != "":
+                    ResultsPlotManager.plot_force_graphs(self, filename)
+                elif type == "Chip Format" and filename != "":
+                    ResultsPlotManager.plot_chip(self, filename)
+                else:
+                    ResultsPlotManager._clear_canvas(self)
 
         except Exception as e:
-            import traceback
-            print("❌ Error generating graph:")
-            print(traceback.format_exc()) 
-            # figure = Figure(figsize=(12, 8))
-            # ResultsPlotManager.canvas(self, figure)
+            logging.exception("Error generating graph")
 
 
     def get_interface_value(self, filename: str) -> None:
@@ -125,7 +138,6 @@ class ResultsPlotManager():
             project_id (str): Project identifier.
             filename (str): Simulation filename.
         """
-        print("TA AQUIII", filename)
         response = self.supabase.table("simulation_forces_results")\
             .select("time", "cutting_force", "normal_force")\
             .eq("project_id", self.project_id)\
@@ -133,14 +145,15 @@ class ResultsPlotManager():
             .execute()
             
         if not response.data or len(response.data) == 0:
-            print(f"❌ No data found for '{filename}' in project {self.project_id}")
+            logging.error(f"No data found for '{filename}' in project {self.project_id}")
+            ResultsPlotManager._clear_canvas(self)
+            QMessageBox.warning(self, "Data Not Found", f"No force data was found for '{filename}'. An error might have occurred during the simulation.")
             return
 
         data = response.data[0]
         time = data["time"]
         cutting = data["cutting_force"]
         normal = data["normal_force"]
-
 
         figure = Figure(figsize=(12, 8))
         ax = figure.add_subplot(111)
@@ -171,7 +184,9 @@ class ResultsPlotManager():
             .execute()
             
         if not response.data or len(response.data) == 0:
-            print(f"❌ No data found for '{filename}' in project {self.project_id}")
+            logging.error(f"No data found for '{filename}' in project {self.project_id}")
+            ResultsPlotManager._clear_canvas(self)
+            QMessageBox.warning(self, "Data Not Found", f"No data was found for '{filename}'. An error might have occurred during the simulation.")
             return
 
         data = response.data[0]
@@ -187,6 +202,10 @@ class ResultsPlotManager():
             x, y = hull.exterior.xy
             ax.fill(x, y, color="blue", alpha=0.5, label="Corpo sólido")
             ax.plot(x, y, 'b-', linewidth=2)
+        else:
+            logging.warning(f"⚠️ Hull for '{filename}' is not a valid Polygon. Check alpha or input points.")
+            QMessageBox.warning(self, "Invalid Geometry", f"Could not generate a valid chip geometry for '{filename}'. Displaying raw points instead.")
+            ax.scatter(x, y, color="red", s=5, label="Raw points")
 
         ax.set_xlabel("X")
         ax.set_ylabel("Y")
@@ -213,9 +232,9 @@ class ResultsPlotManager():
             .execute()
 
         if not response.data or len(response.data) == 0:
-            print(f"❌ Nenhum dado encontrado na tabela 'results' para o projeto {self.project_id}")
+            logging.error(f"No data found in table 'results' for project {self.project_id}")
             return
-        
+                
         number_of_particles = len(set(item["parameter_set"] for item in response.data if "parameter_set" in item))
         df = pd.DataFrame(response.data)
         grouped = df.groupby(["iteration_number", "parameter_set"])
@@ -259,15 +278,19 @@ class ResultsPlotManager():
 
         for set_num in range(1, number_of_particles + 1):
             if set_num in lines['error']:
-                y = lines['error'][set_num]
+                y_raw = lines['error'][set_num]
+                y = [val for val in y_raw if not np.isnan(val)]
                 x = np.arange(1, len(y) + 1)
-                line = ax.plot(x, y, label=f"Set-{set_num:02d}")
-                color = line[0].get_color()
+
+                print(f"📊 Set-{set_num:02d} → {len(y)} pontos válidos: {y}")
 
                 if len(y) >= 2:
                     coef = np.polyfit(x, y, 1)
                     trendline = np.polyval(coef, x)
-                    ax.plot(x, trendline, linestyle='--', color=color, label=f"Set-{set_num:02d} (trendline)")
+                    ax.plot(x, y, label=f"Set-{set_num:02d}")
+                    ax.plot(x, trendline, linestyle='--', color=ax.lines[-1].get_color(), label=f"Set-{set_num:02d} (trendline)")
+                else:
+                    print(f"⚠️ Trendline ignorada para Set-{set_num:02d} — apenas {len(y)} ponto(s) válido(s)")
 
         all_y_values = [val for values in lines['error'].values() for val in values]
         max_y = max(all_y_values) if all_y_values else 1.0  # fallback seguro
@@ -302,7 +325,7 @@ class ResultsPlotManager():
 
 
 
-    def _update_tracking_view(self):
+    def update_tracking_view(self):
         """
         Updates the UI based on the selected tracking or graph view.
         """
@@ -330,7 +353,7 @@ class ResultsPlotManager():
             self.ui.label_code_status.setText("")
             self.ui.frame_tracking.hide()
             self.ui.frame_results_graph.show()
-            ResultsPlotManager.canvas(self)
+            # ResultsPlotManager.canvas(self)
             self.ui.frame_graph_analysis.show()
             self.ui.pushButton_extract_data.show()
             self.ui.pushButton_extract_graph.show()
@@ -339,3 +362,26 @@ class ResultsPlotManager():
             self.ui.frame_forces_and_chip.hide()
         elif self.ui.combobox_tracking_graph.currentText() == "Graphs":
             self.ui.frame_forces_and_chip.show()
+
+
+
+    def filter_files_by_iteration(self):
+        selected_iteration = str(self.ui.combobox_iteration.currentText()).zfill(2)
+        
+        graph_datas = self.supabase.table("simulation_forces_results").select("filename").eq("project_id", self.project_id).execute()
+        self.ui.combobox_file.clear()
+
+        if graph_datas.data and len(graph_datas.data) > 0:
+            filtered_files = [item["filename"] for item in graph_datas.data if f"_it_{selected_iteration}_" in item["filename"]]
+
+            def sort_key(name):
+                parts = name.split("_")
+                cond_num = int(parts[0].replace("cond", ""))
+                set_num = int(parts[4])
+                return (cond_num, set_num)
+
+            filtered_files.sort(key=sort_key)
+            
+            self.ui.combobox_file.addItems(filtered_files)
+            if filtered_files:
+                self.ui.combobox_file.setCurrentIndex(0)

@@ -23,6 +23,17 @@ class ButtonsCallback:
         self.main_cp = False
         ButtonsCallback._initialize_state(self)
         SoftwareConfig.software_setup(self)
+        
+        
+        try:
+            self.ui.combobox_analysis_type.insertItem(0, "Convergence Analysis")
+            self.ui.combobox_analysis_type.removeItem(self.ui.combobox_analysis_type.findText("None"))
+            self.ui.combobox_file.removeItem(self.ui.combobox_file.findText("None"))
+            self.ui.combobox_iteration.removeItem(self.ui.combobox_iteration.findText("None"))
+            self.ui.combobox_iteration.addItem("01")
+            self.ui.combobox_iteration.addItem("02")
+        except:
+            pass
 
         # Page 01 - Project Setup
         self.ui.button_login_next_page.clicked.connect(lambda: ButtonsCallback._handle_project_setup(self))
@@ -33,10 +44,12 @@ class ButtonsCallback:
         # Page 10 - Results Visualizaer
         self.ui.pushButton_extract_graph.clicked.connect(lambda: ResultsPlotManager.extract_otimization_info(self, 'graph'))
         self.ui.pushButton_extract_data.clicked.connect(lambda: ResultsPlotManager.extract_otimization_info(self, 'data'))
-        self.ui.combobox_file.currentIndexChanged.connect(lambda: ResultsPlotManager.graphs_manager(self))
-        self.ui.combobox_analysis_type.currentIndexChanged.connect(lambda: ResultsPlotManager.graphs_manager(self))
-        self.ui.combobox_tracking_graph.currentIndexChanged.connect(lambda: ResultsPlotManager._update_tracking_view(self))
-        self.ui.combobox_analysis_type.currentIndexChanged.connect(lambda: ResultsPlotManager._update_tracking_view(self))
+        self.ui.combobox_file.currentIndexChanged.connect(lambda: ResultsPlotManager.graphs_manager(self, '01'))
+        self.ui.combobox_analysis_type.currentIndexChanged.connect(lambda: ResultsPlotManager.graphs_manager(self, '02'))
+
+        self.ui.combobox_tracking_graph.currentIndexChanged.connect(lambda: ResultsPlotManager.update_tracking_view(self))
+        self.ui.combobox_analysis_type.currentIndexChanged.connect(lambda: ResultsPlotManager.update_tracking_view(self))
+        self.ui.combobox_iteration.currentIndexChanged.connect(lambda: ResultsPlotManager.filter_files_by_iteration(self))
 
 
     def _handle_project_setup(self) -> None:
@@ -44,15 +57,15 @@ class ButtonsCallback:
         Handles project setup and activates the appropriate button set.
         """
         SoftwareConfig.project_setup(self)
-        ResultsPlotManager._update_tracking_view(self)
+        ResultsPlotManager.update_tracking_view(self)
         ButtonsCallback._activate_main_buttons(self) if self.main_cp else ButtonsCallback._activate_aux_buttons(self)
+        #self.ui.pages.setCurrentIndex(1)
             
             
     def _activate_main_buttons(self) -> None:
         """
         Connects buttons for the main workflow.
         """
-        print('main')
         # Page 02 - Abaqus Path
         self.ui.button_settings_next_page.clicked.connect(lambda: SoftwareConfig.get_results_and_abaqus_folders(self, None))
 
@@ -108,8 +121,8 @@ class ButtonsCallback:
         self.error_tracking = False
         self.current_opt = 1
 
-        self.ui.lineEdit_password.setText('1006')
-        self.ui.lineEdit_project_name.setText('Optimization1006')
+        self.ui.lineEdit_password.setText('1007')
+        self.ui.lineEdit_project_name.setText('Optimization1007')
 
         self.ui.frame_plastic.hide()
         self.ui.frame_damage.hide()
@@ -121,6 +134,7 @@ class ButtonsCallback:
         options_storage = ClientOptions(httpx_client=httpx.Client(timeout=60.0))
         self.supabase = create_client(supabase_url, supabase_key, options=options)
         self.supabase_storage = create_client(supabase_url, supabase_key, options=options_storage)
+
         
 
     def _handle_condition_creation(self) -> None:

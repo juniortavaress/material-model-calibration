@@ -1,8 +1,4 @@
-import os
 import numpy as np
-import pandas as pd
-from frontend.aux_files.tracking_message_manager import ProcessStatusLogger
-
 
 class PostPso:
     @staticmethod
@@ -16,7 +12,6 @@ class PostPso:
 
 
     def save_position_velocity(self, num_particles, positions, velocities):
-
         for i in range(num_particles):
             set_number = i + 1
 
@@ -26,7 +21,6 @@ class PostPso:
                 param_value = positions[i][j]
                 param_value = param_value.item() if isinstance(param_value, np.generic) else param_value
                 db_field = f"parameter_{param_name}"  # Ex: 'A' -> 'parameter_a'
-                # print('db_field', db_field)
                 param_values[db_field] = param_value
 
             response = self.main.supabase.table("conditions").select("*").eq("project_id", self.main.project_id).execute()

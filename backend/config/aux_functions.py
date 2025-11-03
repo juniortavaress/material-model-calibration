@@ -1,6 +1,7 @@
 import os
 import time
 import shutil
+import logging
 import traceback
 from frontend.aux_files.tracking_message_manager import ProcessStatusLogger
 
@@ -18,7 +19,7 @@ class AuxClass():
         self.stage = stage
         ProcessStatusLogger.set_log_to_ui(self, "message-error")
         error_message = traceback.format_exc()
-        print(f"\n❌ Error during stage '{stage}':\n{error_message}")
+        logging.error(f"\n\n =========== ❌ Error during stage '{stage}':\n{error_message} =========== \n\n")
 
 
     def finish_otimization(self) -> None:

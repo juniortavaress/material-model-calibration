@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 import os
 import sys
+import shutil
+import logging
 import platform
+import traceback
 from datetime import datetime
 from collections import defaultdict
 from PySide6.QtWidgets import QFileDialog, QMessageBox
 
+from frontend.aux_files.results_plot_manager import ResultsPlotManager
 from frontend.aux_files.output_configuration_manager import OutputConfigurationManager
 from frontend.aux_files.simulation_configuration_manager import SimulationConfiguratorManager
 from backend.optimization.aux_files.thread_manager import WorkerThread
@@ -30,9 +34,6 @@ class SoftwareConfig():
         - Loads Abaqus executable path if already registered in the database.
         """        
         self.pc_id = platform.node()
-        print("Computer:", self.pc_id)
-        # self.pc_id = "4TH-PRE3660-111"
-
         response = self.supabase.table("abaqus_paths").select("*").eq("pc_id", self.pc_id).execute()
         if response.data and len(response.data) > 0:
             self.abaqus_path = response.data[0]['abaqus_path']
@@ -97,6 +98,12 @@ class SoftwareConfig():
             if project_password == self.project["password"]:
                 self.project_id = self.project["id"]
                 
+                if self.project["id_main_computer"] in (None, ""):
+                    self.supabase.table("projects").update({
+                        "id_main_computer": self.pc_id
+                    }).eq("id", self.project_id).execute()
+                    self.project["id_main_computer"] = self.pc_id 
+                
                 if self.project["id_main_computer"] == self.pc_id:
                     self.main_cp = True
                     QMessageBox.information(self, "Success", "Project loaded successfully!\nRunning as MAIN computer")
@@ -122,6 +129,7 @@ class SoftwareConfig():
             
             if insert_response.data:
                 self.project_id = insert_response.data[0]["id"]
+                self.main_cp = True
                 QMessageBox.information(self, "Success", "Project created successfully!")
                 self.ui.pages.setCurrentIndex(1)
 
@@ -144,7 +152,12 @@ class SoftwareConfig():
         if current_opt_datas.data and len(current_opt_datas.data) > 0:
             self.current_opt = current_opt_datas.data[0].get("iteration", 1)
             
-        SoftwareConfig._load_graphs(self, self.project)
+        self.ui.combobox_iteration.clear()
+        for i in range(1, self.current_opt + 1):
+            iter_str = str(i).zfill(2)  
+            self.ui.combobox_iteration.addItem(iter_str)
+
+        ResultsPlotManager.filter_files_by_iteration(self)
         
         
     def start_aux_optimization(self):
@@ -153,7 +166,8 @@ class SoftwareConfig():
             self.thread = WorkerThread(lambda: SoftwareConfig.manage_simulation(self), name="PsoThread")
             self.thread.start()
         except Exception as e:
-            print("Erro")
+            logging.error(f"❌ Error while starting auxiliary optimization: {str(e)}")
+            logging.debug("🔍 Traceback:\n%s", traceback.format_exc())
        
 
     def manage_simulation(self) -> None:
@@ -167,7 +181,8 @@ class SoftwareConfig():
             self.sim_thread = ParallelSimulation(self, self.cores_by_simulation, cp_id)
             self.sim_thread.run_all_simulations()
         except Exception as e:
-            print(f"Simulation management error: {e}")
+            logging.error(f"❌ Simulation management error: {str(e)}")
+            logging.debug("🔍 Traceback:\n%s", traceback.format_exc())
 
 
     def _load_outputs(self, project) -> None:
@@ -263,25 +278,16 @@ class SoftwareConfig():
             # self.ui.pages.setCurrentIndex(9)
 
 
-    def _load_graphs(self, project):
-        graph_datas = self.supabase.table("simulation_forces_results").select("*").eq("project_id", project["id"]).execute()
-        if graph_datas.data and len(graph_datas.data) > 0:
-            [self.ui.combobox_file.addItems([item["filename"]]) for item in graph_datas.data]
-            self.ui.combobox_file.setCurrentIndex(1)
+    def _load_iterations(self, project):
+        current_opt_datas = self.supabase.table("current_optimization_data").select("*").eq("project_id", project["id"]).execute()
+        if current_opt_datas.data and len(current_opt_datas.data) > 0:
+            current_opt = current_opt_datas.data[0].get("iteration", 1)
 
-        iterations = defaultdict(list)
-        completed_iteration = self.supabase.table("results").select("iteration_number, error").eq("project_id", self.project_id).execute()
-        for row in completed_iteration.data:
-            iter_number = row.get("iteration_number")
-            error = row.get("error")
-            iterations[iter_number].append(error)
-
-        valid_iterations = len([i for i, errors in iterations.items() if all(e is not None for e in errors)])
-        if valid_iterations >= 2:
-            self.ui.combobox_analysis_type.insertItem(0, "Convergence Analysis")
-            self.ui.combobox_analysis_type.setCurrentIndex(0)
-            self.ui.combobox_file.setCurrentIndex(0)
-
+        self.ui.combobox_iteration.clear()
+        for i in range(1, current_opt + 1):
+            iter_str = str(i).zfill(2)  
+            self.ui.combobox_iteration.addItem(iter_str)
+            
 
     def _check_optimization_status(self, project) -> None:
         current_opt_datas = self.supabase.table("current_optimization_data").select("*").eq("project_id", project["id"]).execute()
@@ -289,34 +295,54 @@ class SoftwareConfig():
             self.current_opt = current_opt_datas.data[0]["iteration"]
             
             if self.current_opt == self.total_iterations:
-                print('Optimization already finished.')
+                logging.info("✅ Optimization already finished.")
                 self.process_finished = True
                 self.ui.button_result_back.setEnabled(False)
                 self.ui.pages.setCurrentIndex(10)
 
             elif self.current_opt < self.total_iterations and self.current_opt > 1:
-                print('Reloading last optimization state...')
+                logging.info("🔄 Reloading last optimization state...")
                 self.reload = True
+                print(self.current_opt)
+                iteration_exists = (self.supabase.table("results").select("id").eq("project_id", project["id"]).eq("iteration_number", self.current_opt).limit(1).execute())
 
-                optimization_status = self.supabase.table("results").select("*").eq("project_id", project["id"]).eq("iteration_number", self.current_opt).execute()
-                if optimization_status.data and len(optimization_status.data) > 0:
-                    opt_data = optimization_status.data
+                if iteration_exists.data and len(iteration_exists.data) > 0:
+                    opt_data = iteration_exists.data
 
                     all_errors_filled = all(item.get("error") is not None for item in opt_data)
                     self.iteration_in_progress = False if all_errors_filled else True
 
                     if self.iteration_in_progress:
-                        print('Continuing Otimization Manager')
-                        OtimizationManager(self)
-                        self.ui.pages.setCurrentIndex(10)
+                        logging.info("▶️ Continuing Optimization Manager...")
                     else:
                         self.current_opt += 1
-                        print('Restarting Otimization Manager')
-                        OtimizationManager(self)
-                        self.ui.pages.setCurrentIndex(10)
+                        logging.info("🔁 Restarting Optimization Manager...")
+                    OtimizationManager(self)
+                    self.ui.pages.setCurrentIndex(10)
+                else:
+                    print("kjdkjfk")
+                    self.iteration_in_progress = False
+                    OtimizationManager(self)
+            else:
+                self.supabase.table("results").delete().eq("project_id", project["id"]).execute()
+                
+                if not os.path.exists(self.project_folder):
+                    logging.warning(f"⚠️ Project folder '{self.project_folder}' does not exist.")
+                    return
 
-            print('Current Opt:', self.current_opt)
-            print('self.reload:', self.reload)
+                for item in os.listdir(self.project_folder):
+                    item_path = os.path.join(self.project_folder, item)
+                    try:
+                        if os.path.isfile(item_path) or os.path.islink(item_path):
+                            os.remove(item_path)
+                        elif os.path.isdir(item_path):
+                            shutil.rmtree(item_path)
+                    except Exception as e:
+                        logging.error(f"❌ Failed to delete '{item_path}': {e}")
+                SoftwareConfig.set_user_config_path(self)
+
+            logging.info(f"📊 Current iteration: {self.current_opt}")
+            logging.info(f"🔁 Reload flag: {self.reload}")
 
 
     def _load_saved_datas(self, project) -> None:
@@ -326,18 +352,21 @@ class SoftwareConfig():
         self.ui.pages.setCurrentIndex(1)
         SoftwareConfig.set_user_config_path(self)
 
-        SoftwareConfig._load_outputs(self, project)
-        SoftwareConfig._load_conditions(self, project)
-        SoftwareConfig._load_parameters(self, project)
-        SoftwareConfig._load_simulation(self, project)
-        
-        SoftwareConfig._load_graphs(self, project)
-        SoftwareConfig._check_optimization_status(self, project)
-        # self.ui.pages.setCurrentIndex(1)
+        try:
+            SoftwareConfig._load_outputs(self, project)
+            SoftwareConfig._load_conditions(self, project)
+            SoftwareConfig._load_parameters(self, project)
+            SoftwareConfig._load_simulation(self, project)
+            SoftwareConfig._load_iterations(self, project)
+            
+            ResultsPlotManager.filter_files_by_iteration(self)
+            SoftwareConfig._check_optimization_status(self, project)
+            # self.ui.pages.setCurrentIndex(1)
+        except:
+            pass
         
 
-
-    def get_results_and_abaqus_folders(self, type: str, call) -> None:
+    def get_results_and_abaqus_folders(self, type: str) -> None:
         """
         Opens a dialog for the user to select the Abaqus executable or result directory.
 
@@ -350,7 +379,6 @@ class SoftwareConfig():
                 self.ui.label_abaqus.setText(self.abaqus_path)
                 existing = self.supabase.table("abaqus_paths").select("*").eq("pc_id", self.pc_id).execute().data
                 if existing:
-                    print('existe')
                     self.supabase.table("abaqus_paths").update({
                     "abaqus_path": self.abaqus_path
                 }).eq("pc_id", self.pc_id).execute()
@@ -372,13 +400,18 @@ class SoftwareConfig():
                 self.ui.pages.setCurrentIndex(2)
                 
 
-
     def set_user_config_path(self) -> None:
         """
         Creates all necessary subfolders in the project directories.
         Also defines the paths used throughout the project and saves them if needed.
         """
-        self.scripts_path = os.path.join(os.getcwd(), "backend", "abaqus_results_extractor", "extract_results_from_odb")   
+        if getattr(sys, 'frozen', False):
+            base_path = sys._MEIPASS
+        else:
+            base_path = os.getcwd()
+
+        self.scripts_path = os.path.join(base_path, "backend", "abaqus_results_extractor", "extract_results_from_odb")
+
         drive = os.getenv("SystemDrive", "C:")
         if not drive.endswith("\\") and not drive.endswith("/"):
             drive += "/"
@@ -395,6 +428,12 @@ class SoftwareConfig():
         self.obj_path = os.path.join(self.project_folder, "raw_datas", "objFiles")
         self.json_default_path = os.path.join(self.project_folder, "raw_datas", "jsonFiles")
         
+        os.makedirs(os.path.join(self.log_files, "general_logs"), exist_ok=True)
+        self.general_log_folder = os.path.join(self.log_files, "general_logs", "log.txt")
+        
+        logging.basicConfig(filename=self.general_log_folder, level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s", filemode="w")
+        logging.info("===== Log geral iniciado. =====")
+
         folders_result = [self.chip_images, self.simulation_folder, self.json_default_path, self.obj_path, self.log_files]
         for folder in folders_result:
             if not os.path.exists(folder):

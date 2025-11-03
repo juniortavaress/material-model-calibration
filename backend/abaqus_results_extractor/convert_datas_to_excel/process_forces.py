@@ -1,6 +1,9 @@
 import os 
 import json
+import logging
+import traceback
 import pandas as pd 
+
 
 class ForceProcessor():
     def __init__(self, main):
@@ -40,9 +43,8 @@ class ForceProcessor():
             self._compute_statistics(df, filename, start_pct, end_pct)
             return self.results_summary
         except Exception as e:
-            import traceback
-            print("❌ Erro ao gerar gráfico:")
-            print(traceback.format_exc())  # imprime a stack completa
+            logging.error(f"❌ Erro ao gerar gráfico:")
+            logging.error("🔍 Traceback:\n%s", traceback.format_exc())
 
 
     def _load_and_prepare_data(self, json_path: str, exp_width: float, sim_width: float) -> pd.DataFrame:

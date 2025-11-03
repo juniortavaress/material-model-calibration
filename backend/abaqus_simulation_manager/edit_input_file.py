@@ -1,6 +1,8 @@
 import os 
 import re 
+import logging
 import requests
+import traceback
 import numpy as np 
 from typing import List
 
@@ -135,13 +137,14 @@ class InpEditor():
 
             upload_response = self.main.supabase_storage.storage.from_(bucket).update(storage_path, file_data)
             if hasattr(upload_response, "error") and upload_response.error:
-                print(f"❌ Upload error: {upload_response.error.message}")
+                logging.error(f"❌ Erro ao fazer upload do arquivo '{filename}': {upload_response.error.message}")
                 return None
 
             return self.main.supabase_storage.storage.from_(bucket).get_public_url(storage_path)
 
         except Exception as error:
-            print(f"❌ Unexpected error during upload: {error}")
+            logging.error(f"❌ Erro inesperado ao enviar '{filename}' para Supabase: {error}")
+            logging.debug("🔍 Traceback:\n%s", traceback.format_exc())
             return None
 
 

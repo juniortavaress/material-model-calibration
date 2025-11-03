@@ -1,5 +1,6 @@
 import os
 import psutil
+import logging
 import requests
 import traceback
 import threading
@@ -9,7 +10,7 @@ from zoneinfo import ZoneInfo
 from datetime import datetime
 from PySide6.QtCore import QTimer
 from typing import List, Tuple, Optional
-
+import time
 from backend.abaqus_results_extractor.results_manager import SimulationResultHandler
 
 
@@ -27,7 +28,6 @@ class ParallelSimulation():
             cores_per_simulation: Number of CPU cores allocated per simulation.
             computer_id: Identifier for the current computer (e.g., 'cp01').
         """
-        # self.ui = main.ui
         self.main = main
         self.cores_per_simulation = cores_per_simulation
         self.computer_id = computer_id
@@ -40,15 +40,13 @@ class ParallelSimulation():
         """
         # Schedule status updates every 20 minutes
         self._schedule(lambda: self._update_status_and_timestamp(), 1200)
+
         # Run initial check
         self._check_and_run_simulations()
-        # Schedule periodic simulation checks (only for auxiliary computers)
+
         if self.computer_id != "cp01":
-            print("⏱️ Starting periodic simulation timer...")
-            self.simulation_timer = QTimer()
-            self.simulation_timer.setInterval(1200000)  
-            self.simulation_timer.timeout.connect(self._check_and_run_simulations)
-            self.simulation_timer.start()
+            logging.info("⏱️ Starting periodic simulation timer...")
+            self._schedule(lambda: self._check_and_run_simulations(), 1200)
 
 
     def _check_and_run_simulations(self) -> None:
@@ -56,17 +54,18 @@ class ParallelSimulation():
         Checks for pending simulations and executes them if available.
         """
         if self.is_running:
-            print("⏳ Já está executando, aguardando próxima verificação.")
+            logging.info("⏳ Already running. Waiting for the next check.")            
             return
+        
     
         if self._has_pending_simulations():
-            print("🟢 Pending simulations found.")
+            logging.info("🟢 Pending simulations found.")
             self.is_running = True
             self._execute_simulation_batch()
             
         else:
             self.is_running = False
-            print("⚪ No simulations to run.")
+            logging.info("⚪ No simulations available to run.")
 
 
     def _has_pending_simulations(self) -> bool:
@@ -76,12 +75,7 @@ class ParallelSimulation():
         Returns:
             bool: True if pending jobs exist, False otherwise.
         """
-        response = self.main.supabase.table("simulation_commands")\
-            .select("id")\
-            .eq("project_id", self.main.project_id)\
-            .eq("status", 'false')\
-            .limit(1)\
-            .execute()
+        response = self.main.supabase.table("simulation_commands").select("id").eq("project_id", self.main.project_id).eq("status", 'false').limit(1).execute()
         return bool(response.data)
 
 
@@ -111,8 +105,8 @@ class ParallelSimulation():
         available = sum(1 for i, usage in enumerate(usages) if usage < threshold and i < physical_cores)
         jobs = (available - 2) // self.cores_per_simulation
         return min(max(jobs, 2), 3)
-        # return 4
-    
+
+
     def _reserve_jobs(self, num_files) -> List[str]:
         """
         Reserves simulation jobs for execution.
@@ -132,10 +126,7 @@ class ParallelSimulation():
         reserved_paths = []
         for job in jobs:
             updated = self.main.supabase.table("simulation_commands")\
-                .update({
-                    "status": "running",
-                    "computer_id": self.computer_id
-                })\
+                .update({"status": "running","computer_id": self.computer_id})\
                 .eq("id", job["id"])\
                 .eq("status", "false")\
                 .execute()
@@ -211,9 +202,8 @@ class ParallelSimulation():
             if response.status_code == 200:
                 with open(os.path.join(dir_path, file), "wb") as f:
                     f.write(response.content)
-                # print(f"✅ Downloaded: {file}")
             else:
-                print(f"❌ Falha ao baixar: {file_url}")
+                logging.error(f"❌ Failed to download: {file_url}")
 
 
     def _run_simulations_concurrently(self, commands, num_file) -> None:
@@ -224,38 +214,51 @@ class ParallelSimulation():
             commands: List of (directory, command) tuples.
             max_workers: Number of concurrent threads.
         """
-
         def aux_run_simulations(inp_dir, command) -> Optional[str]:
             retries = 3
             job_name = command.split('job=')[1].split()[0]
             output_file = os.path.join(inp_dir, f"{job_name}.odb")
-
-            # input('coloca os odb')
+            
             for attempt in range(1, retries + 1):
                 try:
                     print(f"▶️  Running: {command}")
+                    logging.info(f"▶️ Attempt {attempt}: Executing command: {command}")
                     os.chdir(inp_dir)
                     process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                     stdout, stderr = process.communicate()
                     process.wait()
+                    time.sleep(15)
 
                     if os.path.exists(output_file):
+                        print(f"✅ Found output file: {output_file}")
                         return
                     else:
-                        print(f"Output file not found for {job_name}. Retrying...")
+                        logging.warning(f"⚠️ Output file not found for job '{job_name}'. Retrying...")
                 except Exception as e:
+                    logging.error(f"❌ Failed to execute: {command}. Error: {str(e)}")
+                    logging.debug("🔍 Traceback:\n%s", traceback.format_exc())
                     return f"Failed: {command}. Error: {str(e)}"
-            
+                            
         with concurrent.futures.ThreadPoolExecutor(max_workers=num_file) as executor:
             futures = {executor.submit(aux_run_simulations, inp_dir, command): command for inp_dir, command in commands}
             for future in concurrent.futures.as_completed(futures):
-                # command = futures[future]
+                command = futures[future]
                 try:                 
                     future.result()
                 except Exception as e:
-                    traceback.print_exc()
-                    print(e)
-                
+                    logging.error("❌ Error during parallel execution: %s", str(e))
+                    logging.debug("🔍 Traceback:\n%s", traceback.format_exc())
+
+        for inp_dir, command in commands:
+            job_name = command.split('job=')[1].split()[0]
+            odb_path = os.path.join(inp_dir, f"{job_name}.odb")
+
+            # print("odb_path:", odb_path)
+            # print("odb_path:", os.path.getsize(odb_path))
+            while not os.path.exists(odb_path) or os.path.getsize(odb_path) < 450000 * 1024:
+                print(f"⏳ Waiting for {job_name}.odb ({os.path.getsize(odb_path)/1024:.1f} KB)" if os.path.exists(odb_path) else f"⏳ Waiting for {job_name}.odb (not yet created)")
+                time.sleep(600)
+
 
     def _extract_simulation_results(self, commands) -> None:
         """
@@ -264,20 +267,45 @@ class ParallelSimulation():
         Args:
             commands: List of (directory, command) tuples.
         """
-        print("📊 Extracting results...")
         result_extractor = SimulationResultHandler(self.main)
+
         try:
             for inp_dir, command in commands:
                 job_name = command.split('job=')[1].split()[0]
+                # print(f"🔧 Job name: {job_name}")
+
                 output_file = os.path.join(inp_dir, f"{job_name}.odb")
                 result_extractor.run_result_call(output_file)  
-                self._mark_jobs_as_completed(job_name)
 
-           
+                time.sleep(30)
+
+                parts = job_name.split('_')
+                condition = parts[1]  # cond01
+                iteration_number = int(parts[3])  # 1
+                set_number = int(parts[5])  # 1
+                existing = self.main.supabase.table("results").select("*")\
+                .eq("project_id", self.main.project_id)\
+                .eq("iteration_number", iteration_number)\
+                .eq("parameter_set", set_number)\
+                .eq("condition_name", condition)\
+                .execute()
+
+                result_row = existing.data[0] if existing.data else None
+                erro = result_row.get("error") if result_row else None
+
+                if not erro:
+                    print("📤 Attempting result extraction for job '%s'", job_name)
+                    logging.info("📤 Attempting result extraction for job '%s'", job_name)
+                    result_extractor.run_result_call(output_file)
+                    self._mark_jobs_as_completed(job_name)
+                else:
+                    logging.info("✅ Job '%s' already has error recorded, skipping extraction", job_name)
+                    print("✅ Job '%s' already has error recorded, skipping extraction", job_name)
+                    self._mark_jobs_as_completed(job_name)
 
         except Exception as e:
-            print("❌ Error in SimulationResultHandler:", e)
-            traceback.print_exc()
+            logging.error("❌ Error in SimulationResultHandler: %s", str(e))
+            logging.debug("🔍 Traceback:\n%s", traceback.format_exc())
             raise
 
 
@@ -288,19 +316,11 @@ class ParallelSimulation():
         Args:
             job_name (str): Name of the job that finished.
         """
-        response = self.main.supabase.table("simulation_commands")\
-            .update({
-                "status": "True"
-            })\
-            .eq("project_id", self.main.project_id)\
-            .like("command", f"%{job_name}%")\
-            .eq("status", "running")\
-            .execute()
-        
+        response = self.main.supabase.table("simulation_commands").update({"status": "True"}).eq("project_id", self.main.project_id).like("command", f"%{job_name}%").eq("status", "running").execute()
         if response.data:
-            print(f"✅ Job '{job_name}' marked as completed.")
+            logging.info(f"✅ Job '{job_name}' marked as completed.")
         else:
-            print(f"⚠️ Job '{job_name}' not found or already completed.")
+            logging.warning(f"⚠️ Job '{job_name}' not found or already marked as completed.")
 
     
     def _update_status_and_timestamp(self) -> None:

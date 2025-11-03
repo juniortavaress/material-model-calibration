@@ -22,7 +22,7 @@ class ProcessStatusLogger:
             messages.extend(["<b>==========================================</b>"])
 
         elif message == "message-id_02":
-            messages = ["<br><br><b>ITERATION {0}</b>".format(self.main.current_opt)]
+            messages = ["<br><b>ITERATION {0}</b>".format(self.main.current_opt)]
             messages.extend(["<br>Editing .inp file"])
 
         elif message == "message-id_03":
@@ -33,6 +33,9 @@ class ProcessStatusLogger:
 
         elif message == "message-id_05":
             messages.extend(["Time running: {0}".format(self.formatted_duration)])
+
+        elif message == "message-id_06":
+            messages = ["<br>Waiting for simulations"]
 
         elif message == "message-error":
             messages = ["<br><b>==========================================</b><br>"]
@@ -45,14 +48,16 @@ class ProcessStatusLogger:
         # Update the UI label with the constructed message
         if messages:
             existing_logs = ""
+            new_message = "".join(str(m) for m in messages)
+
             if message != "message-id_01":
                 response = self.main.supabase.table("projects").select("logs").eq("project_name", self.main.project_name).execute()
                 existing_logs = response.data[0]["logs"] if response.data and response.data[0]["logs"] else ""
 
-            new_logs = existing_logs + "\n" + "".join(str(m) for m in messages)
-            self.main.supabase.table("projects").update({"logs": new_logs}).eq("project_name", self.main.project_name).execute()
-            # self.main.ui.label_code_status.setText(new_logs)
-            ProcessStatusLogger.safe_set_text(self, self.main.ui.label_code_status, new_logs)
+            if not existing_logs.endswith(new_message):
+                new_logs = existing_logs + "\n" + "".join(str(m) for m in messages)
+                self.main.supabase.table("projects").update({"logs": new_logs}).eq("project_name", self.main.project_name).execute()
+                ProcessStatusLogger.safe_set_text(self, self.main.ui.label_code_status, new_logs)
 
     def safe_set_text(self, widget, text):
         QMetaObject.invokeMethod(widget, "setText", Qt.QueuedConnection, Q_ARG(str, text))

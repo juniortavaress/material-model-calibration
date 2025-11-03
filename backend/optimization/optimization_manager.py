@@ -43,7 +43,8 @@ class OtimizationManager:
         Starts a worker thread to run the PSO algorithm.
         Connects thread signals to post-processing functions.
         """
-        ProcessStatusLogger.set_log_to_ui(self, "message-id_01")
+        if not self.main.reload:
+            ProcessStatusLogger.set_log_to_ui(self, "message-id_01")
 
         try:
             self.thread = WorkerThread(lambda: self.start_pso(), name="PsoThread")
@@ -51,7 +52,7 @@ class OtimizationManager:
             self.thread.finished_signal.connect(lambda: AuxClass.clean_folder(self))
             self.thread.start()
         except Exception as e:
-            self.emain.error_tracking = True
+            self.main.error_tracking = True
             AuxClass._handle_exception(self, e, "Error at call_pso_script")
        
 
@@ -61,12 +62,22 @@ class OtimizationManager:
         """
         try:
             lb, ub, num_dimensions, velocities, positions, personal_best_positions, personal_best_scores, global_best_position, global_best_score, global_best_scores_history = PsoSetup.get_start_info(self)
-
             if not self.main.error_tracking:
                 PsoManager.run_pso(self, velocities, positions, personal_best_positions, personal_best_scores, global_best_position, global_best_score, global_best_scores_history, lb, ub, num_dimensions)
+
         except Exception as e:
+            import traceback
             self.e = e
             self.main.error_tracking = True
+
+            # Imprime o erro completo
+            print("\n❌ Erro durante 'start_pso':")
+            print(f"Tipo: {type(e).__name__}")
+            print(f"Mensagem: {e}")
+            print("Traceback completo:")
+            print(traceback.format_exc())
+
+            # Mantém o fluxo do tratamento de erro existente
             AuxClass._handle_exception(self, e, "Error in start_pso")
 
 

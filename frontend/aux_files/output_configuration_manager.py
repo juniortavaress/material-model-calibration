@@ -34,6 +34,15 @@ class OutputConfigurationManager:
         Updates visibility of UI components based on selected output options.
         Hides related frames and removes analysis types if options are disabled.
         """
+        self.ui.frame_csr_result.show()
+        self.ui.frame_ccr_result.show()
+        self.ui.results_ccr.show()
+        self.ui.results_csr.show()
+        self.ui.frame_fn_result.show()
+        self.ui.frame_fc_result.show()
+        self.ui.results_fn.show()
+        self.ui.results_fc.show()
+
         if not self.forces:
             self.ui.frame_fn_result.hide()
             self.ui.frame_fc_result.hide()

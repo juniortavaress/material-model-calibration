@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import sys
+import logging
 import traceback
 import subprocess
 from typing import Tuple, Optional
@@ -22,12 +23,17 @@ class SimulationResultHandler:
     """
     def __init__(self, main):
         self.main = main
-        # self.ui = main.ui
-        
-        # self.wfc = self.main.wfc
-        # self.wfn = self.main.wfn
-        # self.wccr = self.main.wccr
-        # self.wcsr = self.main.wcsr
+        import platform
+        self.debug_file = os.path.join(os.getcwd(), f"{platform.node()}_debug_steps.txt")
+
+
+    def _log_debug(self, message: str):
+        """Writes debug messages to a local TXT file."""
+
+        with open(self.debug_file, "a", encoding="utf-8") as f:
+            f.write(message + "\n")
+        print(message)  # opcional, mostra no console também
+
 
     def run_result_call(self, odb_file: str) -> Tuple[Optional[dict], Optional[dict]]:
         """
@@ -50,9 +56,14 @@ class SimulationResultHandler:
             "LOG_DIRECTORY": log
         })      
 
+        self._log_debug("\n\n\n--- STEP 01 ---")
+        print("Extraindo info do: ", odb_file)
         self._run_abaqus_scripts(odb_file)
+        self._log_debug("\n\n\n--- STEP 02 ---")
         self._clean_directory()
+        self._log_debug("\n\n\n--- STEP 03 ---")
         self._process_simulation_outputs(odb_file)
+        self._log_debug("\n\n\n--- STEP FINAL ---")
         
 
     def _run_abaqus_scripts(self, odb_file) -> None:
@@ -92,6 +103,8 @@ class SimulationResultHandler:
         except Exception as e:
             print("❌ Error in SimulationResultHandler:", e)
             traceback.print_exc()
+            logging.error("❌ Error in SimulationResultHandler: %s", str(e))
+            logging.error("🔍 Traceback:\n%s", traceback.format_exc())
             raise
 
 
@@ -105,38 +118,37 @@ class SimulationResultHandler:
         Returns:
             Tuple[Optional[dict], Optional[dict]]: Force and chip summaries.
         """
-        forces_summary, chip_summary = None, None
-        processor01 = ForceProcessor(self.main)
-        processor03 = ChipProcessor(self.main)
 
-        iteration_tag = f"it_{str(self.main.current_opt).zfill(2)}"
-        if iteration_tag in odb_file:
+        self._log_debug("--- Starting _process_simulation_outputs ---")
+        self._log_debug(f"ODB: {odb_file}")
+
+        try:
+            forces_summary, chip_summary = None, None
+            processor01 = ForceProcessor(self.main)
+            processor03 = ChipProcessor(self.main)
+
+            # iteration_tag = f"it_{str(self.main.current_opt).zfill(2)}"
+            # self._log_debug(f"Iteration tag: {iteration_tag}")
+            
+            # if iteration_tag in odb_file:
             base_name = os.path.splitext(os.path.basename(odb_file))[0]
-            # item_text = base_name[4:]
-
-            # if self.main.ui.combobox_file.findText(item_text) == -1:
-            #     QMetaObject.invokeMethod(
-            #         self.main.ui.combobox_file,
-            #         "addItem",
-            #         Qt.QueuedConnection,
-            #         Q_ARG(str, item_text)
-            #     )
-
-            # index = self.main.ui.combobox_file.findText(base_name)
-            # if index != -1:
-            #     QMetaObject.invokeMethod(
-            #         self.main.ui.combobox_file,
-            #         "setCurrentIndex",
-            #         Qt.QueuedConnection,
-            #         Q_ARG(int, index)
-            #     )
-
             if self.main.forces:
+                self._log_debug("Processing forces...")
                 forces_summary = processor01.process_file(base_name, exp_width = 4.0, sim_width = 0.02, start_pct = 0.25, end_pct = 1.00)
             if self.main.chip:
+                self._log_debug("Processing chip geometry...")
                 chip_summary = processor03.process_file(base_name)
+            self._log_debug("Calling ResultsManager.store_simulation_results...")
             ResultsManager.store_simulation_results(self, base_name, forces_summary, chip_summary)
         
+        except Exception as e:
+            print("❌ Error in SimulationResultHandler22:", e)
+            err = f"❌ Error in _process_simulation_outputs: {e}\n{traceback.format_exc()}"
+            self._log_debug(err)
+            traceback.print_exc()
+            logging.error("❌ Error in SimulationResultHandler22: %s", str(e))
+            logging.error("🔍 Traceback:\n%s", traceback.format_exc())
+            raise
 
     @staticmethod
     def _clean_directory() -> None:

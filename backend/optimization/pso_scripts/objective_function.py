@@ -1,14 +1,12 @@
 import numpy as np
 from typing import List
-from backend.abaqus_simulation_manager.simualtion_manager import SimulationManager
-from frontend.aux_files.tracking_message_manager import ProcessStatusLogger
-from backend.abaqus_results_extractor.results_manager import SimulationResultHandler
-from frontend.aux_files.results_plot_manager import ResultsPlotManager
 from collections import defaultdict
+from frontend.aux_files.tracking_message_manager import ProcessStatusLogger
+from backend.abaqus_simulation_manager.simualtion_manager import SimulationManager
 from backend.abaqus_results_extractor.convert_datas_to_excel.results_processor import ResultsManager
 
 class ObjectiveFunction():
-    def objective_function(self, parameters) -> List[float]:
+    def objective_function(self) -> List[float]:
         """
         Objective function for optimization, calculates the error between
         simulated results and experimental data for a given parameter set.
@@ -24,25 +22,13 @@ class ObjectiveFunction():
 
         best_set_data = ResultsManager.update_best_parameter_set(self)
         error_list = ObjectiveFunction._calculate_errors_from_results(self, self.main.current_opt)
-        ObjectiveFunction.add_result_names_to_combobox(self, self.main.current_opt)
-        
+
         self.main.current_opt += 1
-
-        print('Error List: ', error_list)
-        print('Iteration: ', self.main.current_opt)
-
-        if self.main.current_opt == 2:
-            self.ui.combobox_analysis_type.insertItem(0, "Convergence Analysis")
-            self.ui.combobox_analysis_type.setCurrentIndex(0)
-            self.ui.combobox_file.setCurrentIndex(0)
+        if self.ui.combobox_iteration.findText(str(self.main.current_opt).zfill(2)) == -1:
+            self.ui.combobox_iteration.addItem(str(self.main.current_opt).zfill(2))
         
         # Update iteration counter
         self.number_of_iterations -= 1
-
-
-        # ResultsPlotManager.graphs_manager(self.main)    
-
-        print(error_list)
         return error_list
 
 
@@ -77,22 +63,27 @@ class ObjectiveFunction():
         return error_list
     
 
-    def add_result_names_to_combobox(self, current_iteration):
-        response = self.main.supabase.table("results").select("condition_name, iteration_number, parameter_set") \
-            .eq("project_id", self.main.project_id) \
-            .eq("iteration_number", current_iteration) \
-            .execute()
+    # def add_result_names_to_combobox(self, current_iteration):
+    #     selected_iteration = str(current_iteration).zfill(2)
+    #     response = self.main.supabase.table("results").select("condition_name, iteration_number, parameter_set") \
+    #         .eq("project_id", self.main.project_id) \
+    #         .eq("iteration_number", current_iteration) \
+    #         .execute()
 
-        names = set()
-        for row in response.data:
-            condition = row["condition_name"]
-            iteration = row["iteration_number"]
-            set_num = row["parameter_set"]
-            name = f"{condition}_it_{str(iteration).zfill(2)}_set_{str(set_num).zfill(2)}"
-            names.add(name)
+    #     names = set()
+    #     for row in response.data:
+    #         iteration = str(row["iteration_number"]).zfill(2)
+    #         if iteration == selected_iteration:
+    #             condition = row["condition_name"]
+    #             iteration = row["iteration_number"]
+    #             set_num = row["parameter_set"]
+    #             name = f"{condition}_it_{str(iteration).zfill(2)}_set_{str(set_num).zfill(2)}"
+    #             names.add(name)
 
-        for name in sorted(names):
-            if self.ui.combobox_file.findText(name) == -1:
-                self.ui.combobox_file.addItem(name)
+    #     for name in sorted(names):
+    #         if self.ui.combobox_file.findText(name) == -1:
+    #             self.ui.combobox_file.addItem(name)
+        
+
 
 

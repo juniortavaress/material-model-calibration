@@ -19,6 +19,8 @@ class ResultsManager():
             chip_summary (dict): Simulated chip geometry results.
         """
         error_fc, error_fn, error_ccr, error_csr = None, None, None, None
+        simulated_cutting_forces = simulated_normal_forces = None
+        chip_compression_ratio = chip_segmentation_ratio = None
         iteration_number, set_number, condition = ResultsManager._extract_file_info(self, filename)
         target_values = ResultsManager._fetch_target_values(self, condition)
 
