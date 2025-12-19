@@ -4,12 +4,6 @@
         "frontend/interface/form.ui",
         "frontend/interface/icons.qrc",
         "frontend/aux_files/buttons_callback.py",
-        "frontend/aux_files/get_conditions.py",
-        "frontend/aux_files/variables_manager.py",
-        "frontend/aux_files/yaml_generator.py",
-        "frontend/aux_files/get_parameters.py",
-        "frontend/aux_files/get_pso_and_simulation_info.py",
-        "frontend/aux_files/show_status_message.py",
         "backend/pso/start_otimization.py",
         "backend/pso/pso_manager.py",
         "backend/pso/edit_input_file.py",
@@ -29,6 +23,12 @@
         "backend/aux_files/aux_geometry/dictionaries.py",
         "backend/aux_files/aux_geometry/generalFunctions.py",
         "backend/aux_files/aux_geometry/getGeometry.py",
-        "backend/aux_files/aux_geometry/graph_setup.py"
+        "backend/aux_files/aux_geometry/graph_setup.py",
+        "frontend/aux_files/conditions_configuration_manager.py",
+        "frontend/aux_files/material_configuration_manager.py",
+        "frontend/aux_files/output_configuration_manager.py",
+        "frontend/aux_files/results_plot_manager.py",
+        "frontend/aux_files/simulation_configuration_manager.py",
+        "frontend/aux_files/tracking_message_manager.py"
     ]
 }

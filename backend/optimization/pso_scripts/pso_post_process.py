@@ -5,7 +5,7 @@ class PostPso:
     def to_list_if_numpy(obj):
         if isinstance(obj, np.ndarray):
             return obj.tolist()
-        # Caso seja lista de arrays ou misturado
+        
         if isinstance(obj, list) and any(isinstance(i, np.ndarray) for i in obj):
             return [i.tolist() if isinstance(i, np.ndarray) else i for i in obj]
         return obj
@@ -15,7 +15,6 @@ class PostPso:
         for i in range(num_particles):
             set_number = i + 1
 
-            # Monta os valores para salvar
             param_values = {}
             for j, (param_name, _) in enumerate(self.parameters_boundry.items()):
                 param_value = positions[i][j]
@@ -28,7 +27,6 @@ class PostPso:
             for cond in db_conditions:
                 cond_name = cond["name"]
 
-                # Verifica se já existe um registro no banco
                 response = (
                     self.main.supabase
                     .from_('results')
@@ -43,11 +41,9 @@ class PostPso:
 
                 data = response.data
                 if data:
-                    # Atualiza registro existente
                     result_id = data[0]['id']
                     self.main.supabase.from_('results').update(param_values).eq('id', result_id).execute()
                 else:
-                    # Insere novo registro
                     new_row = {
                         'project_id': self.main.project_id,
                         'condition_name': cond_name,
@@ -71,11 +67,9 @@ class PostPso:
         }
 
         if record:
-            # Atualiza a linha existente
             self.main.supabase.table("current_optimization_data") \
                 .update(data_to_save).eq("project_id", self.main.project_id).execute()
         else:
-            # Insere uma nova linha
             self.main.supabase.table("current_optimization_data") \
                 .insert(data_to_save).execute()
 
@@ -96,10 +90,8 @@ class PostPso:
         }
 
         if record:
-            # Atualiza a linha existente
             self.main.supabase.table("last_optimization_data").update(data_to_save).eq("project_id", self.main.project_id).execute()
         else:
-            # Insere uma nova linha
             self.main.supabase.table("last_optimization_data").insert(data_to_save).execute()
 
     
@@ -116,11 +108,9 @@ class PostPso:
         }
 
         if record:
-            # Atualiza a linha existente
             self.main.supabase.table("best_optimization_data") \
                 .update(data_to_save).eq("project_id", self.main.project_id).execute()
         else:
-            # Insere uma nova linha
             self.main.supabase.table("best_optimization_data") \
                 .insert(data_to_save).execute()    
             
@@ -141,15 +131,12 @@ class PostPso:
             set_number = i + 1
             iteration_number = self.main.current_opt
 
-            # Prepare parameters dictionary
             params_dict = {}
             for j, param_name in enumerate(parameter_names):
                 value = positions[i][j]
                 value = value.item() if isinstance(value, np.generic) else value
                 params_dict[f"parameter_{param_name}"] = value
 
-
-            # Define the unique key for upsert
             for cond in db_conditions:
                 cond_name = cond["name"]
 
@@ -172,9 +159,7 @@ class PostPso:
                 }
 
                 if base_filter.data:  
-                    # se já existe → update
                     record_id = base_filter.data[0]["id"]
                     self.main.supabase.table("results").update(upsert_data).eq("id", record_id).execute()
                 else:
-                    # se não existe → insert
                     self.main.supabase.table("results").insert(upsert_data).execute()

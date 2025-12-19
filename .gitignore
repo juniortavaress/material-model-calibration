@@ -7,3 +7,5 @@
 *.autosave
 *.TMP
 *~RF*
+*.pyproject
+*.pyproject.user

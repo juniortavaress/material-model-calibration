@@ -24,7 +24,6 @@ class SimulationManager:
             optimization: Object containing optimization parameters and settings.
             main: Main application context with UI and Supabase access.
         """
-        # self.ui = main.ui
         self.main = main
         self.optimization = optimization
 
@@ -39,8 +38,6 @@ class SimulationManager:
         3. Waits for all simulations to complete
         """
         # STEP-01
-        print("self.main.iteration_in_progress", self.main.iteration_in_progress)
-        
         if not self.main.iteration_in_progress:
             ProcessStatusLogger.set_log_to_ui(self, "message-id_02")
             try:    
@@ -67,17 +64,6 @@ class SimulationManager:
                 self._wait_for_all_simulations()
 
             except Exception as e:
-                import traceback
-                self.main.error_tracking = True
-                
-                # Imprime o tipo de erro, a mensagem e o traceback completo
-                error_message = f"\n❌ Erro durante 'SM - Waiting Simulations':\n"
-                error_message += f"Tipo: {type(e).__name__}\n"
-                error_message += f"Mensagem: {e}\n"
-                error_message += f"Traceback:\n{traceback.format_exc()}"
-                print(error_message)
-
-                # Se quiser, também pode enviar para UI ou log
                 AuxClass._handle_exception(self, e, "SM - Waiting Simulations")
 
 
@@ -102,7 +88,6 @@ class SimulationManager:
                 break
 
             logging.info("⏳ Waiting for all simulations to complete...")
-            # time.sleep(60)
             time.sleep(2700)
 
 
@@ -143,7 +128,6 @@ class SimulationManager:
             cp_id = f'cp{comp["computer_number"]:02d}'
 
             if not is_active:
-                print(f"🚨 {cp_id} is INACTIVE. Updating tables...")
                 self.main.supabase.table("computers").update({"status": False,"last_update": None}).eq("id", comp["id"]).execute()
                 self.main.supabase.table("simulation_commands").update({"status": "false","computer_id": None}).eq("project_id", self.main.project_id).eq("computer_id", cp_id).eq("status", "running").execute()
 

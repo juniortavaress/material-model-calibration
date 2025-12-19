@@ -253,7 +253,7 @@ class Ui_MainWindow(object):
         self.pages.addWidget(self.page_login)
         self.page_settings = QWidget()
         self.page_settings.setObjectName(u"page_settings")
-        self.page_settings.setStyleSheet(u"#label_abaqus, #label_result {\n"
+        self.page_settings.setStyleSheet(u"#label_abaqus, #label_subrotine {\n"
 "background-color: rgb(248, 248, 248);\n"
 "border-radius: 10px;\n"
 "border: 1px solid rgb(113, 113, 113);}\n"
@@ -265,7 +265,7 @@ class Ui_MainWindow(object):
 "border: 1px solid rgb(182, 182, 182);\n"
 "border-radius: 5px}\n"
 "\n"
-"#button_abaqus, #button_result {\n"
+"#button_abaqus, #button_subrotine {\n"
 "background-color: rgb(248, 248, 248);\n"
 "border-radius: 17px;}\n"
 "\n"
@@ -319,7 +319,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_63.setObjectName(u"horizontalLayout_63")
         self.frame_4 = QFrame(self.frame_2)
         self.frame_4.setObjectName(u"frame_4")
-        self.frame_4.setMaximumSize(QSize(465, 200))
+        self.frame_4.setMaximumSize(QSize(465, 350))
         self.frame_4.setStyleSheet(u"")
         self.frame_4.setFrameShape(QFrame.Shape.NoFrame)
         self.frame_4.setFrameShadow(QFrame.Shadow.Raised)
@@ -373,6 +373,49 @@ class Ui_MainWindow(object):
 
 
         self.verticalLayout_7.addWidget(self.frame_7)
+
+        self.frame_20 = QFrame(self.frame_4)
+        self.frame_20.setObjectName(u"frame_20")
+        self.frame_20.setMinimumSize(QSize(0, 100))
+        self.frame_20.setMaximumSize(QSize(16777215, 100))
+        self.frame_20.setStyleSheet(u"")
+        self.frame_20.setFrameShape(QFrame.Shape.NoFrame)
+        self.frame_20.setFrameShadow(QFrame.Shadow.Raised)
+        self.verticalLayout_58 = QVBoxLayout(self.frame_20)
+        self.verticalLayout_58.setObjectName(u"verticalLayout_58")
+        self.label_13 = QLabel(self.frame_20)
+        self.label_13.setObjectName(u"label_13")
+        self.label_13.setFont(font2)
+
+        self.verticalLayout_58.addWidget(self.label_13)
+
+        self.frame_44 = QFrame(self.frame_20)
+        self.frame_44.setObjectName(u"frame_44")
+        self.frame_44.setFrameShape(QFrame.Shape.NoFrame)
+        self.frame_44.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_20 = QHBoxLayout(self.frame_44)
+        self.horizontalLayout_20.setObjectName(u"horizontalLayout_20")
+        self.label_subrotine = QLabel(self.frame_44)
+        self.label_subrotine.setObjectName(u"label_subrotine")
+        self.label_subrotine.setMaximumSize(QSize(16777215, 25))
+
+        self.horizontalLayout_20.addWidget(self.label_subrotine)
+
+        self.button_subrotine = QPushButton(self.frame_44)
+        self.button_subrotine.setObjectName(u"button_subrotine")
+        self.button_subrotine.setMinimumSize(QSize(34, 34))
+        self.button_subrotine.setMaximumSize(QSize(34, 34))
+        self.button_subrotine.setStyleSheet(u"")
+        self.button_subrotine.setIcon(icon1)
+        self.button_subrotine.setIconSize(QSize(35, 35))
+
+        self.horizontalLayout_20.addWidget(self.button_subrotine)
+
+
+        self.verticalLayout_58.addWidget(self.frame_44)
+
+
+        self.verticalLayout_7.addWidget(self.frame_20)
 
         self.frame_11 = QFrame(self.frame_4)
         self.frame_11.setObjectName(u"frame_11")
@@ -4138,7 +4181,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.pages.setCurrentIndex(10)
+        self.pages.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -4158,6 +4201,9 @@ class Ui_MainWindow(object):
         self.label_4.setText(QCoreApplication.translate("MainWindow", u"Select Abaqus Path:", None))
         self.label_abaqus.setText("")
         self.button_abaqus.setText("")
+        self.label_13.setText(QCoreApplication.translate("MainWindow", u"Select Subrotine Folder:", None))
+        self.label_subrotine.setText("")
+        self.button_subrotine.setText("")
         self.button_settings_next_page.setText(QCoreApplication.translate("MainWindow", u"Next", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"Developed by Junior Tavares, Severin Groh and Pascal Behrens", None))
         self.icon_interface_4.setText("")

@@ -1,3 +1,4 @@
+import logging
 import numpy as np
 from typing import List
 from collections import defaultdict
@@ -23,6 +24,7 @@ class ObjectiveFunction():
         best_set_data = ResultsManager.update_best_parameter_set(self)
         error_list = ObjectiveFunction._calculate_errors_from_results(self, self.main.current_opt)
 
+        ObjectiveFunction.delete_inp_files_by_iteration(self)
         self.main.current_opt += 1
         if self.ui.combobox_iteration.findText(str(self.main.current_opt).zfill(2)) == -1:
             self.ui.combobox_iteration.addItem(str(self.main.current_opt).zfill(2))
@@ -63,27 +65,43 @@ class ObjectiveFunction():
         return error_list
     
 
-    # def add_result_names_to_combobox(self, current_iteration):
-    #     selected_iteration = str(current_iteration).zfill(2)
-    #     response = self.main.supabase.table("results").select("condition_name, iteration_number, parameter_set") \
-    #         .eq("project_id", self.main.project_id) \
-    #         .eq("iteration_number", current_iteration) \
-    #         .execute()
+    def delete_inp_files_by_iteration(self):
+        """
+        Deletes all .inp files in storage that belong to a specific iteration.
+        """
+        iteration = self.main.current_opt - 1
+        if iteration > 0:
+            try:
+                bucket = "inp-default-files"
+                folder_path = f"{self.main.project_id}/edited_inp"
+                iteration_tag = f"_it_{str(iteration).zfill(2)}_"
 
-    #     names = set()
-    #     for row in response.data:
-    #         iteration = str(row["iteration_number"]).zfill(2)
-    #         if iteration == selected_iteration:
-    #             condition = row["condition_name"]
-    #             iteration = row["iteration_number"]
-    #             set_num = row["parameter_set"]
-    #             name = f"{condition}_it_{str(iteration).zfill(2)}_set_{str(set_num).zfill(2)}"
-    #             names.add(name)
+                # List files
+                list_response = self.main.supabase_storage.storage.from_(bucket).list(folder_path)
 
-    #     for name in sorted(names):
-    #         if self.ui.combobox_file.findText(name) == -1:
-    #             self.ui.combobox_file.addItem(name)
-        
+                # Check for listing error
+                if isinstance(list_response, dict) and list_response.get("error"):
+                    logging.error(f"Error listing files in bucket '{bucket}': {list_response['error']['message']}")
+                    return
 
+                # Filter matching files
+                files_to_delete = [
+                    f"{folder_path}/{file['name']}"
+                    for file in list_response
+                    if file["name"].endswith(".inp") and iteration_tag in file["name"]
+                ]
 
+                if not files_to_delete:
+                    logging.info(f"No .inp files found for iteration {iteration}.")
+                    return
 
+                # Delete files
+                delete_response = (self.main.supabase_storage.storage.from_(bucket).remove(files_to_delete))
+
+                if isinstance(delete_response, dict) and delete_response.get("error"):
+                    logging.error(f"Error deleting files: {delete_response['error']['message']}")
+                else:
+                    logging.info(f"{len(files_to_delete)} files deleted for iteration {iteration}.")
+
+            except Exception as error:
+                logging.error(f"Unexpected error while deleting files for iteration {iteration}: {error}")

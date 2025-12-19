@@ -66,18 +66,8 @@ class OtimizationManager:
                 PsoManager.run_pso(self, velocities, positions, personal_best_positions, personal_best_scores, global_best_position, global_best_score, global_best_scores_history, lb, ub, num_dimensions)
 
         except Exception as e:
-            import traceback
             self.e = e
             self.main.error_tracking = True
-
-            # Imprime o erro completo
-            print("\n❌ Erro durante 'start_pso':")
-            print(f"Tipo: {type(e).__name__}")
-            print(f"Mensagem: {e}")
-            print("Traceback completo:")
-            print(traceback.format_exc())
-
-            # Mantém o fluxo do tratamento de erro existente
             AuxClass._handle_exception(self, e, "Error in start_pso")
 
 

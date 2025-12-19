@@ -1,6 +1,5 @@
 import os 
 import logging 
-import traceback
 import alphashape
 import matplotlib
 import numpy as np
@@ -250,7 +249,7 @@ class ResultsPlotManager():
                 csr = pd.to_numeric(group["error_csr"], errors="coerce").abs().mean()
 
             combined_error = (self.wfc * fc + self.wfn * fn + self.wccr * ccr + self.wcsr * csr)
-            dict_errors[name] = {"error": round(combined_error * 100, 1)}  # em porcentagem
+            dict_errors[name] = {"error": round(combined_error * 100, 1)} 
 
         lines = {}
         for keys, values in dict_errors.items():
@@ -282,18 +281,16 @@ class ResultsPlotManager():
                 y = [val for val in y_raw if not np.isnan(val)]
                 x = np.arange(1, len(y) + 1)
 
-                print(f"📊 Set-{set_num:02d} → {len(y)} pontos válidos: {y}")
-
                 if len(y) >= 2:
                     coef = np.polyfit(x, y, 1)
                     trendline = np.polyval(coef, x)
-                    ax.plot(x, y, label=f"Set-{set_num:02d}")
-                    ax.plot(x, trendline, linestyle='--', color=ax.lines[-1].get_color(), label=f"Set-{set_num:02d} (trendline)")
+                    ax.plot(x, y, label=f"Particle-{set_num:02d}")
+                    ax.plot(x, trendline, linestyle='--', color=ax.lines[-1].get_color(), label=f"Particle-{set_num:02d} (trendline)")
                 else:
-                    print(f"⚠️ Trendline ignorada para Set-{set_num:02d} — apenas {len(y)} ponto(s) válido(s)")
+                    pass
 
         all_y_values = [val for values in lines['error'].values() for val in values]
-        max_y = max(all_y_values) if all_y_values else 1.0  # fallback seguro
+        max_y = max(all_y_values) if all_y_values else 1.0  
         ax.set_ylim(bottom=0, top=max_y * 1.05)
         ax.legend()
         ResultsPlotManager.canvas(self, figure)
@@ -323,8 +320,6 @@ class ResultsPlotManager():
                 df.to_csv(filename, index=False)
 
 
-
-
     def update_tracking_view(self):
         """
         Updates the UI based on the selected tracking or graph view.
@@ -348,12 +343,10 @@ class ResultsPlotManager():
             else:
                 self.ui.label_code_status.setText("No logs available.")
 
-
         elif self.ui.combobox_tracking_graph.currentText() == "Graphs":
             self.ui.label_code_status.setText("")
             self.ui.frame_tracking.hide()
             self.ui.frame_results_graph.show()
-            # ResultsPlotManager.canvas(self)
             self.ui.frame_graph_analysis.show()
             self.ui.pushButton_extract_data.show()
             self.ui.pushButton_extract_graph.show()
@@ -362,7 +355,6 @@ class ResultsPlotManager():
             self.ui.frame_forces_and_chip.hide()
         elif self.ui.combobox_tracking_graph.currentText() == "Graphs":
             self.ui.frame_forces_and_chip.show()
-
 
 
     def filter_files_by_iteration(self):

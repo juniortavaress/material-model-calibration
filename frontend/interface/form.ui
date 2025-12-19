@@ -75,7 +75,7 @@ padding: 5px;}
     <item>
      <widget class="QStackedWidget" name="pages">
       <property name="currentIndex">
-       <number>10</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="page_login">
        <property name="styleSheet">
@@ -465,7 +465,7 @@ background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5
       </widget>
       <widget class="QWidget" name="page_settings">
        <property name="styleSheet">
-        <string notr="true">#label_abaqus, #label_result {
+        <string notr="true">#label_abaqus, #label_subrotine {
 background-color: rgb(248, 248, 248);
 border-radius: 10px;
 border: 1px solid rgb(113, 113, 113);}
@@ -477,7 +477,7 @@ background-color: rgb(248, 248, 248);
 border: 1px solid rgb(182, 182, 182);
 border-radius: 5px}
 
-#button_abaqus, #button_result {
+#button_abaqus, #button_subrotine {
 background-color: rgb(248, 248, 248);
 border-radius: 17px;}
 
@@ -595,7 +595,7 @@ background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5
              <property name="maximumSize">
               <size>
                <width>465</width>
-               <height>200</height>
+               <height>350</height>
               </size>
              </property>
              <property name="styleSheet">
@@ -683,6 +683,102 @@ background-color: qradialgradient(spread:pad, cx:0.5, cy:0.5, radius:0.5, fx:0.5
                     </item>
                     <item>
                      <widget class="QPushButton" name="button_abaqus">
+                      <property name="minimumSize">
+                       <size>
+                        <width>34</width>
+                        <height>34</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>34</width>
+                        <height>34</height>
+                       </size>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true"/>
+                      </property>
+                      <property name="text">
+                       <string/>
+                      </property>
+                      <property name="icon">
+                       <iconset resource="icons.qrc">
+                        <normaloff>:/folder1/Icons/import.png</normaloff>:/folder1/Icons/import.png</iconset>
+                      </property>
+                      <property name="iconSize">
+                       <size>
+                        <width>35</width>
+                        <height>35</height>
+                       </size>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QFrame" name="frame_20">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>100</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>100</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true"/>
+                </property>
+                <property name="frameShape">
+                 <enum>QFrame::Shape::NoFrame</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Shadow::Raised</enum>
+                </property>
+                <layout class="QVBoxLayout" name="verticalLayout_58">
+                 <item>
+                  <widget class="QLabel" name="label_13">
+                   <property name="font">
+                    <font>
+                     <pointsize>12</pointsize>
+                    </font>
+                   </property>
+                   <property name="text">
+                    <string>Select Subrotine Folder:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QFrame" name="frame_44">
+                   <property name="frameShape">
+                    <enum>QFrame::Shape::NoFrame</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Shadow::Raised</enum>
+                   </property>
+                   <layout class="QHBoxLayout" name="horizontalLayout_20">
+                    <item>
+                     <widget class="QLabel" name="label_subrotine">
+                      <property name="maximumSize">
+                       <size>
+                        <width>16777215</width>
+                        <height>25</height>
+                       </size>
+                      </property>
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="button_subrotine">
                       <property name="minimumSize">
                        <size>
                         <width>34</width>

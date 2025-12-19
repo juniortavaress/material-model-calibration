@@ -26,8 +26,6 @@ class InpEditor():
         default_inp_folder = f"{self.main.project_id}/default_inp"
         
         default_file = self.main.supabase_storage.storage.from_(bucket_name).list(default_inp_folder)
-       
-        # Pega todos os sets da última iteração
         response = self.main.supabase.table("results").select("*").eq("project_id", self.main.project_id).eq("iteration_number", self.main.current_opt).execute()
         if not response.data:
             return []
@@ -45,7 +43,6 @@ class InpEditor():
             } for row in response.data
         }
 
-        # Modify each default inp file with each parameter set
         for set_key, parameters in param_sets.items():
             for file in default_file:
                 file_name = file["name"]
@@ -70,7 +67,11 @@ class InpEditor():
             "computer_id": None
         } for url in edited_inp_urls]
 
-        self.main.supabase.table("simulation_commands").insert(commands).execute()
+        if not commands:
+            logging.warning("No commands to insert into simulation_commands.")
+        else:
+            self.main.supabase.table("simulation_commands").insert(commands).execute()
+
         return edited_inp_urls
 
 
@@ -135,7 +136,7 @@ class InpEditor():
             bucket = "inp-default-files"
             storage_path = f"{self.main.project_id}/edited_inp/{filename}"
 
-            upload_response = self.main.supabase_storage.storage.from_(bucket).update(storage_path, file_data)
+            upload_response = self.main.supabase_storage.storage.from_(bucket).upload(storage_path, file_data)
             if hasattr(upload_response, "error") and upload_response.error:
                 logging.error(f"❌ Erro ao fazer upload do arquivo '{filename}': {upload_response.error.message}")
                 return None

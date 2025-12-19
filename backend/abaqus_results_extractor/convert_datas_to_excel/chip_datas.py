@@ -22,10 +22,7 @@ class ManagerChipDatasAndImage():
         if len(filename) > 31:
             filename = filename[:31]
 
-        df_points = df_points.rename(columns={
-            "X": "x",
-            "Y": "y"
-        })
+        df_points = df_points.rename(columns={"X": "x",  "Y": "y"})
 
         x_list = df_points["x"].tolist()
         y_list = df_points["y"].tolist()
@@ -178,6 +175,5 @@ class ManagerChipDatasAndImage():
 
         # Draw only the filtered measurement lines
         for p1, p2 in filtered_lines:
-            plt.plot([p1[0], p2[0]], [p1[1], p2[1]], 'k--', linewidth=1)  # Draw connecting line
-
+            plt.plot([p1[0], p2[0]], [p1[1], p2[1]], 'k--', linewidth=1) 
 

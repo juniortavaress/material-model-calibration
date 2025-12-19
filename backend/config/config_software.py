@@ -97,6 +97,19 @@ class SoftwareConfig():
             self.project = response.data[0]
             if project_password == self.project["password"]:
                 self.project_id = self.project["id"]
+
+                try:
+                    files = self.supabase_storage.storage.from_("inp-default-files").list(f"{self.project_id}/subroutine")
+
+                except Exception as e:
+                    files = []
+
+                if files:  
+                    folder_url = f"storage/inp-default-files/{self.project_id}/subroutine"
+                    self.ui.label_subrotine.setText(folder_url)
+                else:
+                    self.ui.label_subrotine.setText("") 
+
                 
                 if self.project["id_main_computer"] in (None, ""):
                     self.supabase.table("projects").update({
@@ -130,6 +143,7 @@ class SoftwareConfig():
             if insert_response.data:
                 self.project_id = insert_response.data[0]["id"]
                 self.main_cp = True
+                SoftwareConfig._register_computer(self)
                 QMessageBox.information(self, "Success", "Project created successfully!")
                 self.ui.pages.setCurrentIndex(1)
 
@@ -275,7 +289,6 @@ class SoftwareConfig():
             self.ui.lineEdit_fig.setText(str(sim_data.get("fig", 0)))
             self.ui.lineEdit_w.setText(str(sim_data.get("w", 0)))
             self.ui.lineEdit_fip.setText(str(sim_data.get("fip", 0)))
-            # self.ui.pages.setCurrentIndex(9)
 
 
     def _load_iterations(self, project):
@@ -303,7 +316,6 @@ class SoftwareConfig():
             elif self.current_opt < self.total_iterations and self.current_opt > 1:
                 logging.info("🔄 Reloading last optimization state...")
                 self.reload = True
-                print(self.current_opt)
                 iteration_exists = (self.supabase.table("results").select("id").eq("project_id", project["id"]).eq("iteration_number", self.current_opt).limit(1).execute())
 
                 if iteration_exists.data and len(iteration_exists.data) > 0:
@@ -320,7 +332,6 @@ class SoftwareConfig():
                     OtimizationManager(self)
                     self.ui.pages.setCurrentIndex(10)
                 else:
-                    print("kjdkjfk")
                     self.iteration_in_progress = False
                     OtimizationManager(self)
             else:
@@ -361,7 +372,6 @@ class SoftwareConfig():
             
             ResultsPlotManager.filter_files_by_iteration(self)
             SoftwareConfig._check_optimization_status(self, project)
-            # self.ui.pages.setCurrentIndex(1)
         except:
             pass
         
@@ -387,17 +397,46 @@ class SoftwareConfig():
                     "pc_id": self.pc_id,
                     "abaqus_path": self.abaqus_path
                 }).execute()
-                # self.ui.button_result.setEnabled(True)
             else:
                 self.ui.label_abaqus.setText(" ")
                 QMessageBox.warning(self, "Error", "Select a valid path.")
-            
-        if type != "abq":
-            if not self.ui.label_abaqus.text().strip():
-                QMessageBox.warning(self, "Error", "Select a valid path.")
+
+        elif type == "sub":
+            folder_path = QFileDialog.getExistingDirectory(self, "Select Subroutine Folder")
+            if folder_path:
+                self.ui.label_subrotine.setText(folder_path)  # Assumindo que você tenha esse label
+                try:
+                    for filename in os.listdir(folder_path):
+                        file_path = os.path.join(folder_path, filename)
+                        if os.path.isfile(file_path):
+                            # Abrindo o arquivo em modo binário
+                            with open(file_path, "rb") as f:
+                                file_data = f.read()  # bytes
+
+                            bucket = "inp-default-files"
+                            storage_path = f"{self.project_id}/subroutine/{filename}"
+
+                            upload_response = self.supabase_storage.storage.from_(bucket).update(storage_path, file_data)
+                            if hasattr(upload_response, "error") and upload_response.error:
+                                logging.error(f"❌ Erro ao fazer upload do arquivo '{filename}': {upload_response.error.message}")
+                                continue
+                            
+
+                except Exception as error:
+                    logging.error(f"❌ Erro inesperado ao enviar arquivos da pasta '{folder_path}': {error}")
+                    logging.debug("🔍 Traceback:\n%s", traceback.format_exc())
+                    QMessageBox.warning(self, "Error", f"Erro ao enviar arquivos: {error}")
+
             else:
-                SoftwareConfig.set_user_config_path(self)
-                self.ui.pages.setCurrentIndex(2)
+                self.ui.label_subrotine.setText(" ")
+                QMessageBox.warning(self, "Error", "Select a valid folder.")
+
+        else:
+                if not self.ui.label_abaqus.text().strip():
+                    QMessageBox.warning(self, "Error", "Select a valid path.")
+                else:
+                    SoftwareConfig.set_user_config_path(self)
+                    self.ui.pages.setCurrentIndex(2)
                 
 
     def set_user_config_path(self) -> None:

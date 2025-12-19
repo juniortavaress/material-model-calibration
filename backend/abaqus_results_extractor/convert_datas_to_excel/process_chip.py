@@ -177,9 +177,9 @@ class ChipProcessor():
         iteration = 0
         while True:
             try:
-                logging.disable(logging.WARNING) # Silence warnings temporarily
+                logging.disable(logging.WARNING) 
                 alpha_shape = alphashape.alphashape(points, alpha)
-                logging.disable(logging.NOTSET) # Re-enable logging
+                logging.disable(logging.NOTSET) 
                 if isinstance(alpha_shape, MultiPolygon):
                     raise AttributeError("Alphashape resulted in MultiPolygon.")
                 return alpha_shape

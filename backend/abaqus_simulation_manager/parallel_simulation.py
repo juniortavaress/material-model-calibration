@@ -196,7 +196,8 @@ class ParallelSimulation():
         bucket_name = "inp-default-files"
 
         for file in source_path_list:
-            storage_path = f"subrotine/{file}"
+            # storage_path = f"subrotine/{file}"
+            storage_path = f"{self.main.project_id}/subroutine/{file}"
             file_url = self.main.supabase_storage.storage.from_(bucket_name).get_public_url(storage_path)
             response = requests.get(file_url)
             if response.status_code == 200:
@@ -219,9 +220,9 @@ class ParallelSimulation():
             job_name = command.split('job=')[1].split()[0]
             output_file = os.path.join(inp_dir, f"{job_name}.odb")
             
+            # input("Press Enter to start simulation for job: {job_name}...")  # Debugging pause
             for attempt in range(1, retries + 1):
                 try:
-                    print(f"▶️  Running: {command}")
                     logging.info(f"▶️ Attempt {attempt}: Executing command: {command}")
                     os.chdir(inp_dir)
                     process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -230,7 +231,6 @@ class ParallelSimulation():
                     time.sleep(15)
 
                     if os.path.exists(output_file):
-                        print(f"✅ Found output file: {output_file}")
                         return
                     else:
                         logging.warning(f"⚠️ Output file not found for job '{job_name}'. Retrying...")
@@ -253,10 +253,7 @@ class ParallelSimulation():
             job_name = command.split('job=')[1].split()[0]
             odb_path = os.path.join(inp_dir, f"{job_name}.odb")
 
-            # print("odb_path:", odb_path)
-            # print("odb_path:", os.path.getsize(odb_path))
-            while not os.path.exists(odb_path) or os.path.getsize(odb_path) < 450000 * 1024:
-                print(f"⏳ Waiting for {job_name}.odb ({os.path.getsize(odb_path)/1024:.1f} KB)" if os.path.exists(odb_path) else f"⏳ Waiting for {job_name}.odb (not yet created)")
+            while not os.path.exists(odb_path) or os.path.getsize(odb_path) < 300000 * 1024:
                 time.sleep(600)
 
 
@@ -272,7 +269,6 @@ class ParallelSimulation():
         try:
             for inp_dir, command in commands:
                 job_name = command.split('job=')[1].split()[0]
-                # print(f"🔧 Job name: {job_name}")
 
                 output_file = os.path.join(inp_dir, f"{job_name}.odb")
                 result_extractor.run_result_call(output_file)  
@@ -294,13 +290,11 @@ class ParallelSimulation():
                 erro = result_row.get("error") if result_row else None
 
                 if not erro:
-                    print("📤 Attempting result extraction for job '%s'", job_name)
                     logging.info("📤 Attempting result extraction for job '%s'", job_name)
                     result_extractor.run_result_call(output_file)
                     self._mark_jobs_as_completed(job_name)
                 else:
                     logging.info("✅ Job '%s' already has error recorded, skipping extraction", job_name)
-                    print("✅ Job '%s' already has error recorded, skipping extraction", job_name)
                     self._mark_jobs_as_completed(job_name)
 
         except Exception as e:

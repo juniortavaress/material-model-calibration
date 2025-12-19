@@ -1,4 +1,3 @@
-import numpy as np
 from PySide6.QtCore import QMetaObject, Qt
 from PySide6.QtCore import Q_ARG
 
@@ -45,19 +44,49 @@ class ProcessStatusLogger:
             messages.extend(["<br>", self.e, "<br>"])
             messages.extend(["<br><b>==========================================</b><br>"])
 
-        # Update the UI label with the constructed message
-        if messages:
+
+        new_message = "".join(str(m) for m in messages)
+
+        if message == "message-id_01":
+            ProcessStatusLogger.safe_set_text(self, self.main.ui.label_code_status, new_message)
+            return
+
+        request = self.main.supabase.table("projects").select("logs").eq("project_name", self.main.project_name)
+        response = ProcessStatusLogger.safe_supabase_execute(self, request)
+
+        if response is None or not response.data:
             existing_logs = ""
-            new_message = "".join(str(m) for m in messages)
+        else:
+            existing_logs = response.data[0].get("logs", "") or ""
 
-            if message != "message-id_01":
-                response = self.main.supabase.table("projects").select("logs").eq("project_name", self.main.project_name).execute()
-                existing_logs = response.data[0]["logs"] if response.data and response.data[0]["logs"] else ""
+        new_logs = existing_logs + "\n" + new_message
 
-            if not existing_logs.endswith(new_message):
-                new_logs = existing_logs + "\n" + "".join(str(m) for m in messages)
-                self.main.supabase.table("projects").update({"logs": new_logs}).eq("project_name", self.main.project_name).execute()
-                ProcessStatusLogger.safe_set_text(self, self.main.ui.label_code_status, new_logs)
+        if message != "message-error":
+            request_upd = self.main.supabase.table("projects").update({"logs": new_logs}).eq("project_name", self.main.project_name)
+            ProcessStatusLogger.safe_supabase_execute(self, request_upd)
+
+        ProcessStatusLogger.safe_set_text(self, self.main.ui.label_code_status, new_logs)
+
 
     def safe_set_text(self, widget, text):
         QMetaObject.invokeMethod(widget, "setText", Qt.QueuedConnection, Q_ARG(str, text))
+
+
+    def safe_supabase_execute(self, request):
+        """
+        Executa requisições ao Supabase com tratamento de erros.
+        Se o Supabase retornar HTML ou erro 500, retorna None.
+        """
+        try:
+            response = request.execute()
+        except Exception as e:
+            # Se vier HTML (Cloudflare), identificar
+            if "html" in str(e).lower():
+                return None
+            return None
+
+        # Caso o Supabase retorne conteúdo inesperado
+        if not hasattr(response, "data"):
+            return None
+
+        return response

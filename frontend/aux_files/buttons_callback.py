@@ -40,6 +40,7 @@ class ButtonsCallback:
 
         # Page 02 - Abaqus Path
         self.ui.button_abaqus.clicked.connect(lambda: SoftwareConfig.get_results_and_abaqus_folders(self, "abq"))
+        self.ui.button_subrotine.clicked.connect(lambda: SoftwareConfig.get_results_and_abaqus_folders(self, "sub"))
 
         # Page 10 - Results Visualizaer
         self.ui.pushButton_extract_graph.clicked.connect(lambda: ResultsPlotManager.extract_otimization_info(self, 'graph'))
@@ -121,8 +122,8 @@ class ButtonsCallback:
         self.error_tracking = False
         self.current_opt = 1
 
-        self.ui.lineEdit_password.setText('1007')
-        self.ui.lineEdit_project_name.setText('Optimization1007')
+        # self.ui.lineEdit_password.setText('1007')
+        # self.ui.lineEdit_project_name.setText('Optimization1007')
 
         self.ui.frame_plastic.hide()
         self.ui.frame_damage.hide()
@@ -130,8 +131,10 @@ class ButtonsCallback:
 
         supabase_url = 'https://dbbvsfnxsyvkjrcoeakh.supabase.co'
         supabase_key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRiYnZzZm54c3l2a2pyY29lYWtoIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1ODUyMzIzNywiZXhwIjoyMDc0MDk5MjM3fQ.eggQomAbqZUbXwldB3ICj0DB6qp76bb6Opgi_p6UIC8'
-        options = ClientOptions(httpx_client=httpx.Client(timeout=60.0))
-        options_storage = ClientOptions(httpx_client=httpx.Client(timeout=60.0))
+        #supabase_url = 'https://lcvvmcjoqauusunznrho.supabase.co'
+        #supabase_key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxjdnZtY2pvcWF1dXN1bnpucmhvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NTM1MzU4NywiZXhwIjoyMDgwOTI5NTg3fQ.U21M1VUFHskVAgzqxUcoGe8DvPWpbWtl96LIZ2jVj5Q'
+        options = ClientOptions(httpx_client=httpx.Client(timeout=160.0))
+        options_storage = ClientOptions(httpx_client=httpx.Client(timeout=160.0))
         self.supabase = create_client(supabase_url, supabase_key, options=options)
         self.supabase_storage = create_client(supabase_url, supabase_key, options=options_storage)
 

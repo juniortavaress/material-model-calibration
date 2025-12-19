@@ -103,8 +103,6 @@ class PsoSetup:
         """
         try:
             cur_response = self.main.supabase.table("current_optimization_data").select("*").eq("project_id", self.main.project_id).execute().data
-
-            
             if cur_response:
                 cur_opt_data = cur_response[0]
                 self.number_of_iterations = self.number_of_iterations - self.main.current_opt + 1
@@ -163,20 +161,8 @@ class PsoSetup:
             return velocities, positions, personal_best_positions, personal_best_scores, global_best_position, global_best_score, global_best_scores_history
         
         except Exception as e:
-            import traceback
             self.e = e
             self.main.error_tracking = True
-            
-            # Imprime o erro completo
-            print("\n❌ Erro durante 'initial_parameters_pso':")
-            print(f"Tipo: {type(e).__name__}")
-            print(f"Mensagem: {e}")
-            print("Traceback completo:")
-            print(traceback.format_exc())
-            
-            # Mantém o tratamento de erro existente
             AuxClass._handle_exception(self, e, "Error at def initial_parameters_pso")
-            
-            # Retorna valores padrão para não quebrar o fluxo
             return [], [], [], [], None, None, []
 
